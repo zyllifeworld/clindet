@@ -1,0 +1,92 @@
+import os
+def get_tumor_fastq(wildcards):
+    fq_files = list(samples_info.loc[wildcards.sample,['Tumor_R1_file_path','Tumor_R2_file_path']])
+    return {
+        "R1":fq_files[0],
+        "R2":fq_files[1],
+    }
+
+def get_normal_fastq(wildcards):
+    fq_files = list(samples_info.loc[wildcards.sample,['Normal_R1_file_path','Normal_R2_file_path']])
+    return {
+        "R1":fq_files[0],
+        "R2":fq_files[1],
+    }
+
+def get_sample_bed(wildcards):
+    bed_file = samples_info.loc[wildcards.sample,'Target_file_bed']
+    return(bed_file)
+
+def get_sample_gender(wildcards):
+    bed_file = samples_info.loc[wildcards.sample,'Target_file_bed']
+    return(bed_file)
+
+
+def get_vcf_name(wildcards):
+    if wildcards.sample in paired_samples:
+        if wildcards.caller == 'vardict' or wildcards.caller == 'vardict_filter' or wildcards.caller == 'vardict_germline':          
+            name =  "--tumor-id " + wildcards.sample + '-T' + " --normal-id " + wildcards.sample + '-NC'
+        elif wildcards.caller == 'cgppindel_filter':
+            name = "--tumor-id TUMOUR --normal-id NORMAL"
+        elif wildcards.caller == 'caveman':
+            name = "--tumor-id TUMOUR --normal-id NORMAL"
+        elif wildcards.caller == 'muse':
+            name = "--tumor-id TUMOR --normal-id NORMAL"
+        else: 
+            name =  "--tumor-id " + wildcards.sample + '_T' + " --normal-id " + wildcards.sample + '_NC'
+    else:
+        name =  "--tumor-id " + wildcards.sample + '_T' + " --normal-id " + wildcards.sample + '_NORMAL'
+    return(name)
+
+
+def get_vcf_file(wildcards):
+    if wildcards.sample in paired_samples:
+        file_name =  f"results/vcf/" + 'paired' + "/{sample}/{caller}.vcf"
+    else:
+        file_name =  f"results/vcf/" + 'unpaired' + "/{sample}/{caller}.vcf"
+    return(file_name)
+##### Modules #####
+include: "rules/qc.smk"
+include: "rules/mapping.smk"
+# include: "rules/calling_paired.smk"
+# include: "rules/calling_paired_strelka.smk"
+include: "rules/calling_unpaired.smk"
+
+## cgp pipeline caller
+if recall_pon_pindel:
+    include: "rules/cgp/cgppindel.smk"
+    # include: "rules/rtm/paired/Mutect2.smk"
+else:
+    # print('not recall')
+    include: "rules/cgp/cgppindel_nobuild_NP.smk"
+
+include: "rules/cgp/cgpCaVEMan.smk"
+include: "rules/rtm/paired/SNV.smk"
+# ## rtm
+
+# include: "rules/rtm/paired/varscan2.smk"
+# include: "rules/rtm/paired/UnifiedGenoTyper.smk"
+include: "rules/rtm/paired/CNV.smk"
+
+# #include: "rules/merge.smk"
+include: "rules/merge_loop.smk"
+include: "rules/merge_loop_germline.smk"
+
+## SV call rules
+BRASS_CNV = config['singularity']['brass'].get("CNV", 'ASCAT'),
+rule brass_ascat:
+    input:
+        cnv=rules.CNA_ASCAT.output['rdata'] if BRASS_CNV == 'ASCAT' else rules.paired_purple.output['pp']
+    output:
+        ascat="{project}/{genome_version}/results/cnv/paired/BRASS/{sample}/{sample}.ascat"
+    params:
+        brass_cnv = BRASS_CNV
+    script:
+        "../scripts/stats_ascat.R"
+        
+include: "rules/rtm/paired/SV.smk"
+
+include: "rules/rtm/paired/svclone.smk"
+include: "rules/report/multiqc.smk"
+# java -Xmx55G -cp commons-math3-3.6.1.jar:Jama-1.0.3.jar:./  Breast ../MutationTestFiles/MutationFiles.txt  ../SignificanceAnalysis/ 
+# java -Xmx55G -cp commons-math3-3.6.1.jar:Jama-1.0.3.jar:./ SignificanceNoncoding MM ../MutationTestFiles/MutationFiles.txt  ../SignificanceAnalysis_MM/ ../
