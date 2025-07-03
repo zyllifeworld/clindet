@@ -68,7 +68,7 @@ rule paired_cobalt:
         -gc_profile {params.gc_profile}
         """
 
-purple_run_with_sv =True
+purple_run_with_sv = True
 if purple_run_with_sv:
     rule paired_purple:
         input:
@@ -79,7 +79,7 @@ if purple_run_with_sv:
             # indexes="{project}/{genome_version}/results/recal/paired/{sample}-T.bam.bai",
             amber="{project}/{genome_version}/results/cnv/paired/purple/{sample}/amber",
             cobalt="{project}/{genome_version}/results/cnv/paired/purple/{sample}/cobalt",
-            sage_vcf="{project}/{genome_version}/results/vcf/paired/{sample}/{sample}.sage.vcf.gz",
+            sage_vcf="{project}/{genome_version}/results/vcf/paired/{sample}/sage/{sample}.sage_pave.vcf.gz",#use pave annotate vcf
             sv_vcf=purple_sv_vcf,
             ref_genome=config['resources'][genome_version]['REFFA'],
         output:

@@ -6,7 +6,7 @@ analysis/
 data/
 eval/
 pre_bin/
-report/
+/report/
 reference/
 resources/
 output/
@@ -151,3 +151,4 @@ workflow/WGS/scripts/caveman/mutect2_to_caveman.R
 workflow/WGS/scripts/caveman/un_cavman_cmds.R
 workflow/WGS/scripts/sample_check.R
 workflow/WGS/scripts/svclone_pre.R
+workflow/WES/rules/report/multiqc.smk
