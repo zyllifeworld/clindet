@@ -14,4 +14,5 @@ dependencies:
   - vardict-java=1.8.3
   - vcflib=1.0.2
   - vcftools=0.1.16
+  - picard
 

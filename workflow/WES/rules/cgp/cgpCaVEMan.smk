@@ -27,7 +27,8 @@ rule CM_call:
     params:
         ref=config['resources'][genome_version]['REFFA'],
         igbed=config['singularity']['caveman'][genome_version]['ignorebed'],
-        out_dir='{project}/{genome_version}/results/vcf/paired/{sample}/caveman'
+        out_dir='{project}/{genome_version}/results/vcf/paired/{sample}/caveman',
+        s=config['singularity']['caveman'][genome_version]['flag']['s']
     singularity:
         config['singularity']['cgpwgs']['sif']
     shell:
@@ -38,7 +39,7 @@ rule CM_call:
         -tc {input.Tcnv} -nc {input.NCcnv} \
         -tumour-bam {input.Tum} -normal-bam {input.NC} \
         -ignore-file {params.igbed} \
-        -s HUMAN -sa GRCh37 -seqType WXS -t {threads} -no-flagging
+        -s {params.s} -sa {wildcards.genome_version} -seqType WXS -t {threads} -no-flagging
         touch {output.log}
         """
 
@@ -59,6 +60,7 @@ rule CM_flag:
         b=config['singularity']['caveman'][genome_version]['flag']['b'],
         ab=config['singularity']['caveman'][genome_version]['flag']['ab'],
         g=config['singularity']['caveman'][genome_version]['flag']['g'],
+        s=config['singularity']['caveman'][genome_version]['flag']['s'],
         vcf="{project}/{genome_version}/results/vcf/paired/{sample}/caveman/{sample}_T_vs_{sample}_NC.muts.ids.vcf.gz",
     singularity:
         config['singularity']['caveman']['sif']
@@ -68,7 +70,7 @@ rule CM_flag:
         -i {params.vcf} \
         -o {output} \
         -m {input.Tum} -n {input.NC} \
-        -s Human  -t genome \
+        -s {params.s}  -t genome \
         -ref {params.ref}.fai \
         -c  {params.c} \
         -v  {params.v} \
@@ -96,6 +98,7 @@ rule CM_germ_flag:
         b=config['singularity']['caveman'][genome_version]['flag']['b'],
         ab=config['singularity']['caveman'][genome_version]['flag']['ab'],
         g=config['singularity']['caveman'][genome_version]['flag']['g'],
+        s=config['singularity']['caveman'][genome_version]['flag']['s'],
         vcf="{project}/{genome_version}/results/vcf/paired/{sample}/caveman/{sample}_T_vs_{sample}_NC.snps.ids.vcf.gz",
     singularity:
         config['singularity']['caveman']['sif']
@@ -105,7 +108,7 @@ rule CM_germ_flag:
         -i {params.vcf} \
         -o {output} \
         -m {input.Tum} -n {input.NC} \
-        -s Human  -t genome \
+        -s {params.s}  -t genome \
         -ref {params.ref}.fai \
         -c  {params.c} \
         -v  {params.v} \

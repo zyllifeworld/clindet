@@ -1,17 +1,3 @@
-# pindel.pl -noflag \
-# -reference /public/home/lijf/env/genome/broad/hg19/ucsc.hg19.fasta \
-# -simrep /public/ClinicalExam/lj_sih/resource/mutFilter/simpleRepeats.bed.gz \
-# -genes /public/ClinicalExam/lj_sih/resource/mutFilter/hg19.exon.bed.gz \
-# -filter /public/ClinicalExam/lj_sih/resource/mutFilter/WES/human/hg19/cgpPindel/perl/rules/pulldownRules.lst \
-# -assembly GRCh37 \
-# -species Human \
-# -seqtype WXS \
-# -tumour /public/ClinicalExam/lj_sih/resource/mutFilter/hg19_FAKE.bam \
-# -normal /public/ClinicalExam/lj_sih/projects/project_pipeline/WES/results/recal/paired/MM-015-NC.bam \
-# -outdir /public/ClinicalExam/lj_sih/projects/project_pipeline/WES/pindel \
-# -cpus 20
-
-
 ### pindel_normal_pane
 rule PI_NP: 
     input:
@@ -68,18 +54,18 @@ rule PI_call:
     input:
         Tum="{project}/{genome_version}/results/recal/paired/{sample}-T.bam",
         NC="{project}/{genome_version}/results/recal/paired/{sample}-NC.bam",
-        # NP_gff3=config['singularity']['cgppindel'][genome_version]['WES']['normal_panel']
-        # NP_gff3=config['singularity']['cgppindel'][genome_version]['WGS']['normal_panel']
-        # NP_gff3='{project}/{genome_version}/analysis/normalPanel/pindel_merge.gff3.gz'
-        NP_gff3=expand('{project}/{genome_version}/analysis/normalPanel/pindel_{sample}.gff3.gz',sample = ['merge'],project = project,genome_version = genome_version)
+        NP_gff3=config['singularity']['cgppindel'][genome_version]['WES']['normal_panel']
     output:
         out_dir=directory('{project}/{genome_version}/results/vcf/paired/{sample}/cgppindel'),
-        log='{project}/{genome_version}/logs/paired/cgppindel_{sample}.log'
+        log='{project}/{genome_version}/results/logs/paired/cgppindel_{sample}.log'
     threads: 20
     params:
         ref=config['resources'][genome_version]['REFFA'],
         simrep=config['singularity']['cgppindel'][genome_version]['simrep'],
         genes=config['singularity']['cgppindel'][genome_version]['genes'],
+        filter=config['singularity']['cgppindel'][genome_version]['WES']['filter'],
+        softfil=config['singularity']['cgppindel'][genome_version]['softfil'],
+        species=config['singularity']['cgppindel'][genome_version]['species']
     singularity:
         config['singularity']['cgppindel']['sif']
         # '/public/ClinicalExam/lj_sih/softwares/pindel.sif'
@@ -87,15 +73,15 @@ rule PI_call:
         """
         pindel.pl \
         -reference {params.ref} \
-        -simrep /public/ClinicalExam/lj_sih/resource/mutFilter/simpleRepeats.bed.gz \
-        -genes /public/ClinicalExam/lj_sih/resource/mutFilter/hg19.exon.bed.gz \
+        -simrep {params.simrep} \
+        -genes {params.genes} \
         -exclude chrUn% \
         -unmatched {input.NP_gff3} \
-        -filter /public/ClinicalExam/lj_sih/softwares/cgp/cgpPindel/perl/rules/pulldownRules.lst \
-        -softfil /public/ClinicalExam/lj_sih/softwares/cgp/cgpPindel/perl/rules/softRules.lst \
-        -assembly GRCh37 \
-        -species Human \
-        -seqtype WGS \
+        -filter {params.filter} \
+        -softfil {param.softfil} \
+        -assembly {wildcards.genome_version} \
+        -species {params.species} \
+        -seqtype WXS \
         -tumour {input.Tum} \
         -normal {input.NC} \
         -outdir {output.out_dir} \

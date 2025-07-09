@@ -1,33 +1,24 @@
 resources:
-  hg19:
-    REFFA: "/Users/ZYL/Documents/Project/Github/clinwdl/snakemake/WES/data/ucsc.hg19.fasta"
-    REFFA_DICT: "/Users/ZYL/Documents/Project/Github/clinwdl/snakemake/WES/data/ucsc.hg19.fasta"
-    BED_GENOME: "/public/home/lijf/projects/clinrep/meta/bed/genome/hg19/genome.bed"
-    BED_PANEL: "/public/home/lijf/projects/clinrep/meta/bed/panel/hg19_al/IDT-100.Targeted.hg19.bed"
-    BED_PANEL_MM: "/public/home/lijf/projects/clinrep/meta/bed/panel/hg19_mm/MM_panel_genes.Targeted.hg19_20211012.final.bed"
-    BED_PANEL_EXTEND: "/public/home/lijf/projects/clinrep/meta/bed/panel/hg19_al/IDT-100.Targeted.hg19.extend.bed"
-    BED_PANEL_EXTEND_MM: "/public/home/lijf/projects/clinrep/meta/bed/panel/hg19_mm/MM_panel_genes.Targeted.hg19_20211012.final.extend.bed"
-    BIAT_PANEL: "/public/home/lijf/projects/clinrep/meta/bed/panel/hg19_al/IDT-100.Targeted.hg19.interval_list"
-    BIAT_PANEL_MM: "/public/home/lijf/projects/clinrep/meta/bed/panel/hg19_mm/MM_panel_genes.Targeted.hg19_20211012.final.interval_list"
-  hg38:
-    REFFA: "/public/home/lijf/env/genome/broad/hg38-v2/Homo_sapiens_assembly38.fasta"
-    REFFA_DICT: "/public/home/lijf/env/genome/broad/hg38-v2/Homo_sapiens_assembly38.dict"
-    BED_GENOME_38: "/public/home/lijf/projects/clinrep/meta/bed/genome/hg38/genome.bed"
-    GENECODE_HG38: "/public/home/lijf/env/genome/gencode/hg38/v38"
-    GENECODE_HG38_v38_GTF: "/public/home/lijf/env/genome/gencode/hg38/v38/gencode.v38.annotation.gtf"
-    GENECODE_HG38_v38_ID2SYMBOL: "/public/home/lijf/env/genome/gencode/hg38/v38/tximport.geneid2symbol"
-    GENECODE_HG38_v38_GENES: "/public/home/lijf/env/genome/gencode/hg38/v38/tximport.genes"
-  sample_folder:
-    FQDIR_RNA: "/public/home/lijf/projects/clinrep/data/rnaseq/fq"
-    FQDIR_PANEL: "/public/home/lijf/projects/clinrep/data/panel/fq"
-    FQDIR_WES: "/public/home/lijf/projects/clinrep/data/wes/fq"
-    FQDIR_WGS: "/public/home/lijf/projects/clinrep/data/wgs/fq"
-    FQDIR_IGH: "/public/home/lijf/projects/clinrep/data/igh/fq"
+  b37:
+    REFFA: "/AbsoPath/of/clindet/folder/resources/ref_genome/b37/Homo_sapiens.GRCh37.GATK.illumina.fasta"
+    GENOME_BED: ""
+    GTF: "/AbsoPath/of/clindet/folder/resources/ref_genome/b37/"
+    WES_PON: "/AbsoPath/of/clindet/folder/resources/ref_genome/b37/Mutect2-exome-panel.vcf"
+    WES_BED: 
+    WGS_PON: "/AbsoPath/of/clindet/folder/resources/ref_genome/b37/Mutect2-WGS-panel-b37.vcf"
+    DBSNP: "/AbsoPath/of/clindet/folder/resources/ref_genome/b37/Homo_sapiens_assembly19.dbsnp138.vcf"
+    DBSNP_GZ: "/AbsoPath/of/clindet/folder/resources/ref_genome/b37/Homo_sapiens_assembly19.dbsnp138.vcf.gz"
+    DBSNP_INDEL: "/public/ClinicalExam/lj_sih/resource/genome/human/hg19/dbsnp_151_indel.hg19.vcf.gz"
+    MUTECT2_VCF: "/public/ClinicalExam/lj_sih/resource/af-only-gnomad.raw.sites.b37.vcf.gz"
+    REFFA_DICT: "/AbsoPath/of/clindet/folder/resources/ref_genome/b37/Homo_sapiens_assembly19.fasta"
+    MUTECT2_germline_vcf: "/public/ClinicalExam/lj_sih/resource/af-only-gnomad.raw.sites.b37.vcf.gz"
+    common_vcf: "/public/ClinicalExam/lj_sih/resource/genome/human/GRCh37/00-common_all.vcf.gz"
+    CELLRANGER: "/public/home/lijf/env/genome/cellranger/GRCh38"
+    CELLRANGER_FASTA: "/public/home/lijf/env/genome/cellranger/GRCh38/fasta/genome.fa"
   varanno:
-    KNOWN_SITES1: "/Users/ZYL/Documents/Project/Github/clinwdl/snakemake/WES/data/dbsnp_138.hg19.vcf"
-    KNOWN_SITES2: "/Users/ZYL/Documents/Project/Github/clinwdl/snakemake/WES/data/Mills_and_1000G_gold_standard.indels.hg19.sites.vcf"
-    KNOWN_SITES1_38: "/public/home/lijf/env/genome/broad/hg38-v2/Homo_sapiens_assembly38.dbsnp138.vcf.gz"
-    KNOWN_SITES2_38: "/public/home/lijf/env/genome/broad/hg38-v2/Mills_and_1000G_gold_standard.indels.hg38.vcf.gz"
+    b37:
+      KNOWN_SITES1: "/AbsoPath/of/clindet/folder/resources/ref_genome/b37/1000G_phase1.snps.high_confidence.b37.vcf.gz"
+      KNOWN_SITES2: "/AbsoPath/of/clindet/folder/resources/ref_genome/b37/1000G_phase1.indels.b37.vcf.gz"
 
 softwares:
   BWA: "/public/home/lijf/env/miniconda3/envs/clindet/bin/bwa"
@@ -55,7 +46,10 @@ softwares:
       time: '235'
       threads: 24
 
-  
+  facets:
+    conda: 'facets'
+
+
   SAMTOOLS: "/public/home/lijf/env/miniconda3/envs/samtools114/bin/samtools"
   samtools:
     call: "/public/home/lijf/env/miniconda3/envs/samtools114/bin/samtools "
@@ -88,71 +82,513 @@ softwares:
       mem: '2000'
       time: '235'
   
-  GATK4: "/public/home/lijf/env/opt/bio/gatk/4.2.4.1/gatk"
+  GATK4: "/AbsoPath/of/clindet/folder/resources/softwares/gatk/gatk "
   gatk4:
-    call: "/public/ClinicalExam/lj_sih/projects/project_test2/analysis/cnv/cnv_call/gatk-4.2.6.1/gatk "
+    call: "/AbsoPath/of/clindet/folder/resources/softwares/gatk/gatk "
     MarkDuplicates:
-      call: "/public/ClinicalExam/lj_sih/projects/project_test2/analysis/cnv/cnv_call/gatk-4.2.6.1/gatk MarkDuplicates "
+      call: "/AbsoPath/of/clindet/folder/resources/softwares/gatk/gatk MarkDuplicates "
     BaseRecalibrator:
-      call: "/public/ClinicalExam/lj_sih/projects/project_test2/analysis/cnv/cnv_call/gatk-4.2.6.1/gatk BaseRecalibrator "
+      call: "/AbsoPath/of/clindet/folder/resources/softwares/gatk/gatk BaseRecalibrator "
     ApplyBQSR:
-      call: "/public/ClinicalExam/lj_sih/projects/project_test2/analysis/cnv/cnv_call/gatk-4.2.6.1/gatk ApplyBQSR "
+      call: "/AbsoPath/of/clindet/folder/resources/softwares/gatk/gatk ApplyBQSR "
 
   GATK3: "/public/home/lijf/env/opt/bio/gatk/3.8-0/GenomeAnalysisTK.jar"
   gatk3:
     call: "java -jar /public/home/lijf/env/opt/bio/gatk/3.8-0/GenomeAnalysisTK.jar"
-
 
   strelka:
     conda: "strelka"
     somatic:
       call:
 
-
-
-
+  SENTIEON: "/public/astra/bin/_sentieon/bin/sentieon"
+  sentieon:
+    call: "/public/astra/bin/_sentieon/bin/sentieon "
   fastp:
-    call: "/public/home/lijf/env/miniconda3/envs/fastp/bin/fastp"
-    conda: "fastp"
+    # conda: "fastp"
+    conda: "srakit"
 
   vcf2maf:
-    call: "perl /public/ClinicalExam/lj_sih/projects/project_QC/env/vcf_maf/vcf2maf.pl "
+    call: "perl /AbsoPath/of/clindet/folder/project_QC/env/vcf_maf/vcf2maf.pl "
     conda: "vep105"
+    build_version:
+      hg19: "GRCh37"
+      b37: "GRCh37"
+      hg38: "GRCh38"
+      WBcel235: "WBcel235"
+    vep:
+      hg19:
+        vep_data: "/public/home/lijf/env/db/vep"
+        vep_path: "/public/home/lijf/env/miniconda3/envs/vep105/bin"
+        cache_version: "105"
+        species: "homo_sapiens"
+      b37:
+        vep_data: "/public/home/lijf/env/db/vep"
+        vep_path: "/public/home/lijf/env/miniconda3/envs/vep105/bin"
+        cache_version: "105"
+        species: "homo_sapiens"
+      hg38:
+        vep_data: "/public/home/lijf/env/db/vep"
+        vep_path: "/public/home/lijf/env/miniconda3/envs/vep105/bin"
+        cache_version: "105"
+        species: "homo_sapiens"
+      WBcel235:
+        vep_data: "/public/ClinicalExam/lj_sih/resource/vep"
+        vep_path: "/public/home/lijf/env/miniconda3/envs/vep105/bin"
+        cache_version: "113"
+        species: "caenorhabditis_elegans"
+  maf2vcf:
+    call: "perl /AbsoPath/of/clindet/folder/project_QC/env/vcf_maf/maf2vcf.pl "
+    conda: "vep105"
+    build_version:
+      hg19: "GRCh37"
+      hg38: "GRCh38"
 
 
   star:
     conda: "star279"
     index:
       hg38: "/public/home/lijf/env/genome/gencode/hg38/v38/star_index/2.7.9a"
+      # hg38: "/public/home/lijf/env/genome/broad/hg38-v2/star_index/2.7.10b/149"
+      t2t: "/public/ClinicalExam/lj_sih/resource/STAR_index/human/T2T"
 
+  bowtie2:
+    conda: "star279"
+    index:
+      hg38: "/public/home/lijf/env/genome/gencode/hg38/v38/bowtie2_index"
+      # hg38: "/public/home/lijf/env/genome/broad/hg38-v2/star_index/2.7.10b/149"
+      t2t: "/public/ClinicalExam/lj_sih/resource/STAR_index/human/T2T"
 
+  salom:
+    conda:
+    index:
+      hg19:
+      hg38:
+      t2t:
 
-  CLINREP_PRJ: "/public/home/lijf/projects/clinrep"
-  JAVA: "/public/home/lijf/env/opt/jdk/1.8.0_201/bin/java"
-  BWA: "/public/home/lijf/env/miniconda3/envs/clindet/bin/bwa"
-  PICARD: "/public/home/lijf/env/opt/bio/picard/2.26.6/picard.jar"
-  JELLYFISH: "/public/home/lijf/env/miniconda3/envs/km/bin/jellyfish"
-  KM: "/public/home/lijf/env/miniconda3/envs/km/bin/km"
-  KM_REFFA: "/public/home/lijf/env/opt/bio/km/data"
-  IK6_REFFA: "/public/home/lijf/env/genome/salmon/ik6/v34"
-  IK6_HEADER: "/public/home/lijf/env/genome/salmon/ik6/header"
-  IK6_TNAME: "/public/home/lijf/env/genome/salmon/ik6/ikzf1"
-  VARDICT_HOME: "/public/home/lijf/env/opt/bio/vardict"
-  VARDICT_JAVA: "/public/home/lijf/env/opt/bio/vardictJava/1.8.3/bin/"
+  kallisto:
+    conda:
+    index:
+      hg19:
+      hg38:
+      t2t:
+
   VARSCAN2: "/public/home/lijf/env/opt/bio/varscan2/VarScan.v2.4.4.jar"
-  SAMTOOLS: "/public/home/lijf/env/miniconda3/envs/samtools114/bin/samtools"
-  LOFREQ: "/public/home/lijf/env/miniconda3/envs/clindet/bin/lofreq"
-  LOFREQ_SOMATIC: "/public/home/lijf/env/miniconda3/envs/clindet/bin/lofreq2_somatic.py"
-  SCALPEL: "/public/home/env/miniconda3/envs/clindet/bin/scalpel-discovery"
-  GATK3: "/public/home/lijf/env/opt/bio/gatk/3.8-0/GenomeAnalysisTK.jar"
-
-  VEP_BIN: "/public/home/lijf/env/miniconda3/envs/vep104/bin"
-  VEP_DB: "/public/home/lijf/env/db/vep"
-  SNPEFF: "/public/home/lijf/env/opt/bio/snpEff/5.0e/snpEff.jar"
-  VCF2MAF: "/public/home/lijf/env/opt/bio/vcf2maf"
-  MIXCR: "/public/home/lijf/env/opt/bio/mixcr/3.0.13/mixcr"
-  VDJTOOLS: "/public/home/lijf/env/opt/bio/vdjtools/1.2.1/vdjtools-1.2.1.jar"
-  TRUST4: "/public/home/lijf/env/opt/bio/trust4/run-trust4"
-  FASTP: "/public/home/lijf/env/miniconda3/envs/fastp/bin/fastp"
+  varscan2:
+    conda: "clindet"
+    call: "java -jar /public/ClinicalExam/lj_sih/softwares/VarScan.v2.4.2.jar "
 
 
+  DELLY: "/public/ClinicalExam/lj_sih/softwares/delly116"
+  delly: 
+    call: "/public/ClinicalExam/lj_sih/softwares/delly116 "
+
+  SANSA: "/public/ClinicalExam/lj_sih/softwares/sansa"
+  sansa: 
+    call: "/public/ClinicalExam/lj_sih/softwares/sansa "
+    db: "/public/ClinicalExam/lj_sih/resource/SVref/gnomad_v2.1_sv.sites.vcf.gz"
+    g: "/public/ClinicalExam/lj_sih/resource/genome/human/GRCh37/Homo_sapiens.GRCh37.87.gff3.gz"
+    hg19:
+      db: "/public/ClinicalExam/lj_sih/resource/SVref/gnomad_v2.1_sv.sites.vcf.gz"
+      g: "/public/ClinicalExam/lj_sih/resource/genome/human/GRCh37/Homo_sapiens.GRCh37.87.gff3.gz"
+      t_len: 5000
+    b37:
+      db: "/public/ClinicalExam/lj_sih/resource/SVref/gnomad_v2.1_sv.sites.vcf.gz"
+      g: "/public/ClinicalExam/lj_sih/resource/genome/human/GRCh37/Homo_sapiens.GRCh37.87.gff3.gz"
+      t_len: 5000
+    WBcel235:
+      db: "/public/ClinicalExam/lj_sih/resource/SVref/gnomad_v2.1_sv.sites.vcf.gz"
+      g: "/public/ClinicalExam/lj_sih/resource/genome/human/GRCh37/Homo_sapiens.GRCh37.87.gff3.gz"
+      t_len: 5000
+    hg38:
+      db: ""
+      g: ""
+    T2T:
+      db: "/public/ClinicalExam/lj_sih/resource/genome/human/T2T_human/gnomad_v2.1_sv.sites_chr.chm13.vcf.gz"
+      g: "/public/ClinicalExam/lj_sih/resource/genome/human/T2T_human/chm13.draft_v2.0.gene_annotation.gtf.gz"
+      t_len: 5000
+  
+  RSEM: "/public/ClinicalExam/lj_sih/softwares/RSEM_bin/bin/"
+  rsem:
+    pre_ref_index: "/public/ClinicalExam/lj_sih/softwares/RSEM_bin/bin/rsem-prepare-reference "
+    cal_exp: "/public/ClinicalExam/lj_sih/softwares/RSEM_bin/bin/rsem-calculate-expression "
+    bam2wig: "/public/ClinicalExam/lj_sih/softwares/RSEM_bin/bin/rsem-bam2wig "
+    ref:
+      hg38: "/public/ClinicalExam/lj_sih/resource/genome/human/hg38/GRCh38.primary_assembly.genome.fa"
+    index:
+      # hg38: "/public/ClinicalExam/lj_sih/resource/genome/human/hg38/ref/hg38"
+      hg38: "/public/ClinicalExam/lj_sih/resource/genome/human/hg38/rsem_ref/hg38"
+
+      # hg38: "/public/home/lijf/env/genome/gencode/hg38/v38/star_index/2.7.9a"
+
+  ARRIBA:  "/public/ClinicalExam/lj_sih/softwares/arriba_v2.3.0/arriba"
+  arriba:
+    call: "/public/ClinicalExam/lj_sih/softwares/arriba_v2.3.0/arriba "
+    hg19:
+      blacklist: "/public/ClinicalExam/lj_sih/softwares/arriba_v2.3.0/database/blacklist_hg19_hs37d5_GRCh37_v2.3.0.tsv.gz"
+      known_fusions: "/public/ClinicalExam/lj_sih/softwares/arriba_v2.3.0/database/known_fusions_hg19_hs37d5_GRCh37_v2.3.0.tsv.gz"
+      protein_domains: "/public/ClinicalExam/lj_sih/softwares/arriba_v2.3.0/database/protein_domains_hg19_hs37d5_GRCh37_v2.3.0.gff3"
+      cytobands: "/public/ClinicalExam/lj_sih/softwares/arriba_v2.3.0/database/cytobands_hg19_hs37d5_GRCh37_v2.3.0.tsv"
+    hg38:
+      blacklist: "/public/ClinicalExam/lj_sih/softwares/arriba_v2.4.0/database/blacklist_hg38_GRCh38_v2.4.0.tsv.gz"
+      known_fusions: "/public/ClinicalExam/lj_sih/softwares/arriba_v2.4.0/database/known_fusions_hg38_GRCh38_v2.4.0.tsv.gz"
+      protein_domains: "/public/ClinicalExam/lj_sih/softwares/arriba_v2.4.0/database/protein_domains_hg38_GRCh38_v2.4.0.gff3"
+      cytobands: "/public/ClinicalExam/lj_sih/softwares/arriba_v2.4.0/database/cytobands_hg38_GRCh38_v2.4.0.tsv"
+
+
+  TRUST4: "/public/ClinicalExam/lj_sih/softwares/TRUST4/run-trust4"
+  trust4:
+    call: "/public/ClinicalExam/lj_sih/softwares/TRUST4/run-trust4 "
+    conda: "clindet"
+    hg19:
+      ref: "/public/ClinicalExam/lj_sih/softwares/TRUST4/IMGT+C.fa"
+      f: "/public/ClinicalExam/lj_sih/softwares/TRUST4/hg19_bcrtcr.fa"
+    hg38:
+      ref: "/public/ClinicalExam/lj_sih/softwares/TRUST4/IMGT+C.fa"
+      f: "/public/ClinicalExam/lj_sih/softwares/TRUST4/hg38_bcrtcr.fa"
+
+  BATTENBERG:
+  battenberg:
+    conda: "snakemake"
+
+  SEQUENZA:
+  sequenza:
+    conda: "sequenza"
+    hg19:
+      gc: /AbsoPath/of/clindet/folder/project_pipeline/WGS/MMWGSPE300_RJ/hg19/genome/hg19_gc50.wig.gz 
+    b37:
+      gc: /AbsoPath/of/clindet/folder/project_pipeline/WGS/MMWGSPE300_RJ/hg19/genome/hg19_gc50.wig.gz 
+
+  PICARD: "/public/ClinicalExam/lj_sih/softwares/picard.jar"
+  picard:
+    call: "/public/ClinicalExam/lj_sih/softwares/picard.jar "
+  
+  ascat:
+    b37:
+      loci_1000: "/public/ClinicalExam/lj_sih/projects/project_clindet/resources/ref_genome/b37/ASCAT/WES/G1000_lociAll_hg19/G1000_loci_hg19_chr"
+      alleles_1000: "/public/ClinicalExam/lj_sih/projects/project_clindet/resources/ref_genome/b37/ASCAT/WES/G1000_allelesAll_hg19/G1000_alleles_hg19_chr"
+      replictimingfile: "/public/ClinicalExam/lj_sih/projects/project_clindet/resources/ref_genome/b37/ASCAT/WES/RT_G1000_hg19.txt"
+      GCcontentfile: "/public/ClinicalExam/lj_sih/projects/project_clindet/resources/ref_genome/b37/ASCAT/WES/GC_G1000_hg19.txt"
+  ascat_wgs:
+    b37:
+      loci_1000: "/public/ClinicalExam/lj_sih/projects/project_clindet/resources/ref_genome/b37/ASCAT/WGS/G1000_lociAll_hg19/G1000_loci_hg19_chr"
+      alleles_1000: "/public/ClinicalExam/lj_sih/projects/project_clindet/resources/ref_genome/b37/ASCAT/WGS/G1000_allelesAll_hg19/G1000_alleles_hg19_chr"
+      replictimingfile: "/public/ClinicalExam/lj_sih/projects/project_clindet/resources/ref_genome/b37/ASCAT/WGS/RT_G1000_hg19.txt"
+      GCcontentfile: "/public/ClinicalExam/lj_sih/projects/project_clindet/resources/ref_genome/b37/ASCAT/WGS/GC_G1000_hg19.txt"
+
+singularity:
+  cgppindel:
+    sif: "/public/ClinicalExam/lj_sih/softwares/pindel.sif"
+    cpu: 30
+    b37:
+      species: "HUMAN"
+      genes: "/public/ClinicalExam/lj_sih/resource/mutFilter/hg19.exon.bed.gz"
+      softfil: "/public/ClinicalExam/lj_sih/projects/project_clindet/resources/ref_genome/b37/Sanger/SNV_INDEL_ref/pindel/WXS_Rules.lst"
+      simrep: "/AbsoPath/of/clindet/folder/resources/ref_genome/b37/SNV_INDEL_ref/pindel/simpleRepeats.bed.gz"
+      normal_panel: "/AbsoPath/of/clindet/folder/resources/ref_genome/b37/SNV_INDEL_ref/pindel/pindel_np.gff3.gz"
+      WES:
+        fil: "/public/ClinicalExam/lj_sih/projects/project_clindet/resources/ref_genome/b37/Sanger/SNV_INDEL_ref/pindel/WXS_Rules.lst"
+      WGS:
+        fil: "/public/ClinicalExam/lj_sih/projects/project_clindet/resources/ref_genome/b37/Sanger/SNV_INDEL_ref/pindel/WGS_Rules.lst"
+
+  caveman:
+    sif: "/public/ClinicalExam/lj_sih/softwares/caveman153.sif"
+    cpu: 30
+    b37:
+      ignorebed: "/AbsoPath/of/clindet/folder/project_pipeline/WES/hg19_ignore-region-exon.bed"
+      flag:
+        c: "/AbsoPath/of/clindet/folder/resources/ref_genome/b37/SNV_INDEL_ref/caveman/flagging/flag.vcf.config.ini"
+        v: "/AbsoPath/of/clindet/folder/resources/ref_genome/b37/SNV_INDEL_ref/caveman/flagging/flag.to.vcf.convert.ini"
+        u: "/AbsoPath/of/clindet/folder/resources/ref_genome/b37/SNV_INDEL_ref/caveman/flagging"
+        g: "/AbsoPath/of/clindet/folder/resources/ref_genome/b37/Sanger/SNV_INDEL_ref/caveman/unmatchedNormal.bed.gz"
+        b: "/AbsoPath/of/clindet/folder/resources/ref_genome/b37/SNV_INDEL_ref/caveman/flagging"
+        ab: "/AbsoPath/of/clindet/folder/resources/ref_genome/b37/SNV_INDEL_ref/caveman/flagging"
+        s: "HUMAN"
+
+  brass:
+    sif: "/public/ClinicalExam/lj_sih/softwares/brass634.sif"
+    cpu: 30
+    b37:
+      gc: "/AbsoPath/of/clindet/folder/resources/ref_genome/b37/Sanger/VAGrENT_ref_GRCh37d5_ensembl_75/vagrent/vagrent.cache.gz"
+      b: "/AbsoPath/of/clindet/folder/resources/ref_genome/b37/Sanger/CNV_SV_ref/brass/500bp_windows.gc.bed.gz"
+      d: "/AbsoPath/of/clindet/folder/resources/ref_genome/b37/Sanger/CNV_SV_ref/brass/HiDepth.bed.gz"
+      cb: "/AbsoPath/of/clindet/folder/resources/ref_genome/b37/Sanger/CNV_SV_ref/brass/cytoband.txt"
+      ct: "/AbsoPath/of/clindet/folder/resources/ref_genome/b37/Sanger/CNV_SV_ref/brass/CentTelo.tsv"
+      vi: "/AbsoPath/of/clindet/folder/resources/ref_genome/b37/Sanger/CNV_SV_ref/brass/viral.genomic.fa.2bit"
+      mi: "/AbsoPath/of/clindet/folder/resources/ref_genome/b37/CNV_SV_ref/brass/all_ncbi_bacteria"
+
+  freec:
+    sif: "/public/ClinicalExam/lj_sih/softwares/control-freec-11.6.sif"
+    cpu: 30
+    hg19:
+      chrFiles: "/public/ClinicalExam/lj_sih/resource/genome/human/hg19/fasta"
+      chrLenFile: "/public/ClinicalExam/lj_sih/resource/genome/human/hg19/ucsc.hg19_auto.fasta.fai"
+    b37:
+      chrFiles: "/public/ClinicalExam/lj_sih/resource/genome/human/GRCh37/fasta"
+      chrLenFile: "/AbsoPath/of/clindet/folder/resources/ref_genome/b37/Homo_sapiens_assembly19_auto.fasta.fai"
+
+  cgpwgs:
+    sif: "/public/ClinicalExam/lj_sih/softwares/cgpwgs.sif"
+
+  ctat_mutation:
+    sif: "/AbsoPath/of/clindet/folder/project_clindet/resources/containers/ctat_mutations.v4.1.0.simg"
+    hg38:
+      lib: "/public/ClinicalExam/lj_sih/resource/CTAT/hg38/GRCh38_gencode_v44_CTAT_lib_Oct292023.plug-n-play/ctat_genome_lib_build_dir"
+  
+  svaba:
+    sif: "/public/ClinicalExam/lj_sih/softwares/svaba.sif"
+
+  ascat:
+    hg19:
+      sif: "/public/ClinicalExam/lj_sih/softwares/cgpbattenberg371.sif"
+      gc: "/public/ClinicalExam/lj_sih/resource/ASCAT_chr/hg19/battenberg_wgs_gc_correction_1000g_v3/"
+      impute: "/public/ClinicalExam/lj_sih/resource/ASCAT_chr/hg19/battenberg_impute_v3/impute_info.txt"
+      prob_loci: "/public/ClinicalExam/lj_sih/resource/ASCAT_chr/hg19/probloci.txt"
+      ignorebed: "/public/ClinicalExam/lj_sih/resource/genome/human/hg19/hg19.exclude.contigs.txt"
+      oci_1000: "/public/ClinicalExam/lj_sih/resource/ASCAT_chr/hg19/battenberg_1000genomesloci2012_v3/1000genomesloci2012_chr"
+      alleles_1000: "/public/ClinicalExam/lj_sih/resource/ASCAT_chr/hg19/battenberg_1000genomesloci2012_v3/1000genomesAlleles2012_chr"
+      replictimingfile: "/public/ClinicalExam/lj_sih/resource/ASCAT_chr/hg19/Rep_correction.txt"
+    b37:
+      gc: "/public/ClinicalExam/lj_sih/resource/ASCAT/hg19/battenberg_wgs_gc_correction_1000g_v3/"
+      impute: "/public/ClinicalExam/lj_sih/resource/ASCAT/hg19/battenberg_impute_v3/impute_info.txt"
+      prob_loci: "/public/ClinicalExam/lj_sih/resource/ASCAT/hg19/probloci_270415.txt"
+      ignorebed: "/public/ClinicalExam/lj_sih/resource/genome/human/hg19/hg19.exclude.contigs.txt"
+      loci_1000: "/public/ClinicalExam/lj_sih/resource/ASCAT/hg19/battenberg_1000genomesloci2012_v3/1000genomesloci2012_chr"
+      alleles_1000: "/public/ClinicalExam/lj_sih/resource/ASCAT/hg19/battenberg_1000genomesloci2012_v3/1000genomesAlleles2012_chr"
+      replictimingfile: "/public/ClinicalExam/lj_sih/resource/ASCAT/hg19/Rep_correction.txt"
+    hg38:
+      gc: 
+      impute: 
+      prob_loci: 
+      ignorebed:
+      loci_1000: 
+
+  cgpbattenberg:
+    sif: "/public/ClinicalExam/lj_sih/softwares/cgpbattenberg371.sif"
+    gc: "/public/ClinicalExam/lj_sih/resource/ASCAT_chr/hg19/battenberg_wgs_gc_correction_1000g_v3/"
+    impute: "/public/ClinicalExam/lj_sih/resource/ASCAT_chr/hg19/battenberg_impute_v3/impute_info.txt"
+    prob_loci: "/public/ClinicalExam/lj_sih/resource/ASCAT_chr/hg19/probloci.txt"
+    ignorebed: "/public/ClinicalExam/lj_sih/resource/genome/human/hg19/hg19.exclude.contigs.txt"
+    loci_1000: "/public/ClinicalExam/lj_sih/resource/ASCAT_chr/battenberg_1000genomesloci2012_v3/"
+  
+  arriba:
+    sif: "/public/ClinicalExam/lj_sih/softwares/arriba240.sif"
+    call: "/arriba_v2.4.0/arriba "
+    database:
+      hg19:
+        blacklist: "/arriba_v2.4.0/database/blacklist_hg19_hs37d5_GRCh37_v2.3.0.tsv.gz"
+        known_fusions: "/arriba_v2.4.0/database/known_fusions_hg19_hs37d5_GRCh37_v2.3.0.tsv.gz"
+        protein_domains: "/arriba_v2.4.0/database/protein_domains_hg19_hs37d5_GRCh37_v2.3.0.gff3"
+        cytobands: "/arriba_v2.4.0/database/cytobands_hg19_hs37d5_GRCh37_v2.4.0.tsv"
+      hg38:
+        blacklist: "/arriba_v2.4.0/database/blacklist_hg38_GRCh38_v2.4.0.tsv.gz"
+        known_fusions: "/arriba_v2.4.0/database/known_fusions_hg38_GRCh38_v2.4.0.tsv.gz"
+        protein_domains: "/arriba_v2.4.0/database/protein_domains_hg38_GRCh38_v2.4.0.gff3"
+        cytobands: "/arriba_v2.4.0/database/cytobands_hg38_GRCh38_v2.4.0.tsv"
+    
+  lofreq:
+    sif: "/public/ClinicalExam/lj_sih/softwares/lofreq215.sif"
+
+  muse:
+    sif: "/public/ClinicalExam/lj_sih/softwares/muse230.sif"
+
+  deepvariant_somatic:
+    sif: "/public/ClinicalExam/lj_sih/softwares/deepsomatic_160.sif"
+
+  jasminesv:
+    sif: "/public/ClinicalExam/lj_sih/softwares/jasminesv.sif"
+  
+
+
+  # battenberg from hpc
+  battenberg:
+
+  igcaller:
+    sif: "/public/ClinicalExam/lj_sih/softwares/igcaller-1.2.1.simg"
+    hg38:
+      data_dir:
+
+  rnaindel:
+    sif: "/public/ClinicalExam/lj_sih/softwares/rnaindel_v3.3.5.sif"
+    hg38:
+      data_dir: "/AbsoPath/of/clindet/folder/project_pipeline/RNA/data_dir_grch38"
+
+  gridss:
+    sif: "/public/ClinicalExam/lj_sih/softwares/gridss2_13_2.sif"
+    b37:
+      blacklist: "/AbsoPath/of/clindet/folder/resources/ref_genome/b37/pipeline/v5_34/ref/37/sv/gridss_blacklist.37.bed.gz"
+      pondir: "/AbsoPath/of/clindet/folder/resources/ref_genome/b37/pipeline/v5_34/ref/37/sv"
+
+  hmftools:
+    sif: "/public/ClinicalExam/lj_sih/softwares/hmftools.sif"
+    conda: 'hmftools'
+    b37:
+      # AMBER
+      heterozygous_sites: '/AbsoPath/of/clindet/folder/resources/ref_genome/b37/pipeline/hmf_pipeline_resources/dna/copy_number/AmberGermlineSites.37.tsv.gz'
+      # COBALT
+      gc_profile:  '/AbsoPath/of/clindet/folder/resources/ref_genome/b37/pipeline/hmf_pipeline_resources/dna/copy_number/GC_profile.1000bp.37.cnp'
+      diploid_bed:  '/AbsoPath/of/clindet/folder/resources/ref_genome/b37/pipeline/hmf_pipeline_resources/dna/copy_number/DiploidRegions.37.bed.gz'
+      # CUPPA
+      cuppa_alt_sj:  '/AbsoPath/of/clindet/folder/resources/ref_genome/b37/pipeline/hmf_pipeline_resources/misc/cuppa/alt_sj.selected_loci.37.tsv.gz'
+      cuppa_classifier:  '/AbsoPath/of/clindet/folder/resources/ref_genome/b37/pipeline/hmf_pipeline_resources/misc/cuppa/cuppa_classifier.37.pickle.gz'
+      # SV Prep
+      sv_prep_blocklist:  '/AbsoPath/of/clindet/folder/resources/ref_genome/b37/pipeline/hmf_pipeline_resources/dna/sv/sv_prep_blacklist.37.bed'
+      # ESVEE
+      decoy_sequences_image:  '/AbsoPath/of/clindet/folder/resources/ref_genome/b37/pipeline/hmf_pipeline_resources/dna/sv/hg38_decoys.fa.img'
+      gridss_pon_breakends:  '/AbsoPath/of/clindet/folder/resources/ref_genome/b37/pipeline/hmf_pipeline_resources/dna/sv/sgl_pon.37.bed.gz'
+      gridss_pon_breakpoints:  '/AbsoPath/of/clindet/folder/resources/ref_genome/b37/pipeline/hmf_pipeline_resources/dna/sv/sv_pon.37.bedpe.gz'
+      repeatmasker_annotations:  '/AbsoPath/of/clindet/folder/resources/ref_genome/b37/pipeline/hmf_pipeline_resources/dna/sv/repeat_mask_data.37.fa.gz'
+      # Isofox
+      alt_sj_distribution:  '/AbsoPath/of/clindet/folder/resources/ref_genome/b37/pipeline/hmf_pipeline_resources/rna/isofox.hmf_3444.alt_sj_cohort.37.csv'
+      gene_exp_distribution:  '/AbsoPath/of/clindet/folder/resources/ref_genome/b37/pipeline/hmf_pipeline_resources/rna/isofox.hmf_3444.gene_distribution.37.csv'
+      isofox_counts:  '/AbsoPath/of/clindet/folder/resources/ref_genome/b37/pipeline/hmf_pipeline_resources/rna/read_151_exp_counts.37.csv'
+      isofox_gc_ratios:  '/AbsoPath/of/clindet/folder/resources/ref_genome/b37/pipeline/hmf_pipeline_resources/rna/read_100_exp_gc_ratios.37.csv'
+      # LILAC
+      lilac_resources:  '/AbsoPath/of/clindet/folder/resources/ref_genome/b37/pipeline/hmf_pipeline_resources/misc/lilac/'
+      # Neo
+      neo_resources:  '/AbsoPath/of/clindet/folder/resources/ref_genome/b37/pipeline/hmf_pipeline_resources/misc/neo/binding/'
+      cohort_tpm_medians: '/AbsoPath/of/clindet/folder/resources/ref_genome/b37/pipeline/hmf_pipeline_resources/misc/neo/tpm_cohort/isofox.hmf_3444.transcript_medians.37.csv'
+      # CIDER
+      cider_blastdb:  '/AbsoPath/of/clindet/folder/resources/ref_genome/b37/pipeline/hmf_pipeline_resources/misc/cider/blastdb/'
+      # PEACH
+      peach_haplotypes:  '/AbsoPath/of/clindet/folder/resources/ref_genome/b37/pipeline/hmf_pipeline_resources/misc/peach/haplotypes.37.tsv'
+      peach_haplotype_functions:  '/AbsoPath/of/clindet/folder/resources/ref_genome/b37/pipeline/hmf_pipeline_resources/misc/peach/haplotype_functions.37.tsv'
+      peach_drug_info:  '/AbsoPath/of/clindet/folder/resources/ref_genome/b37/pipeline/hmf_pipeline_resources/misc/peach/peach_drugs.37.tsv'
+      # ORANGE
+      cohort_mapping:  '/AbsoPath/of/clindet/folder/resources/ref_genome/b37/pipeline/hmf_pipeline_resources/misc/orange/cohort_mapping.tsv'
+      cohort_percentiles: '/AbsoPath/of/clindet/folder/resources/ref_genome/b37/pipeline/hmf_pipeline_resources/misc/orange/cohort_percentiles.tsv'
+      disease_ontology:  '/AbsoPath/of/clindet/folder/resources/ref_genome/b37/pipeline/hmf_pipeline_resources/misc/orange/doid.json'
+      # SAGE
+      clinvar_annotations:  '/AbsoPath/of/clindet/folder/resources/ref_genome/b37/pipeline/hmf_pipeline_resources/dna/variants/clinvar.37.vcf.gz'
+      sage_blocklist_regions:  '/AbsoPath/of/clindet/folder/resources/ref_genome/b37/pipeline/hmf_pipeline_resources/dna/variants/KnownBlacklist.germline.37.bed'
+      sage_blocklist_sites:  '/AbsoPath/of/clindet/folder/resources/ref_genome/b37/pipeline/hmf_pipeline_resources/dna/variants/KnownBlacklist.germline.37.vcf.gz'
+      sage_actionable_panel:  '/AbsoPath/of/clindet/folder/resources/ref_genome/b37/pipeline/hmf_pipeline_resources/dna/variants/ActionableCodingPanel.37.bed.gz'
+      sage_coverage_panel:  '/AbsoPath/of/clindet/folder/resources/ref_genome/b37/pipeline/hmf_pipeline_resources/dna/variants/CoverageCodingPanel.37.bed.gz'
+      sage_highconf_regions:  '/AbsoPath/of/clindet/folder/resources/ref_genome/b37/pipeline/hmf_pipeline_resources/dna/variants/NA12878_GIAB_highconf_IllFB-IllGATKHC-CG-Ion-Solid_ALLCHROM_v3.2.2_highconf.bed.gz'
+      sage_known_hotspots_germline:  '/AbsoPath/of/clindet/folder/resources/ref_genome/b37/pipeline/hmf_pipeline_resources/dna/variants/KnownHotspots.germline.37.vcf.gz'
+      sage_known_hotspots_somatic:  '/AbsoPath/of/clindet/folder/resources/ref_genome/b37/pipeline/hmf_pipeline_resources/dna/variants/KnownHotspots.somatic.37.vcf.gz'
+      sage_pon:  '/AbsoPath/of/clindet/folder/resources/ref_genome/b37/pipeline/hmf_pipeline_resources/dna/variants/SageGermlinePon.1000x.37.tsv.gz'
+      # Sigs
+      sigs_signatures:  '/AbsoPath/of/clindet/folder/resources/ref_genome/b37/pipeline/hmf_pipeline_resources/misc/sigs/snv_cosmic_signatures.csv'
+      sigs_etiology:  '/AbsoPath/of/clindet/folder/resources/ref_genome/b37/pipeline/hmf_pipeline_resources/misc/sigs/signatures_etiology.tsv'
+      # Virus breakend
+      virusbreakend_db:  '/AbsoPath/of/clindet/folder/resources/ref_genome/b37/pipeline/hmf_pipeline_resources/misc/virusbreakend/'
+      # Virus Interpreter
+      virus_reporting_db: '/AbsoPath/of/clindet/folder/resources/ref_genome/b37/pipeline/hmf_pipeline_resources/misc/virusinterpreter/virus_reporting_db.tsv'
+      virus_taxonomy_db:  '/AbsoPath/of/clindet/folder/resources/ref_genome/b37/pipeline/hmf_pipeline_resources/misc/virusinterpreter/taxonomy_db.tsv'
+      virus_blocklist_db: '/AbsoPath/of/clindet/folder/resources/ref_genome/b37/pipeline/hmf_pipeline_resources/misc/virusinterpreter/virus_blacklisting_db.tsv'
+      # Misc
+      driver_gene_panel:  '/AbsoPath/of/clindet/folder/resources/ref_genome/b37/pipeline/hmf_pipeline_resources/common/DriverGenePanel.37.tsv'
+      ensembl_data_resources:  '/AbsoPath/of/clindet/folder/resources/ref_genome/b37/pipeline/hmf_pipeline_resources/common/ensembl_data/'
+      unmap_regions:  '/AbsoPath/of/clindet/folder/resources/ref_genome/b37/pipeline/hmf_pipeline_resources/common/unmap_regions.37.tsv'
+      gnomad_resource:  '/AbsoPath/of/clindet/folder/resources/ref_genome/b37/pipeline/hmf_pipeline_resources/dna/variants/gnomad_variants_v37.csv.gz'
+      gridss_config:  '/AbsoPath/of/clindet/folder/resources/ref_genome/b37/pipeline/hmf_pipeline_resources/dna/sv/gridss.properties'
+      known_fusion_data:  '/AbsoPath/of/clindet/folder/resources/ref_genome/b37/pipeline/hmf_pipeline_resources/dna/sv/known_fusion_data.37.csv'
+      known_fusions:  '/AbsoPath/of/clindet/folder/resources/ref_genome/b37/pipeline/hmf_pipeline_resources/dna/sv/known_fusions.37.bedpe'
+      msi_jitter_sites:  '/AbsoPath/of/clindet/folder/resources/ref_genome/b37/pipeline/hmf_pipeline_resources/dna/variants/msi_jitter_sites.37.tsv.gz'
+      purple_germline_del:  '/AbsoPath/of/clindet/folder/resources/ref_genome/b37/pipeline/hmf_pipeline_resources/dna/copy_number/cohort_germline_del_freq.37.csv'
+      segment_mappability:  '/AbsoPath/of/clindet/folder/resources/ref_genome/b37/pipeline/hmf_pipeline_resources/dna/variants/mappability_150.37.bed.gz'
+      # tool spec config
+      amber:
+        loci: "/AbsoPath/of/clindet/folder/resources/ref_genome/b37/pipeline/GermlineHetPon.37.vcf.gz"
+      cobalt:
+        ref_genome_version: 37
+        tumor_only_diploid_bed: "/AbsoPath/of/clindet/folder/resources/ref_genome/b37/pipeline/v5_34/ref/37/copy_number/DiploidRegions.37.bed.gz"
+        gc_profile: "/AbsoPath/of/clindet/folder/resources/ref_genome/b37/pipeline/v5_34/ref/37/copy_number/GC_profile.1000bp.37.cnp"
+      purple:
+        ref_genome_version: 37
+        tumor_only_diploid_bed: "/AbsoPath/of/clindet/folder/resources/ref_genome/b37/pipeline/v5_34/ref/37/copy_number/DiploidRegions.37.bed.gz"
+        gc_profile: "/AbsoPath/of/clindet/folder/resources/ref_genome/b37/pipeline/v5_34/ref/37/copy_number/GC_profile.1000bp.37.cnp"
+        ensembl_data_dir: "/AbsoPath/of/clindet/folder/resources/ref_genome/b37/pipeline/v5_34/ref/37/common/ensembl_data"
+        somatic_hotspots: "/AbsoPath/of/clindet/folder/resources/ref_genome/b37/pipeline/v5_34/ref/37/variants/KnownHotspots.somatic.37.vcf.gz"
+        driver_gene_panel: "/AbsoPath/of/clindet/folder/resources/ref_genome/b37/pipeline/v5_34/ref/37/common/DriverGenePanel.37.tsv"
+      linx:
+        ref_genome_version: 37
+        tumor_only_diploid_bed: "/AbsoPath/of/clindet/folder/resources/ref_genome/b37/pipeline/v5_34/ref/37/copy_number/DiploidRegions.37.bed.gz"
+        gc_profile: "/AbsoPath/of/clindet/folder/resources/ref_genome/b37/pipeline/v5_34/ref/37/copy_number/GC_profile.1000bp.37.cnp"
+        ensembl_data_dir: "/AbsoPath/of/clindet/folder/resources/ref_genome/b37/pipeline/v5_34/ref/37/common/ensembl_data"
+        somatic_hotspots: "/AbsoPath/of/clindet/folder/resources/ref_genome/b37/pipeline/v5_34/ref/37/variants/KnownHotspots.somatic.37.vcf.gz"
+        driver_gene_panel: "/AbsoPath/of/clindet/folder/resources/ref_genome/b37/pipeline/v5_34/ref/37/common/DriverGenePanel.37.tsv"
+        known_fusion_file: "/AbsoPath/of/clindet/folder/resources/ref_genome/b37/pipeline/v5_34/ref/37/sv/known_fusion_data.37.csv"
+      sage:
+        ref_genome_version: 37
+        ensembl_data_dir: "/AbsoPath/of/clindet/folder/resources/ref_genome/b37/pipeline/v5_34/ref/37/common/ensembl_data"
+        coverage_bed: "/AbsoPath/of/clindet/folder/resources/ref_genome/b37/pipeline/v5_34/ref/37/variants/CoverageCodingPanel.37.bed.gz"
+        hotspots: "/AbsoPath/of/clindet/folder/resources/ref_genome/b37/pipeline/v5_34/ref/37/variants/KnownHotspots.somatic.37.vcf.gz "
+        panel_bed: "/AbsoPath/of/clindet/folder/resources/ref_genome/b37/pipeline/v5_34/ref/37/variants/ActionableCodingPanel.37.bed.gz"
+        high_confidence_bed: "/AbsoPath/of/clindet/folder/resources/ref_genome/b37/pipeline/v5_34/ref/37/variants/NA12878_GIAB_highconf_IllFB-IllGATKHC-CG-Ion-Solid_ALLCHROM_v3.2.2_highconf.bed.gz"
+      esvee:
+        ref_genome_version: 37
+        ensembl_data_dir: "/AbsoPath/of/clindet/folder/resources/ref_genome/b37/pipeline/v5_34/ref/37/common/ensembl_data"
+        known_fusion_bed: "/AbsoPath/of/clindet/folder/resources/ref_genome/b37/pipeline/v5_34/ref/37/sv/known_fusions.37.bedpe"
+        blacklist: "/AbsoPath/of/clindet/folder/resources/ref_genome/b37/pipeline/v5_34/ref/37/sv/gridss_blacklist.37.bed.gz"
+      orange:
+
+    hg38:
+      amber:
+        loci: "/AbsoPath/of/clindet/folder/project_clindet/reference/hg38/v6_0/ref/38/variants/SageGermlinePon.98x.38.tsv.gz"
+      cobalt:
+        ref_genome_version: 38
+        tumor_only_diploid_bed: "/AbsoPath/of/clindet/folder/project_clindet/reference/hg38/v6_0/ref/38/copy_number/DiploidRegions.38.bed.gz"
+        gc_profile: "/AbsoPath/of/clindet/folder/project_clindet/reference/hg38/v6_0/ref/38/copy_number/GC_profile.1000bp.38.cnp"
+      purple:
+        ref_genome_version: 38
+        tumor_only_diploid_bed: "/AbsoPath/of/clindet/folder/project_clindet/reference/hg38/v6_0/ref/38/copy_number/DiploidRegions.38.bed.gz"
+        gc_profile: "/AbsoPath/of/clindet/folder/project_clindet/reference/hg38/v6_0/ref/38/copy_number/GC_profile.1000bp.38.cnp"
+        ensembl_data_dir: "/AbsoPath/of/clindet/folder/project_clindet/reference/hg38/v6_0/ref/38/common/ensembl_data"
+        somatic_hotspots: "/AbsoPath/of/clindet/folder/project_clindet/reference/hg38/v6_0/ref/38/variants/KnownHotspots.somatic.38.vcf.gz"
+        driver_gene_panel: "/AbsoPath/of/clindet/folder/project_clindet/reference/hg38/v6_0/ref/38/common/DriverGenePanel.38.tsv"
+      linx:
+        ref_genome_version: 38
+        tumor_only_diploid_bed: "/AbsoPath/of/clindet/folder/project_clindet/reference/hg38/v6_0/ref/38/copy_number/DiploidRegions.38.bed.gz"
+        gc_profile: "/AbsoPath/of/clindet/folder/project_clindet/reference/hg38/v6_0/ref/38/copy_number/GC_profile.1000bp.38.cnp"
+        ensembl_data_dir: "/AbsoPath/of/clindet/folder/project_clindet/reference/hg38/v6_0/ref/38/common/ensembl_data"
+        somatic_hotspots: "/AbsoPath/of/clindet/folder/project_clindet/reference/hg38/v6_0/ref/38/variants/KnownHotspots.somatic.38.vcf.gz"
+        driver_gene_panel: "/AbsoPath/of/clindet/folder/project_clindet/reference/hg38/v6_0/ref/38/common/DriverGenePanel.38.tsv"
+        known_fusion_file: "/AbsoPath/of/clindet/folder/project_clindet/reference/hg38/v6_0/ref/38/sv/known_fusion_data.38.csv"
+      sage:
+        ref_genome_version: 38
+        ensembl_data_dir: "/AbsoPath/of/clindet/folder/project_clindet/reference/hg38/v6_0/ref/38/common/ensembl_data"
+        coverage_bed: "/AbsoPath/of/clindet/folder/project_clindet/reference/hg38/v6_0/ref/38/variants/CoverageCodingPanel.38.bed.gz"
+        hotspots: "/AbsoPath/of/clindet/folder/project_clindet/reference/hg38/v6_0/ref/38/variants/KnownHotspots.somatic.38.vcf.gz "
+        panel_bed: "/AbsoPath/of/clindet/folder/project_clindet/reference/hg38/v6_0/ref/38/variants/ActionableCodingPanel.38.bed.gz"
+        high_confidence_bed: "/AbsoPath/of/clindet/folder/project_clindet/reference/hg38/v6_0/ref/38/variants/HG001_GRCh38_GIAB_highconf_CG-IllFB-IllGATKHC-Ion-10X-SOLID_CHROM1-X_v.3.3.2_highconf_nosomaticdel_noCENorHET7.bed.gz"
+      esvee:
+        ref_genome_version: 38
+        ensembl_data_dir: "/AbsoPath/of/clindet/folder/project_clindet/reference/hg38/v6_0/ref/38/common/ensembl_data"
+        known_fusion_bed: "/AbsoPath/of/clindet/folder/project_clindet/reference/hg38/v6_0/ref/38/sv/known_fusions.38.bedpe"
+        blacklist: "/AbsoPath/of/clindet/folder/project_clindet/reference/hg38/v6_0/ref/38/sv/gridss_blacklist.38.bed.gz"
+
+  hetpileups:
+    sif: "/public/ClinicalExam/lj_sih/softwares/hetpileups.sif"
+    b37:
+      hapmap_sites: "/AbsoPath/of/clindet/folder/resources/ref_genome/b37/hapmap_3.3.b37.vcf.gz"
+      filter: True
+      max_depth: 500
+    hg19:
+      hapmap_sites: 
+      filter: 
+      max_depth: 500
+    hg38:
+      hapmap_sites: 
+      filter: 
+      max_depth: 500
+
+  conpair:
+    sif: "/public/ClinicalExam/lj_sih/softwares/conpair_latest.sif"
+    b37:
+      ref: "/AbsoPath/of/clindet/folder/resources/ref_genome/b37/hs37d5.fa"
+      marker: True
+    hg19:
+      ref: ""
+      marker: True
+    hg38:
+      ref: ""
+      marker: True
+
+
+
+
+params:
+  java:
+    temp_directory: "/AbsoPath/of/clindet/folder/project_pipeline/WES/_tmp"

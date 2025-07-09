@@ -1,4 +1,4 @@
-#### BRASS work flow
+#### BRASS workflow
 rule SV_brass_bamstat:
     input:
         Tum="{project}/{genome_version}/results/recal/paired/{sample}-T.bam",
@@ -13,6 +13,7 @@ rule SV_brass_bamstat:
             bam_stats -i {input.NC} -o {output.NC}
         """
 
+brass_cnv
 rule SV_brass:
     input:
         Tum="{project}/{genome_version}/results/recal/paired/{sample}-T.bam",

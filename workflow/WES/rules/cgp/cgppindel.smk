@@ -202,7 +202,10 @@ rule PI_call:
     params:
         ref=config['resources'][genome_version]['REFFA'],
         simrep=config['singularity']['cgppindel'][genome_version]['simrep'],
-        genes=config['singularity']['cgppindel'][genome_version]['genes']
+        genes=config['singularity']['cgppindel'][genome_version]['genes'],
+        filter=config['singularity']['cgppindel'][genome_version]['WES']['filter'],
+        softfil=config['singularity']['cgppindel'][genome_version]['softfil'],
+        species=config['singularity']['cgppindel'][genome_version]['species']
     singularity:
         config['singularity']['cgppindel']['sif']
         # '/public/ClinicalExam/lj_sih/softwares/pindel.sif'
@@ -210,14 +213,14 @@ rule PI_call:
         """
         pindel.pl \
         -reference {params.ref} \
-        -simrep /public/ClinicalExam/lj_sih/resource/mutFilter/simpleRepeats.bed.gz \
-        -genes /public/ClinicalExam/lj_sih/resource/mutFilter/hg19.exon.bed.gz \
+        -simrep {params.simrep} \
+        -genes {params.genes} \
         -exclude chrUn% \
         -unmatched {input.NP_gff3} \
-        -filter /public/ClinicalExam/lj_sih/softwares/cgp/cgpPindel/perl/rules/pulldownRules.lst \
-        -softfil /public/ClinicalExam/lj_sih/softwares/cgp/cgpPindel/perl/rules/softRules.lst \
-        -assembly GRCh37 \
-        -species Human \
+        -filter {params.filter} \
+        -softfil {param.softfil} \
+        -assembly {wildcards.genome_version} \
+        -species {params.species} \
         -seqtype WXS \
         -tumour {input.Tum} \
         -normal {input.NC} \

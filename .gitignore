@@ -152,3 +152,4 @@ workflow/WGS/scripts/caveman/un_cavman_cmds.R
 workflow/WGS/scripts/sample_check.R
 workflow/WGS/scripts/svclone_pre.R
 workflow/WES/rules/report/multiqc.smk
+workflow/WES/rules/rtm/paired/CNV/ASCATsc.smk
