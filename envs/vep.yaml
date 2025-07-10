@@ -1,0 +1,8 @@
+name: clindet_vep
+channels:
+  - conda-forge
+  - bioconda
+  - defaults
+dependencies:
+  - bioconda::vcf2maf
+  - bioconda::ensembl-vep

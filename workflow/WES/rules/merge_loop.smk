@@ -1,14 +1,3 @@
-# rule check_vcf:
-#     input:
-#         paired=expand("{project}/{genome_version}/results/vcf/unpaired/{{sample}}/{caller}.vcf",caller = caller_list),#sample=unpaired_samples
-#         unpaired=expand("{project}/{genome_version}/results/vcf/paired/{{sample}}/{caller}.vcf",caller = caller_list),#,sample = paired_samples
-#     output:
-#         check="logs/check/{sample}/{caller}.log"
-#     shell:
-#         """
-#         touch {output.check}
-#         """
-
 rule loop_vcf2maf_paired:
     input:
         vcf='{project}/{genome_version}/results/vcf/paired/{sample}/{caller}.vcf',
@@ -18,42 +7,24 @@ rule loop_vcf2maf_paired:
     conda:
         config['softwares']['vcf2maf']['conda']
     params:
-        name=get_vcf_name
+        name=get_vcf_name,
+        # vep_path=config['softwares']['vcf2maf']['vep'][genome_version]['vep_path'],
+        vep_data=config['softwares']['vcf2maf']['vep'][genome_version]['vep_data'],
+        ncbi_build=config['softwares']['vcf2maf']['build_version'][genome_version],
+        cache_version=config['softwares']['vcf2maf']['vep'][genome_version]['cache_version'],
+        species=config['softwares']['vcf2maf']['vep'][genome_version]['species']
     shell:
         """
        {config[softwares][vcf2maf][call]} --input-vcf {input.vcf} \
        --output-maf {output.maf} --ref-fasta {input.ref} \
        {params.name} \
-       --vep-data /public/home/lijf/env/db/vep \
-       --vep-path /public/home/lijf/env/miniconda3/envs/vep105/bin \
+       --vep-data {params.vep_data} \
        --vep-fork 40 \
        --vep-overwrite \
-       --ncbi-build GRCh37 \
-       --cache-version 105
+       --species {params.species}
+       --ncbi-build {params.ncbi_build} \
+       --cache-version {params.cache_version}
         """
-
-# rule loop_annovar_paired:
-#     input:
-#         vcf='results/vcf/paired/{sample}/{caller}.vcf',
-#         ref=config['resources'][genome_version]['REFFA']
-#     output:
-#         maf="{project}/{genome_version}/results/maf/paired/{sample}/{caller}.vcf.maf"
-#     conda:
-#         config['softwares']['vcf2maf']['conda']
-#     params:
-#         name=get_vcf_name
-#     shell:
-#         """
-#         {config[softwares][vcf2maf][call]} --input-vcf {input.vcf} \
-#         --output-maf {output.maf} --ref-fasta {input.ref} \
-#         {params.name} \
-#         --vep-data /public/home/lijf/env/db/vep \
-#         --vep-path /public/home/lijf/env/miniconda3/envs/vep105/bin \
-#         --vep-fork 40 \
-#         --vep-overwrite \
-#         --ncbi-build GRCh37 \
-#         --cache-version 105
-#         """
 
 rule loop_vcf2maf_unpaired:
     input:
@@ -64,18 +35,23 @@ rule loop_vcf2maf_unpaired:
     conda:
         config['softwares']['vcf2maf']['conda']
     params:
-        name=get_vcf_name
+        name=get_vcf_name,
+        # vep_path=config['softwares']['vcf2maf']['vep'][genome_version]['vep_path'],
+        vep_data=config['softwares']['vcf2maf']['vep'][genome_version]['vep_data'],
+        ncbi_build=config['softwares']['vcf2maf']['build_version'][genome_version],
+        cache_version=config['softwares']['vcf2maf']['vep'][genome_version]['cache_version'],
+        species=config['softwares']['vcf2maf']['vep'][genome_version]['species']
     shell:
         """
-        {config[softwares][vcf2maf][call]} --input-vcf {input.vcf} \
-        --output-maf {output.maf} --ref-fasta {input.ref} \
-        {params.name} \
-        --vep-data /public/home/lijf/env/db/vep \
-        --vep-path /public/home/lijf/env/miniconda3/envs/vep105/bin \
-        --vep-fork 40 \
-        --vep-overwrite \
-        --ncbi-build GRCh37 \
-        --cache-version 105
+       {config[softwares][vcf2maf][call]} --input-vcf {input.vcf} \
+       --output-maf {output.maf} --ref-fasta {input.ref} \
+       {params.name} \
+       --vep-data {params.vep_data} \
+       --vep-fork 40 \
+       --vep-overwrite \
+       --species {params.species}
+       --ncbi-build {params.ncbi_build} \
+       --cache-version {params.cache_version}
         """
 
 

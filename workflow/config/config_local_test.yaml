@@ -109,38 +109,20 @@ softwares:
     conda: "srakit"
 
   vcf2maf:
-    call: "perl /AbsoPath/of/clindet/folder/project_QC/env/vcf_maf/vcf2maf.pl "
-    conda: "vep105"
+    conda: "clindet_vep"
     build_version:
-      hg19: "GRCh37"
       b37: "GRCh37"
       hg38: "GRCh38"
-      WBcel235: "WBcel235"
     vep:
-      hg19:
-        vep_data: "/public/home/lijf/env/db/vep"
-        vep_path: "/public/home/lijf/env/miniconda3/envs/vep105/bin"
-        cache_version: "105"
-        species: "homo_sapiens"
       b37:
-        vep_data: "/public/home/lijf/env/db/vep"
+        vep_data: "/public/ClinicalExam/lj_sih/projects/project_clindet/resources/ref_genome/b37/vep"
         vep_path: "/public/home/lijf/env/miniconda3/envs/vep105/bin"
         cache_version: "105"
         species: "homo_sapiens"
-      hg38:
-        vep_data: "/public/home/lijf/env/db/vep"
-        vep_path: "/public/home/lijf/env/miniconda3/envs/vep105/bin"
-        cache_version: "105"
-        species: "homo_sapiens"
-      WBcel235:
-        vep_data: "/public/ClinicalExam/lj_sih/resource/vep"
-        vep_path: "/public/home/lijf/env/miniconda3/envs/vep105/bin"
-        cache_version: "113"
-        species: "caenorhabditis_elegans"
   maf2vcf:
-    call: "perl /AbsoPath/of/clindet/folder/project_QC/env/vcf_maf/maf2vcf.pl "
-    conda: "vep105"
+    conda: "clindet_vep"
     build_version:
+      b37: "GRCh37"
       hg19: "GRCh37"
       hg38: "GRCh38"
 
