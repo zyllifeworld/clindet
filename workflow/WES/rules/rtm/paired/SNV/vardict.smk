@@ -57,7 +57,7 @@ rule vardict_filter_somatic:
     params:
         caller='vardict'
     script:
-        "../../../scripts/vcf_filter_somtic.R"
+        "../../../../scripts/vcf_filter_somtic.R"
 
 rule vardict_filter_germline:
     input:
@@ -68,4 +68,4 @@ rule vardict_filter_germline:
     params:
         caller='vardict'
     script:
-        "../../../scripts/vcf_filter_germline.R"
+        "../../../../scripts/vcf_filter_germline.R"

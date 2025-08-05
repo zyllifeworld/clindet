@@ -74,76 +74,6 @@ rule STAR_map:
         touch {output.stamp}
         """
 
-
-# rule cal_count_matrix:
-#     input:
-#         gtf=config['resources'][genome_version]['GTF'],
-#         index=expand("{project}/{genome_version}/results/mapped/STAR/{sample}/{sample}_star.log",sample = paired_samples)
-#     params:
-#         bam=expand("{project}/{genome_version}/results/mapped/STAR/{sample}/{sample}.sorted.bam",sample = paired_samples)
-#     conda:
-#         config['softwares']['subread']['conda']
-#     threads: 60
-#     output:
-#         "{project}/{genome_version}/results/summary/feature_count_all_{sample}.txt"
-#     shell:
-#         """ featureCounts -T {threads} \
-#            -a {input.gtf} \
-#            -t gene -g gene_name \
-#            -o {output} {params.bam}"""
-
-
-
-## RSEM need re-write, RSEM not work with genome type mapping
-
-# rule STAR_RSEM_map:
-#     input:
-#         R1="{project}/{genome_version}/results/trimmed/{sample}_R1.fastq.gz",
-#         R2="{project}/{genome_version}/results/trimmed/{sample}_R2.fastq.gz",
-#         sj_filt='{project}/{genome_version}/results/mapped/STAR/{sample}/_STARpass1/SJ.filt'
-#     output:
-#         bam="{project}/{genome_version}/results/mapped/STAR/{sample}/{sample}.rsem.sorted.bam",
-#         stamp="{project}/{genome_version}/results/mapped/STAR/{sample}/{sample}_star.log",
-#         um_fq1="{project}/{genome_version}/results/mapped/STAR/{sample}/{sample}_unmapped_R1.fq",
-#         um_fq2="{project}/{genome_version}/results/mapped/STAR/{sample}/{sample}_unmapped_R2.fq"
-#     params:
-#         out_dir="{project}/{genome_version}/results/mapped/STAR/{sample}/", # "/"" must in the config string
-#         ref=config['resources'][genome_version]['REFFA'],
-#         gtf=config['resources'][genome_version]['GTF'],
-#         star_index=config['softwares']['star']['index'][genome_version],
-#         rg=r"ID:{sample} PL:ILLUMINA.NovaSeq LB:RNA-Seq SM:{sample}"
-#     threads: 10
-#     conda:
-#         config['softwares']['star']['conda']
-#     shell:
-#         """ 
-#         STAR --genomeDir {params.star_index} --runThreadN={threads} \
-#             --outSAMtype BAM SortedByCoordinate --outFileNamePrefix {params.out_dir} \
-#             --outReadsUnmapped Fastx \
-#             --outSAMattrRGline '{params.rg}' --sjdbFileChrStartEnd {input.sj_filt}\
-#             --sjdbGTFfile {params.gtf} \
-#             --outFilterMultimapNmax 50 \
-#             --peOverlapNbasesMin 10 \
-#             --alignSplicedMateMapLminOverLmate 0.5 \
-#             --alignSJstitchMismatchNmax 5 -1 5 5 \
-#             --chimSegmentMin 10 \
-#             --chimOutType WithinBAM HardClip \
-#             --chimJunctionOverhangMin 10 \
-#             --chimScoreDropMax 30 \
-#             --chimScoreJunctionNonGTAG 0 \
-#             --chimScoreSeparation 1 \
-#             --chimSegmentReadGapMax 3 \
-#             --chimMultimapNmax 50 \
-#             --readFilesIn {input.R1} {input.R2} --readFilesCommand gunzip -c
-
-#         mv {params.out_dir}/Aligned.sortedByCoord.out.bam {output.bam}
-#         mv {params.out_dir}/Unmapped.out.mate1 {output.um_fq1}
-#         mv {params.out_dir}/Unmapped.out.mate2 {output.um_fq2}
-
-#         touch {output.stamp}
-#         """
-
-
 rule cal_exp_RSEM:
     input:
         unpack(get_rna_fastq),
@@ -166,7 +96,6 @@ rule cal_exp_RSEM:
             --star -p {threads} --star-output-genome-bam \
             --star-gzipped-read-file  --sort-bam-by-coordinate \
             {input.R1} {input.R2} \
-            --star-extra '--outBAMsortingBinsN 200' \
            {params.rsem_ref} {params.result_prefix}/{wildcards.sample}/{wildcards.sample}
            """
 

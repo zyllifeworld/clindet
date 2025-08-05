@@ -15,7 +15,7 @@ rule loop_vcf2maf_paired:
         cache_version=config['softwares']['vcf2maf']['vep'][genome_version]['cache_version']
     shell:
         """
-        {config[softwares][vcf2maf][call]} --input-vcf {input.vcf} \
+        vcf2maf.pl --input-vcf {input.vcf} \
         --output-maf {output.maf} --ref-fasta {input.ref} \
         {params.name} \
         --vep-data {params.vep_data} \
@@ -50,7 +50,7 @@ rule loop_vcf2maf_unpaired:
        --vep-data {params.vep_data} \
        --vep-fork 40 \
        --vep-overwrite \
-       --species {params.species}
+       --species {params.species} \
        --ncbi-build {params.ncbi_build} \
        --cache-version {params.cache_version}
         """

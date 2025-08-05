@@ -61,7 +61,7 @@ rule paired_purple:
         indexes="{project}/{genome_version}/results/recal/paired/{sample}-T.bam.bai",
         amber="{project}/{genome_version}/results/cnv/paired/purple/{sample}/amber",
         cobalt="{project}/{genome_version}/results/cnv/paired/purple/{sample}/cobalt",
-        sage_vcf="{project}/{genome_version}/results/vcf/paired/{sample}/{sample}.sage.vcf.gz",
+        sage_vcf="{project}/{genome_version}/results/vcf/paired/{sample}/sage/{sample}.sage.pave.vcf.gz",
         ref_genome=config['resources'][genome_version]['REFFA'],
         bed=get_sample_bed
     output:

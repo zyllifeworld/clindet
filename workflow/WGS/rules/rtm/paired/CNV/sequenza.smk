@@ -5,8 +5,10 @@ rule sequenza_bam2seqz:
         ref=config['resources'][genome_version]['REFFA'],
         gc="{project}/{genome_version}/genome/{genome_version}.gc50Base.txt.gz"
     output:
-        seqz="{project}/{genome_version}/results/cnv/sequenza/{sample}/{sample}.seqz.gz",
+        seqz="{project}/{genome_version}/results/cnv/paired/sequenza/{sample}/{sample}.seqz.gz",
     threads: 8
+    params:
+        gc="{project}/{genome_version}/genome/{genome_version}.gc50Base.txt.gz"
     conda:
         config['softwares']['sequenza']['conda']
     shell:
@@ -14,15 +16,15 @@ rule sequenza_bam2seqz:
         sequenza-utils bam2seqz \
         --normal {input.NC} \
         --tumor {input.Tum} \
-        --fasta {input.ref} -gc {input.gc} \
+        --fasta {input.ref} -gc {params.gc} \
         --output {output.seqz}
         """
 
 rule sequenza_seqz_binning:
     input:
-        seqz="{project}/{genome_version}/results/cnv/sequenza/{sample}/{sample}.seqz.gz"
+        seqz="{project}/{genome_version}/results/cnv/paired/sequenza/{sample}/{sample}.seqz.gz"
     output:
-        bin_seqz="{project}/{genome_version}/results/cnv/sequenza/{sample}/{sample}.bin50_seqz.gz",
+        bin_seqz="{project}/{genome_version}/results/cnv/paired/sequenza/{sample}/{sample}.bin50_seqz.gz",
     conda:
         config['softwares']['sequenza']['conda']
     shell:
@@ -33,10 +35,10 @@ rule sequenza_seqz_binning:
 
 rule sequenza_call:
     input:
-        bin_seqz="{project}/{genome_version}/results/cnv/sequenza/{sample}/{sample}.bin50_seqz.gz",
+        bin_seqz="{project}/{genome_version}/results/cnv/paired/sequenza/{sample}/{sample}.bin50_seqz.gz",
     output:
-        segment="{project}/{genome_version}/results/cnv/sequenza/{sample}/{sample}_segments.txt",
+        segment="{project}/{genome_version}/results/cnv/paired/sequenza/{sample}/{sample}_segments.txt",
     params:
-        wd="{project}/{genome_version}/results/cnv/sequenza/{sample}",
+        wd="{project}/{genome_version}/results/cnv/paired/sequenza/{sample}",
     script:
         "../../../../scripts/sequenza.R"

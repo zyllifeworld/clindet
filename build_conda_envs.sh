@@ -1,0 +1,352 @@
+set -euo pipefail
+RED='\e[31m'
+RED_B='\e[41m'
+NC='\e[0m'
+GREEN='\e[32m'
+GREEN_B='\e[42m'
+bold='\e[1;43m'
+mkdir -p build_log
+
+### parallel conda install
+cleanup() {
+        pkill -P $$
+        kill 0
+}
+
+for sig in INT QUIT HUP TERM; do
+        trap "
+            cleanup
+            trap - $sig EXIT
+            kill -s $sig "'"$$"' "$sig"
+done
+declare -a pids;
+
+# check conda
+command='conda'
+if type $command >/dev/null 2>&1; then
+    echo -e "${GREEN_B}Check  OK ${NC}, ${bold} ${command} ${NC} existed, Start download and config."
+else
+    echo -e "${RED_B}ERROE:  ${NC} ${bold} ${command} ${NC} Not exited !!!!, please install it."
+    exit 1 
+fi
+
+# check singularity
+command='singularity'
+if type $command >/dev/null 2>&1; then
+    echo -e "${GREEN_B}Check  OK ${NC}, ${bold} ${command} ${NC} existed, Start download and config."
+else
+    echo -e "${RED_B}ERROE:  ${NC} ${bold} ${command} ${NC} Not exited !!!!, please install it."
+    exit 1 
+fi
+
+eval "$(conda shell.bash hook)"
+
+idx=0;
+## check conda env and build conda env
+ENV_NAME="clindet"
+if conda env list | grep -q "^${ENV_NAME}\s"; then
+    echo -e "${GREEN_B}Check  OK ${NC}, ${bold} ${ENV_NAME} ${NC} existed."
+else
+    echo -e "${RED_B} ${ENV_NAME} ${NC} not exist，Start build..."
+    conda env create -f envs/clindet.yaml -y  &>build_log/${ENV_NAME}.log &  pids[$idx]=$!;
+	idx=$(($idx+1));
+fi
+
+ENV_NAME="hmftools"
+if conda env list | grep -q "^${ENV_NAME}\s"; then
+    echo -e "${GREEN_B}Check  OK ${NC}, ${bold} ${ENV_NAME} ${NC} existed."
+else
+    echo -e "${RED_B} ${ENV_NAME} ${NC} not exist，Start build..."
+    conda env create -f envs/hmftools.yaml -y &>build_log/${ENV_NAME}.log &  pids[$idx]=$!;
+	idx=$(($idx+1));
+fi
+
+ENV_NAME="clindet_vep"
+if conda env list | grep -q "^${ENV_NAME}\s"; then
+    echo -e "${GREEN_B}Check  OK ${NC}, ${bold} ${ENV_NAME} ${NC} existed."
+else
+    echo -e "${RED_B} ${ENV_NAME} ${NC} not exist，Start build..."
+    conda env create -f envs/clindet_vep.yaml -y  &>build_log/${ENV_NAME}.log &  pids[$idx]=$!;
+	idx=$(($idx+1));
+fi
+
+ENV_NAME="gsutil"
+if conda env list | grep -q "^${ENV_NAME}\s"; then
+    echo -e "${GREEN_B}Check  OK ${NC}, ${bold} ${ENV_NAME} ${NC} existed."
+else
+    echo -e "${RED_B} ${ENV_NAME} ${NC} not exist，Start build..."
+    conda env create -f envs/gsutils.yaml -y &>build_log/${ENV_NAME}.log &  pids[$idx]=$!;
+	idx=$(($idx+1));
+fi
+
+### wait install pids
+fail=0
+for pid in ${pids[*]}; do
+        wait $pid || fail=$(( fail + 1 ));
+done
+
+echo>&2 "Conda build failed,see logs."
+exit "$(( fail > 0 ))"
+
+touch build_log/conda_env_setup.log & echo -e "${GREEN_B} All Conda env built OK ${NC}"
+
+## custome install R package tidyverse/ascat/ for ascat (R >4.3)
+conda activate clindet
+conda install libxml2 pandoc fontconfig freetype -y &>>build_log/clindet.log
+r_mirror="https://cloud.r-project.org" ## can change to nearest location mirror
+R -q -e "install.packages(c('tidyverse','BiocManager'),repos = c(CRAN = '${r_mirror}'))" &>>build_log/clindet.log
+R -q -e 'BiocManager::install(c("devtools", "splines", "readr", "doParallel", "ggplot2", "RColorBrewer", "gridExtra", "gtools", "parallel", "igordot/copynumber", "VariantAnnotation", "GenomicRanges","IRanges"))' &>>build_log/clindet.log
+R -q -e 'devtools::install_github("VanLoo-lab/ascat/ASCAT")' &>>build_log/clindet.log
+
+## 
+conda activate cancer_report
+r_mirror="https://cloud.r-project.org" ## can change to nearest location mirror
+R -q -e "install.packages(c('BiocManager'),repos = c(CRAN = '${r_mirror}'))" &>>build_log/cancer_report.log
+R -q -e 'devtools::install_github("umccr/gpgr")' &>>build_log/cancer_report.log
+R -q -e 'devtools::install_github("umccr/sigrap")' &>>build_log/cancer_report.log
+
+  - bioconductor-bsgenome.hsapiens.ucsc.hg38
+  - bioconductor-txdb.hsapiens.ucsc.hg38.knowngene
+  - bioconductor-bsgenome.hsapiens.ucsc.hg19
+  - bioconductor-txdb.hsapiens.ucsc.hg19.knowngene
+  - bioconductor-genomeinfodbdata
+
+# pull image from zenodo
+
+
+conda activate gsutil
+# mkdir -p resources/ref_genome/b37
+
+# check gsutil
+command='gsutil'
+if type $command >/dev/null 2>&1; then
+    echo -e "${GREEN_B}Check  OK ${NC}, ${bold} ${command} ${NC} existed, Start download and config."
+else
+    echo -e "${RED_B}ERROE:  ${NC} ${bold} ${command} ${NC} Not exited !!!!"
+    exit 1 
+fi
+
+
+## Download b37 genome
+echo "Beginning b37 genome fasta Download ..."
+if [ ! -f "build_log/download_b37.log" ]; then
+    echo "Start download from hmf ..."
+    gsutil -m cp -r \
+      "gs://hmf-public/HMFtools-Resources/ref_genome/37/Homo_sapiens.GRCh37.GATK.illumina.fasta" \
+      "gs://hmf-public/HMFtools-Resources/ref_genome/37/Homo_sapiens.GRCh37.GATK.illumina.fasta.dict" \
+      "gs://hmf-public/HMFtools-Resources/ref_genome/37/Homo_sapiens.GRCh37.GATK.illumina.fasta.fai" \
+      "gs://hmf-public/HMFtools-Resources/ref_genome/37/Homo_sapiens.GRCh37.GATK.illumina.fasta.img" \
+      resources/ref_genome/b37
+    echo "Done"
+    touch build_log/download_b37.log
+else
+    echo -e "${GREEN_B} already download b37 reference, continue ${NC}"
+fi
+
+
+## Download b37 hmftools softwares data
+
+echo "Beginning b37 hmftools data Download ..."
+if [ ! -f "build_log/download_b37_hmftools.log" ]; then
+    echo "Start download from hmf ..."
+    gsutil -m cp \
+      "gs://hmf-public/HMFtools-Resources/pipeline/oncoanalyser/2.0/37/hmf_panel_resources.tso500.37_v2.0.0--3.tar.gz" \
+      "gs://hmf-public/HMFtools-Resources/pipeline/oncoanalyser/2.0/37/hmf_pipeline_resources.37_v2.0.0--3.tar.gz" \
+      resources/ref_genome/b37
+    echo -e "${GREEN_B} Download Done ${NC}"
+
+    mkdir -p resources/ref_genome/b37/hmf_pipeline_resources
+    tar -xzvf resources/ref_genome/b37/hmf_panel_resources.tso500.37_v2.0.0--3.tar.gz --strip-components 1 -C resources/ref_genome/b37/hmf_pipeline_resources/
+    tar -xzvf resources/ref_genome/b37/hmf_pipeline_resources.37_v2.0.0--3.tar.gz --strip-components 1 -C resources/ref_genome/b37/hmf_pipeline_resources/
+
+    echo -e "${GREEN_B} Decompression Done ${NC}"
+    touch build_log/download_b37_hmftools.log
+else
+    echo -e "${GREEN_B} already download hmftools b37 resources, continue ${NC}"
+fi
+
+
+
+## Download b37 GATK tools data
+echo "Beginning b37 GATK files Download ..."
+if [ ! -f "build_log/download_b37_gatk.log" ]; then
+    gsutil -m cp -r \
+      "gs://gcp-public-data--broad-references/hg19/v0/1000G_omni2.5.b37.vcf.gz" \
+      "gs://gcp-public-data--broad-references/hg19/v0/1000G_omni2.5.b37.vcf.gz.tbi" \
+      "gs://gcp-public-data--broad-references/hg19/v0/1000G_phase1.snps.high_confidence.b37.vcf.gz" \
+      "gs://gcp-public-data--broad-references/hg19/v0/1000G_phase1.snps.high_confidence.b37.vcf.gz.tbi" \
+      "gs://gcp-public-data--broad-references/hg19/v0/1000G_reference_panel" \
+      "gs://gcp-public-data--broad-references/hg19/v0/Axiom_Exome_Plus.genotypes.all_populations.poly.vcf.gz" \
+      "gs://gcp-public-data--broad-references/hg19/v0/Axiom_Exome_Plus.genotypes.all_populations.poly.vcf.gz.tbi" \
+      "gs://gcp-public-data--broad-references/hg19/v0/ExomeContam.vcf" \
+      "gs://gcp-public-data--broad-references/hg19/v0/Homo_sapiens_assembly19.dbsnp138.vcf" \
+      "gs://gcp-public-data--broad-references/hg19/v0/Homo_sapiens_assembly19.dbsnp138.vcf.idx" \
+      "gs://gcp-public-data--broad-references/hg19/v0/Homo_sapiens_assembly19.fasta.64.amb" \
+      "gs://gcp-public-data--broad-references/hg19/v0/Homo_sapiens_assembly19.fasta.64.ann" \
+      "gs://gcp-public-data--broad-references/hg19/v0/Homo_sapiens_assembly19.fasta.64.bwt" \
+      "gs://gcp-public-data--broad-references/hg19/v0/Homo_sapiens_assembly19.fasta.64.pac" \
+      "gs://gcp-public-data--broad-references/hg19/v0/Homo_sapiens_assembly19.fasta.64.sa" \
+      "gs://gcp-public-data--broad-references/hg19/v0/Homo_sapiens_assembly19.fasta.alt" \
+      "gs://gcp-public-data--broad-references/hg19/v0/Homo_sapiens_assembly19.fasta.amb" \
+      "gs://gcp-public-data--broad-references/hg19/v0/Homo_sapiens_assembly19.fasta.ann" \
+      "gs://gcp-public-data--broad-references/hg19/v0/Homo_sapiens_assembly19.fasta.bwt" \
+      "gs://gcp-public-data--broad-references/hg19/v0/Homo_sapiens_assembly19.fasta.fai" \
+      "gs://gcp-public-data--broad-references/hg19/v0/Homo_sapiens_assembly19.fasta.pac" \
+      "gs://gcp-public-data--broad-references/hg19/v0/Homo_sapiens_assembly19.fasta.rbwt" \
+      "gs://gcp-public-data--broad-references/hg19/v0/Homo_sapiens_assembly19.fasta.rpac" \
+      "gs://gcp-public-data--broad-references/hg19/v0/Homo_sapiens_assembly19.fasta.rsa" \
+      "gs://gcp-public-data--broad-references/hg19/v0/Homo_sapiens_assembly19.fasta.sa" \
+      resources/ref_genome/b37
+
+    gsutil -m cp \
+      "gs://gatk-best-practices/somatic-b37/Mutect2-WGS-panel-b37.vcf" \
+      "gs://gatk-best-practices/somatic-b37/Mutect2-WGS-panel-b37.vcf.idx" \
+      "gs://gatk-best-practices/somatic-b37/Mutect2-exome-panel.vcf" \
+      "gs://gatk-best-practices/somatic-b37/Mutect2-exome-panel.vcf.idx" \
+      resources/ref_genome/b37
+
+    wget -P resources/ref_genome/b37 -c ftp://gsapubftp-anonymous@ftp.broadinstitute.org/bundle/b37/Mills_and_1000G_gold_standard.indels.b37.vcf.gz
+    wget -P resources/ref_genome/b37 -c ftp://gsapubftp-anonymous@ftp.broadinstitute.org/bundle/b37/Mills_and_1000G_gold_standard.indels.b37.vcf.gz.md5
+    wget -P resources/ref_genome/b37 -c ftp://gsapubftp-anonymous@ftp.broadinstitute.org/bundle/b37/1000G_phase1.indels.b37.vcf.gz
+    wget -P resources/ref_genome/b37 -c ftp://gsapubftp-anonymous@ftp.broadinstitute.org/bundle/b37/1000G_phase1.indels.b37.vcf.gz.md5
+    wget -P resources/ref_genome/b37 -c ftp://gsapubftp-anonymous@ftp.broadinstitute.org/bundle/b37/hapmap_3.3.b37.vcf.gz
+    wget -P resources/ref_genome/b37 -c ftp://gsapubftp-anonymous@ftp.broadinstitute.org/bundle/b37/hapmap_3.3.b37.vcf.gz.md5
+    wget -P resources/ref_genome/b37 -c ftp://gsapubftp-anonymous@ftp.broadinstitute.org/bundle/b37/1000G_omni2.5.b37.vcf.gz
+    wget -P resources/ref_genome/b37 -c ftp://gsapubftp-anonymous@ftp.broadinstitute.org/bundle/b37/1000G_omni2.5.b37.vcf.gz.md5
+    wget -P resources/ref_genome/b37 -c ftp://gsapubftp-anonymous@ftp.broadinstitute.org/bundle/b37/1000G_phase3_v4_20130502.sites.vcf.gz
+    wget -P resources/ref_genome/b37 -c ftp://gsapubftp-anonymous@ftp.broadinstitute.org/bundle/b37/1000G_phase3_v4_20130502.sites.vcf.gz.md5
+
+    echo -e "${GREEN_B} download GATK tools b37 resources Done ${NC}"
+    touch build_log/download_b37_gatk.log
+else
+    echo -e "${GREEN_B} already download GATK tools b37 resources, continue ${NC}"
+fi
+# Download b37 reference data and softwares config data 
+
+
+# Download GATK4 softwares
+echo "Beginning GATK Download ..."
+if [ ! -f "build_log/download_gatk.log" ]; then
+    mkdir -p resources/softwares
+    GATK_version="4.6.2.0"
+    wget -P resources/softwares -c https://github.com/broadinstitute/gatk/releases/download/${GATK_version}/gatk-${GATK_version}.zip
+    unzip resources/softwares/gatk-${GATK_version}.zip -d resources/softwares
+    mv resources/softwares/gatk-${GATK_version} resources/softwares/gatk
+
+    echo -e "${GREEN_B} GATK tools Downloaded ${NC}"
+
+    touch build_log/download_gatk.log
+else
+    echo -e "${GREEN_B} already download GATK tools softwares, continue ${NC}"
+fi
+
+
+## download ASCAT refdata
+echo "Beginning ASCAT config files  Download ..."
+if [ ! -f "build_log/download_ascat.log" ]; then
+    mkdir -p resources/ref_genome/b37/ASCAT/WES
+    wget -P resources/ref_genome/b37/ASCAT/WES -c https://zenodo.org/records/14008443/files/G1000_alleles_WES_hg19.zip
+    wget -P resources/ref_genome/b37/ASCAT/WES -c https://zenodo.org/records/14008443/files/G1000_loci_WES_hg19.zip
+    wget -P resources/ref_genome/b37/ASCAT/WES -c https://zenodo.org/records/14008443/files/GC_G1000_WES_hg19.zip
+    wget -P resources/ref_genome/b37/ASCAT/WES -c https://zenodo.org/records/14008443/files/RT_G1000_WES_hg19.zip
+
+    unzip -d resources/ref_genome/b37/ASCAT/WES resources/ref_genome/b37/ASCAT/WES/G1000_alleles_WES_hg19.zip
+    unzip -d resources/ref_genome/b37/ASCAT/WES resources/ref_genome/b37/ASCAT/WES/G1000_loci_WES_hg19.zip
+    unzip -d resources/ref_genome/b37/ASCAT/WES resources/ref_genome/b37/ASCAT/WES/GC_G1000_WES_hg19.zip
+    unzip -d resources/ref_genome/b37/ASCAT/WES resources/ref_genome/b37/ASCAT/WES/RT_G1000_WES_hg19.zip
+
+
+    wget -P resources/ref_genome/b37/ASCAT/WGS -c https://zenodo.org/records/14008443/files/G1000_alleles_WGS_hg19.zip
+    wget -P resources/ref_genome/b37/ASCAT/WGS -c https://zenodo.org/records/14008443/files/G1000_loci_WGS_hg19.zip
+    wget -P resources/ref_genome/b37/ASCAT/WGS -c https://zenodo.org/records/14008443/files/GC_G1000_WGS_hg19.zip
+    wget -P resources/ref_genome/b37/ASCAT/WGS -c https://zenodo.org/records/14008443/files/RT_G1000_WGS_hg19.zip
+
+
+    unzip -d resources/ref_genome/b37/ASCAT/WGS resources/ref_genome/b37/ASCAT/WGS/G1000_alleles_WGS_hg19.zip
+    unzip -d resources/ref_genome/b37/ASCAT/WGS resources/ref_genome/b37/ASCAT/WGS/G1000_loci_WGS_hg19.zip
+    unzip -d resources/ref_genome/b37/ASCAT/WGS resources/ref_genome/b37/ASCAT/WGS/GC_G1000_WGS_hg19.zip
+    unzip -d resources/ref_genome/b37/ASCAT/WGS resources/ref_genome/b37/ASCAT/WGS/RT_G1000_WGS_hg19.zip
+    echo -e "${GREEN_B} ASCAT configs Downloaded ${NC}"
+
+    touch build_log/download_ascat.log
+else
+    echo -e "${GREEN_B} already download GATK tools softwares, continue ${NC}"
+fi
+# Debugging settings
+## Download CaVEMan,BRASS config data
+echo "Beginning CaVEMan,BRASS config files  Download ..."
+if [ ! -f "build_log/download_sanger.log" ]; then
+    mkdir -p resources/ref_genome/b37/Sanger
+    wget -P resources/ref_genome/b37/Sanger -c https://ftp.sanger.ac.uk/pub/cancer/dockstore/human/SNV_INDEL_ref_GRCh37d5-fragment.tar.gz
+    wget -P resources/ref_genome/b37/Sanger -c https://ftp.sanger.ac.uk/pub/cancer/dockstore/human/CNV_SV_ref_GRCh37d5_brass6+.tar.gz
+    wget -P resources/ref_genome/b37/Sanger -c https://ftp.sanger.ac.uk/pub/cancer/dockstore/human/core_ref_GRCh37d5.tar.gz
+    wget -P resources/ref_genome/b37/Sanger -c https://ftp.sanger.ac.uk/pub/cancer/dockstore/human/VAGrENT_ref_GRCh37d5_ensembl_75.tar.gz
+    wget -P resources/ref_genome/b37/Sanger -c https://ftp.sanger.ac.uk/pub/cancer/support-files/cgpPindel/cgpPindel_CPBI_refarea.tar.gz
+    wget -P resources/ref_genome/b37/Sanger -c https://ftp.sanger.ac.uk/pub/cancer/support-files/CPIB/caveman/cgpCaVEManWrapper_CPBI_refarea.tar.gz
+
+
+    tar -zxvf resources/ref_genome/b37/Sanger/SNV_INDEL_ref_GRCh37d5-fragment.tar.gz -C resources/ref_genome/b37/Sanger
+    tar -zxvf resources/ref_genome/b37/Sanger/CNV_SV_ref_GRCh37d5_brass6+.tar.gz -C resources/ref_genome/b37/Sanger
+    tar -zxvf resources/ref_genome/b37/Sanger/core_ref_GRCh37d5.tar.gz -C resources/ref_genome/b37/Sanger
+    tar -zxvf resources/ref_genome/b37/Sanger/VAGrENT_ref_GRCh37d5_ensembl_75.tar.gz -C resources/ref_genome/b37/Sanger
+    tar -zxvf resources/ref_genome/b37/Sanger/cgpPindel_CPBI_refarea.tar.gz -C resources/ref_genome/b37/Sanger
+    tar -zxvf resources/ref_genome/b37/Sanger/cgpCaVEManWrapper_CPBI_refarea.tar.gz -C resources/ref_genome/b37/Sanger
+
+    ### copy coding snp and indel to 
+    cp resources/ref_genome/b37/Sanger/VAGrENT_ref_GRCh37d5_ensembl_75/vagrent/gene_regions.bed* \
+      resources/ref_genome/b37/Sanger/SNV_INDEL_ref/caveman/flagging/
+
+    cp resources/ref_genome/b37/Sanger/VAGrENT_ref_GRCh37d5_ensembl_75/vagrent/codingexon_regions.sub.bed* \
+      resources/ref_genome/b37/Sanger/SNV_INDEL_ref/caveman/flagging/
+
+    touch build_log/download_sanger.log
+else
+    echo -e "${GREEN_B} already download CaVEMan,BRASS, continue ${NC}"
+fi
+
+
+
+### Download VEP data, version 110
+echo "Beginning VEP config files  Download ..."
+if [ ! -f "build_log/download_vep.log" ]; then
+    mkdir -p resources/ref_genome/b37/vep/v110
+    wget -P resources/ref_genome/b37/vep/v110 -c https://ftp.ensembl.org/pub/release-110/variation/indexed_vep_cache/homo_sapiens_vep_110_GRCh37.tar.gz
+
+    tar -xzvf resources/ref_genome/b37/vep/v110/homo_sapiens_vep_110_GRCh37.tar.gz -C resources/ref_genome/b37/vep/
+    touch build_log/download_vep.log
+else
+    echo -e "${GREEN_B} already download VEP cache ${NC}"
+fi
+
+### BWA index
+conda activate clindet 
+bwa index resources/ref_genome/b37/Homo_sapiens.GRCh37.GATK.illumina.fasta
+
+### RSME STAR index
+
+# ### STAR index
+# gsutil -m cp -r \
+#   "gs://hmf-public/HMFtools-Resources/ref_genome/37/bwa-mem2_index-2.2.1" \
+#   "gs://hmf-public/HMFtools-Resources/ref_genome/37/gridss_index-2.13.2" \
+#   resources/ref_genome/b37
+
+# ### build index
+# # Download star index
+# gsutil -m cp -r \
+#   "gs://hmf-public/HMFtools-Resources/ref_genome/37/star_index-gencode_19-2.7.3a" \
+#   resources/ref_genome/b37
+
+# # Download bwa index
+# gsutil -m cp -r \
+#   "gs://hmf-public/HMFtools-Resources/ref_genome/37/bwa-mem2_index-2.2.1" \
+#   "gs://hmf-public/HMFtools-Resources/ref_genome/37/gridss_index-2.13.2" \
+#   resources/ref_genome/b37
+
+
+# ## setup alphamissense
+# gsutil -m cp \
+#   "gs://dm_alphamissense/AlphaMissense_hg19.tsv.gz" \
+#   "gs://dm_alphamissense/AlphaMissense_hg38.tsv.gz" \
+#   resources/ref_genome/b37/vep/
+# tabix -s 1 -b 2 -e 2 -f -S 1 resources/ref_genome/b37/vep/AlphaMissense_hg19.tsv.gz
+# tabix -s 1 -b 2 -e 2 -f -S 1 resources/ref_genome/b37/vep/AlphaMissense_hg38.tsv.gz

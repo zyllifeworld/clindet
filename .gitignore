@@ -12,6 +12,7 @@ resources/
 output/
 
 logs/
+build_log/
 workflow/scRNA/
 /RNA/
 /WES/
@@ -23,6 +24,9 @@ workflow/scRNA/
 /*.log
 /test.csv
 /geneinfo.rds
+build_cisx.sh
+build_vep_anno.sh
+test.sh
 /*.R
 /Snakefile
 /*.smk
@@ -153,3 +157,5 @@ workflow/WGS/scripts/sample_check.R
 workflow/WGS/scripts/svclone_pre.R
 workflow/WES/rules/report/multiqc.smk
 workflow/WES/rules/rtm/paired/CNV/ASCATsc.smk
+build_cisx.sh
+bulid_vep_anno.sh

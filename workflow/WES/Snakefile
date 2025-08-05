@@ -45,23 +45,19 @@ def get_vcf_file(wildcards):
         file_name =  f"{project}/{genome_version}/results/vcf/" + 'unpaired' + "/{sample}/{caller}.vcf"
     return(file_name)
 
-# ##### Modules #####
 include: "rules/qc.smk"
 include: "rules/mapping.smk"
-# include: "rules/calling_paired.smk"
-# include: "rules/calling_paired_strelka.smk"
-# include: "rules/calling_unpaired.smk"
 
 ## cgp pipeline caller
 include: "rules/cgp/cgppindel.smk"
 include: "rules/cgp/cgpCaVEMan.smk"
 include: "rules/cgp/cgpBattenberg.smk"
 
+# rtm pipeline caller
 include: "rules/rtm/paired/SNV.smk"
 include: "rules/rtm/paired/CNV.smk"
 
 include: "rules/merge_loop.smk"
 include: "rules/merge_loop_germline.smk"
 include: "rules/mutationTime.smk"
-include: "rules/SV.smk"
 include: "rules/report/multiqc.smk"

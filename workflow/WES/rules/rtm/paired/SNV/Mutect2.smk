@@ -98,7 +98,7 @@ rule mutect2:
         -I {input.NC} \
         -O {output.vcf} \
         -normal {wildcards.sample}_NC \
-        -pon {input.pon} \
+        -pon {params.pon} \
         --germline-resource {params.germ_res} \
         --intervals {params.bed}
         """

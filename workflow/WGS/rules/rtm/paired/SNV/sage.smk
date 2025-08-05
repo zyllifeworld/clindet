@@ -15,6 +15,7 @@ rule paired_sage:
         panel_bed=config['singularity']['hmftools'][genome_version]['sage']['panel_bed'],
         ref_genome_version=config['singularity']['hmftools'][genome_version]['sage']['ref_genome_version'],
     threads: 30
+    conda:config['singularity']['hmftools']['conda']
     singularity:config['singularity']['hmftools']['sif']
     shell:
         """
@@ -35,11 +36,12 @@ rule paired_sage:
 rule pave_anno_sage:
     input:
         vcf="{project}/{genome_version}/results/vcf/paired/{sample}/sage/{sample}.sage.vcf.gz",
+        ref_genome=config['resources'][genome_version]['REFFA'],
     output:
-        vcf="{project}/{genome_version}/results/vcf/paired/{sample}/sage/{sample}.sage_pave.vcf.gz",
+        vcf="{project}/{genome_version}/results/vcf/paired/{sample}/sage/{sample}.sage.pave.vcf.gz",
         # dir="{project}/{genome_version}/results/vcf/paired/{sample}/deepvariant,
     conda:config['singularity']['hmftools']['conda']
-    singularity:"https://depot.galaxyproject.org/singularity/hmftools-pave:1.7.1--hdfd78af_0"
+    # singularity:"https://depot.galaxyproject.org/singularity/hmftools-pave:1.7.1--hdfd78af_0"
     params:
         wd="{project}/{genome_version}/results/vcf/paired/{sample}/sage",
         driver_gene_panel=config['singularity']['hmftools'][genome_version]['purple']['driver_gene_panel'],
@@ -52,7 +54,7 @@ rule pave_anno_sage:
     threads: 8
     shell:
         """
-        pave \
+        export _JAVA_OPTIONS="-Xmx30g" && pave \
         -sample {wildcards.sample} \
         -vcf_file {input.vcf} \
         -ensembl_data_dir {params.ensembl_data_dir} \

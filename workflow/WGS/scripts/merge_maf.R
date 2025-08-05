@@ -54,7 +54,13 @@ for(caller_file in callers_vcf) {
   fil1 <- !dat$Variant_Classification %in% c("Targeted_Region")
   fil2 <- str_detect(dat$all_effects, "missense_variant|stop|splice|inframe|frameshift|synonymous")
   dat <- dat[fil1 | fil2,]
-  dat <- dat[is.na(dat$gnomAD_AF) | dat$gnomAD_AF <= 0.1,]
+  # dat <- dat[is.na(dat$gnomAD_AF) | dat$gnomAD_AF <= 0.1,]
+  if (is.null(dat$gnomAD_AF) & !(is.null(dat$gnomADe_AF))){
+    # VEP version 114 change gnomAD_AF to gnomADe_AF
+    dat <- dat[is.na(dat$gnomADe_AF) | dat$gnomADe_AF <= 0.1,]
+  } else {
+    dat <- dat[is.na(dat$gnomAD_AF) | dat$gnomAD_AF <= 0.1,]
+  }
   dat <- dat[is.na(dat$AF) | dat$AF <= 0.1,]
   dat$FILTER <- paste0(caller,":",dat$FILTER,"|")
   # print(caller)

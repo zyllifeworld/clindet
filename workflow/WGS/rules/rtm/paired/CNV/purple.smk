@@ -1,11 +1,10 @@
 ### purple
 ### amber first
-purple_sv = 'gridss'
 def get_purple_sv_vcf(wildcards):
     if purple_sv == 'gridss':
         p_sv =  '-somatic_sv_vcf ' + f"{wildcards.project}/{wildcards.genome_version}/results/sv/paired/gridss/{wildcards.sample}/high_confidence_somatic_rename.vcf.bgz"
     elif purple_sv == 'svaba':
-        p_sv = p_sv =  '-somatic_sv_vcf ' + f"{wildcards.project}/{wildcards.genome_version}/results/sv/paired/gridss/{wildcards.sample}/high_confidence_somatic.vcf.bgz"
+        p_sv = p_sv =  '-somatic_sv_vcf ' + f"{wildcards.project}/{wildcards.genome_version}/results/sv/paired/svaba/{wildcards.sample}/{wildcards.sample}.svaba.somatic.rename.sv.vcf"
     else:
         p_sv = ''
     return p_sv
@@ -14,7 +13,7 @@ def purple_sv_vcf(wildcards):
     if purple_sv == 'gridss':
         p_sv =  "{project}/{genome_version}/results/sv/paired/gridss/{sample}/high_confidence_somatic_rename.vcf.bgz"
     elif purple_sv == 'svaba':
-        p_sv = "{project}/{genome_version}/results/sv/paired/gridss/{sample}/high_confidence_somatic_rename.vcf.bgz"
+        p_sv = "{project}/{genome_version}/results/sv/paired/svaba/{sample}/{sample}.svaba.somatic.rename.sv.vcf"
     else:
         p_sv = ''
     return p_sv
@@ -79,7 +78,7 @@ if purple_run_with_sv:
             # indexes="{project}/{genome_version}/results/recal/paired/{sample}-T.bam.bai",
             amber="{project}/{genome_version}/results/cnv/paired/purple/{sample}/amber",
             cobalt="{project}/{genome_version}/results/cnv/paired/purple/{sample}/cobalt",
-            sage_vcf="{project}/{genome_version}/results/vcf/paired/{sample}/sage/{sample}.sage_pave.vcf.gz",#use pave annotate vcf
+            sage_vcf="{project}/{genome_version}/results/vcf/paired/{sample}/sage/{sample}.sage.pave.vcf.gz",#use pave annotate vcf
             sv_vcf=purple_sv_vcf,
             ref_genome=config['resources'][genome_version]['REFFA'],
         output:

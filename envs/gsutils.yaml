@@ -4,7 +4,7 @@ channels:
   - bioconda
   - nodefaults
 dependencies:
-  - gsutil=5.24
-  - htslib=1.17
+  - gsutil
+  - htslib
   - python=3.9
   - samtools=1.22

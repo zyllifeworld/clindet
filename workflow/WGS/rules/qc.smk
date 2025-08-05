@@ -65,13 +65,13 @@ rule conpair_pileup:
 rule conpair_concordance:
     input:
         Tum_pileup="{project}/{genome_version}/results/qc/conpair/paired/{sample}/{sample}-T.pileup",
-        NC_pileup="{project}/{genome_version}/results/qc/conpair/paired/{sample}/{sample}-NC.pileup",
+        NC_pileup="{project}/{genome_version}/results/qc/conpair/paired/{sample}/{sample}-NC.pileup"
     output:
         txt="{project}/{genome_version}/results/qc/conpair/paired/{sample}/{sample}-T_concordance.txt",
     singularity: config['singularity']['conpair']['sif']
     shell:
         """
-        /Conpair-0.2/scripts/verify_concordance.py -T {input.Tum_pileup} -N {input.NC_pileup} --outfile {}
+        /Conpair-0.2/scripts/verify_concordance.py -T {input.Tum_pileup} -N {input.NC_pileup} --outfile {output.txt}
         """
 
 rule conpair_contamination:

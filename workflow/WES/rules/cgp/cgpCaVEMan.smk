@@ -8,7 +8,8 @@ rule CM_cnv:
     params:
         wd="{project}/{genome_version}/results/cnv/paired/{sample}",
         # gender=,
-        sample_index= lambda wildcards: wildcards.sample
+        sample_index=lambda wildcards: wildcards.sample,
+        genome_version=lambda wildcards: wildcards.genome_version
     threads: 1
     script:
         "../../scripts/caveman/cnv_bed.R"

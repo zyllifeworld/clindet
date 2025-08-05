@@ -218,7 +218,7 @@ rule PI_call:
         -exclude chrUn% \
         -unmatched {input.NP_gff3} \
         -filter {params.filter} \
-        -softfil {param.softfil} \
+        -softfil {params.softfil} \
         -assembly {wildcards.genome_version} \
         -species {params.species} \
         -seqtype WXS \

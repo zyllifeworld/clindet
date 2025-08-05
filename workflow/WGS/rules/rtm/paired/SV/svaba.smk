@@ -6,6 +6,7 @@ rule SV_svaba:
         dbsnp_indel=config['resources'][genome_version]['DBSNP_INDEL'],
     output:
         sv="{project}/{genome_version}/results/sv/paired/svaba/{sample}/{sample}.svaba.somatic.sv.vcf",
+        sv_indel="{project}/{genome_version}/results/sv/paired/svaba/{sample}/{sample}.svaba.somatic.indel.vcf",
         sv_uf="{project}/{genome_version}/results/sv/paired/svaba/{sample}/{sample}.svaba.unfiltered.somatic.sv.vcf"
     params:
         ref=config['resources'][genome_version]['REFFA'],
@@ -53,3 +54,15 @@ rule svanno_svaba:
         --protein-coding-gtf {params.gtf} \
         -O {output.vcf}
         """
+
+#change vcf sample name for purple use
+rule svaba_rename_tumor:
+    input:
+        vcf="{project}/{genome_version}/results/sv/paired/svaba/{sample}/{sample}.svaba.somatic.sv.vcf"
+    output:
+        vcf="{project}/{genome_version}/results/sv/paired/svaba/{sample}/{sample}.svaba.somatic.rename.sv.vcf"
+    # singularity: config['singularity']['gridss']['sif']
+    params:
+        vcf="{project}/{genome_version}/results/sv/paired/svaba/{sample}/{sample}.svaba.somatic.rename.sv.vcf"
+    script:
+        "../../../../scripts/gridss/scripts/change_vcf_sample_name.R"

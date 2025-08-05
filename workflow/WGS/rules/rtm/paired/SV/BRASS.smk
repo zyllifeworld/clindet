@@ -13,7 +13,17 @@ rule SV_brass_bamstat:
             bam_stats -i {input.NC} -o {output.NC}
         """
 
-brass_cnv
+rule brass_cnv:
+    input:
+        cnv=rules.CNA_ASCAT.output.rdata if 'purple' in somatic_cnv_list else rules.paired_purple.output.pp
+    output:
+        ascat="{project}/{genome_version}/results/cnv/paired/BRASS/{sample}/{sample}.ascat"
+    params:
+        brass_cnv='purple' if 'purple' in somatic_cnv_list else rules.paired_purple.output.output_dir
+    script:
+        "../../../../scripts/stats_ascat.R"
+
+
 rule SV_brass:
     input:
         Tum="{project}/{genome_version}/results/recal/paired/{sample}-T.bam",

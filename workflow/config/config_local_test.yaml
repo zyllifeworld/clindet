@@ -117,7 +117,7 @@ softwares:
       b37:
         vep_data: "/public/ClinicalExam/lj_sih/projects/project_clindet/resources/ref_genome/b37/vep"
         vep_path: "/public/home/lijf/env/miniconda3/envs/vep105/bin"
-        cache_version: "105"
+        cache_version: "110"
         species: "homo_sapiens"
   maf2vcf:
     conda: "clindet_vep"
@@ -269,9 +269,9 @@ singularity:
       simrep: "/AbsoPath/of/clindet/folder/resources/ref_genome/b37/SNV_INDEL_ref/pindel/simpleRepeats.bed.gz"
       normal_panel: "/AbsoPath/of/clindet/folder/resources/ref_genome/b37/SNV_INDEL_ref/pindel/pindel_np.gff3.gz"
       WES:
-        fil: "/public/ClinicalExam/lj_sih/projects/project_clindet/resources/ref_genome/b37/Sanger/SNV_INDEL_ref/pindel/WXS_Rules.lst"
+        filter: "/public/ClinicalExam/lj_sih/projects/project_clindet/resources/ref_genome/b37/Sanger/SNV_INDEL_ref/pindel/WXS_Rules.lst"
       WGS:
-        fil: "/public/ClinicalExam/lj_sih/projects/project_clindet/resources/ref_genome/b37/Sanger/SNV_INDEL_ref/pindel/WGS_Rules.lst"
+        filter: "/public/ClinicalExam/lj_sih/projects/project_clindet/resources/ref_genome/b37/Sanger/SNV_INDEL_ref/pindel/WGS_Rules.lst"
 
   caveman:
     sif: "/public/ClinicalExam/lj_sih/softwares/caveman153.sif"

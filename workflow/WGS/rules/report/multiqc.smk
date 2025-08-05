@@ -10,8 +10,8 @@ rule prep_multiqc_data:
         conpair_contam = "{project}/{genome_version}/results/qc/conpair/paired/{sample}/{sample}-T_contamination.txt",
         purple_stats = '{project}/{genome_version}/results/cnv/paired/purple/{sample}/purple/{sample}.purple.purity.tsv',
         purple_qc = '{project}/{genome_version}/results/cnv/paired/purple/{sample}/purple/{sample}.purple.qc',
-        dedup_metrics = "{project}/{genome_version}/results/qc/dedup/{paired}/{sample}-T.metrics.txt",
-        picard = "{project}/{genome_version}/results/stats/{paired}/wes_metrics/{sample}-T.txt"
+        dedup_metrics = "{project}/{genome_version}/results/qc/dedup/paired/{sample}-T.metrics.txt",
+        picard = "{project}/{genome_version}/results/stats/paired/wgs_metrics/{sample}-T.txt"
     output:
         filelist                = '{project}/{genome_version}/results/multiqc_data/{sample}/filelist.txt',
         renamed_file_dir        = directory('{project}/{genome_version}/results/multiqc_data/{sample}'),
@@ -53,6 +53,7 @@ rule prep_multiqc_data:
             err(str(e))
 
 ### multiqc on conpair/fastp/
+### multiqc on conpair/fastp/
 rule combined_multiqc_prep_multiqc_data:
     input:
         filelists=expand('{project}/{genome_version}/results/multiqc_data/{sample}/filelist.txt',project = project,genome_version = genome_version,sample = [*unpaired_samples, *paired_samples]),
@@ -77,16 +78,14 @@ rule combined_multiqc_prep_multiqc_data:
             err(str(e))
 
 
-# rule combined_multiqc:
-#     input:
-#         umccrise_conf_yaml  = join(package_path(), 'multiqc', 'multiqc_config.yaml'),
-#         filelist            = 'multiqc/multiqc_data/filelist.txt',
-#         generated_conf_yaml = 'multiqc/multiqc_data/generated_conf.yaml',
-#     output:
-#         html_file           = 'multiqc/multiqc_report.html'
-#     group: 'combined_multiqc'
-#     run:
-#         list_files = input.filelist
-#         shell(f'LC_ALL=$LC_ALL LANG=$LANG multiqc -f -o . -l {list_files}'
-#                 f' -c {input.umccrise_conf_yaml} -c {input.generated_conf_yaml} --filename {output.html_file}')
-
+rule combined_multiqc:
+    input:
+        filelist            = '{project}/{genome_version}/results/multiqc/filelist.txt',
+    output:
+        html_file           = '{project}/{genome_version}/results/multiqc_report.html'
+    group: 'combined_multiqc'
+    conda:'multiqc'
+    shell:
+        """
+        multiqc -f -o . -l {input.filelist} --filename {output.html_file}
+        """
