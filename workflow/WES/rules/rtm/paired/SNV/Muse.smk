@@ -22,7 +22,7 @@ rule muse_sump:
     output:
         vcf="{project}/{genome_version}/results/vcf/paired/{sample}/muse.vcf"
     params:
-        dbsnp=config['resources'][genome_version]['DBSNP_GZ']
+        dbsnp=config['resources'][genome_version]['DBSNP_GZ'] # Muse need gzip vcf
     threads: 10
     singularity: config['singularity']['muse']['sif']
     shell:

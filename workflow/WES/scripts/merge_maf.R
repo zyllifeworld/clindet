@@ -1,5 +1,3 @@
-#!/public/home/lijf/env/miniconda3/envs/clindet/bin/Rscript
-
 library(stringr)
 library(data.table)
 library(tools)
@@ -10,23 +8,11 @@ output_filter_merge_maf <- snakemake@output[['filter_maf']]
 
 sample_name <- paste0(file_path_sans_ext(basename(output_merge_maf)),'_T')
 
-# input_maf_dir <- '2022-BGI'
-# output_merge_maf <- '2022-BGI/merge.maf'
-
-
-# callers_vcf <- list.files(input_maf_dir, ".maf", full.names = TRUE)
 callers_vcf <- snakemake@input[['maf1']]
 callers_vcf <- callers_vcf[!str_detect(callers_vcf,'strelkasomatic.vcf.maf')]
-# print(callers_vcf)
-# saveRDS(callers_vcf,'test.rds')
-
 
 final <- NULL
-#callers <- c("Mutect2", "HaplotypeCaller", "Strelka", "VarDict", "Pindel", "UnifiedGenoTyper", "Freebayes", "Varscan2", "Lofreq")
-#callers <- c("Mutect2", "HaplotypeCaller", "Strelka", "StrelkaSomatic", "UnifiedGenoTyper")
-
 index_name <- c("Chromosome", "Start_Position", "End_Position", "Reference_Allele", "Tumor_Seq_Allele2")
-
 final.tmp <- NULL
 for(caller_file in callers_vcf) {
   caller <- file_path_sans_ext(file_path_sans_ext(basename(caller_file)))
@@ -67,8 +53,6 @@ for(caller_file in callers_vcf) {
   }
   dat <- dat[is.na(dat$AF) | dat$AF <= 0.1,]
   dat$FILTER <- paste0(caller,":",dat$FILTER,"|")
-  # print(caller)
-  # print(colnames(dat))R
   final.tmp <- rbind(final.tmp, dat)
   final.tmp <- final.tmp[order(final.tmp[, index_name[1]], final.tmp[, index_name[2]], final.tmp[, index_name[3]],
                                final.tmp[, index_name[4]], final.tmp[, index_name[5]]),]

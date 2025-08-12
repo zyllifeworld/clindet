@@ -51,9 +51,9 @@ rule SV_gridss_filter:
         ref=config['resources'][genome_version]['REFFA'],
         wd="{project}/{genome_version}/results/sv/paired/gridss/{sample}",
         pondir=get_gridss_pondir,
+        # gridss will auto bgzip file,so will add bgz suffix,use params
         hvcf="{project}/{genome_version}/results/sv/paired/gridss/{sample}/high_confidence_somatic.vcf",
-        # if else like  (exprs ? c1 : c2) in C++/javascript is OK too,eg on next line
-        # blacklist=("" if config['singularity']['gridss'][genome_version]['blacklist'] == "" else " -b " + config['singularity']['gridss'][genome_version]['blacklist'])
+        fullvcf="{project}/{genome_version}/results/sv/paired/gridss/{sample}/high_and_low_confidence_somatic.vcf"
     singularity: config['singularity']['gridss']['sif']
     shell:
         """
@@ -61,7 +61,7 @@ rule SV_gridss_filter:
         {params.pondir} \
         --input {input.vcf} \
         --output {params.hvcf} \
-        --fulloutput {output.fullvcf} \
+        --fulloutput {params.fullvcf} \
         -s /public/ClinicalExam/lj_sih/softwares/gridss/scripts/ \
         -c /public/ClinicalExam/lj_sih/softwares/gridss/scripts/ \
         -n 1 \

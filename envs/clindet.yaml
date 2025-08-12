@@ -21,3 +21,4 @@ dependencies:
   - vcflib
   - vcftools
   - picard
+  - ucsc-fasplit

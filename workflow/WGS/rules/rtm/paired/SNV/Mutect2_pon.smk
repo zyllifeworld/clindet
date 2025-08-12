@@ -19,7 +19,7 @@ rule call_variants_pon:
 
 rule pon_GB:
     input:
-        expand("{project}/{genome_version}/results/vcf/paired/PoN/{MM_sample}_Mutect2.vcf",MM_sample = paired_samples,project = project,genome_version = genome_version)
+        expand("{project}/{genome_version}/results/vcf/paired/PoN/{wgs_sample}_Mutect2.vcf",wgs_sample = paired_samples,project = project,genome_version = genome_version)
     output:
         log='{project}/{genome_version}/logs/paired/Mutect2_PoNDB_{sample}.log'
     params:
@@ -27,14 +27,16 @@ rule pon_GB:
         ref=config['resources'][genome_version]['REFFA'],
         temp_directory=config['params']['java']['temp_directory'],
         vcfs=lambda wildcards, input: ' -V ' + ' -V '.join(input),
-        bed=config['resources'][genome_version]['GENOME_BED']
+        bed=config['resources'][genome_version]['GENOME_BED'],
+        pon_dir='{project}/{genome_version}/analysis/normalPanel/pon_wgs_db'
     threads: 10
     shell:
         """
+        mkidr -p {params.pon_dir}
         export _JAVA_OPTIONS=-Djava.io.tmpdir={params.temp_directory} && {params.gatk4} \
         GenomicsDBImport -R {params.ref} \
         --merge-input-intervals true --sites-only-vcf-output true \
-        --genomicsdb-workspace-path /public/ClinicalExam/lj_sih/resource/mutFilter/pon_db_WGS \
+        --genomicsdb-workspace-path {params.pon_dir} \
         {params.vcfs}
         touch {output.log}
         """
@@ -45,21 +47,22 @@ rule M2_CSPN:
     input:
         '{project}/{genome_version}/logs/paired/Mutect2_PoNDB_{sample}.log'
     output:
-        vcf="{project}/{genome_version}/results/vcf/paired/PoN/{sample}_pon.vcf.gz",
+        vcf="{project}/{genome_version}/analysis/PoN/mutect2_pon_{sample}.vcf.gz",
         log='{project}/{genome_version}/logs/paired/Mutect2_PoNVCF_{sample}.log'
     params:
         gatk4=config['softwares']['gatk4']['call'],
         ref=config['resources'][genome_version]['REFFA'],
-        af_vcf=config['resources'][genome_version]['MUTECT2_VCF'],
+        germ_vcf=config['resources'][genome_version]['MUTECT2_germline_vcf'],
         temp_directory=config['params']['java']['temp_directory'],
+        pon_dir='{project}/{genome_version}/analysis/normalPanel/pon_wgs_db',
         vcfs=lambda wildcards, input: ' -V ' + ' -V '.join(input)
     threads: 20
     shell:
         """
         export _JAVA_OPTIONS=-Djava.io.tmpdir={params.temp_directory} && {params.gatk4} \
         CreateSomaticPanelOfNormals -R {params.ref} \
-        --germline-resource {params.af_vcf} \
-        -V gendb://../../../resource/mutFilter/pon_db_WGS \
+        --germline-resource {params.germ_vcf} \
+        -V gendb://{params.pon_dir} \
         --sites-only-vcf-output true \
         -O {output.vcf}
         touch {output.log}
@@ -67,16 +70,14 @@ rule M2_CSPN:
 
 rule M2_ST:
     input:
-        log='{project}/{genome_version}/logs/paired/Mutect2_PoNDB_MM.log',
         Tum="{project}/{genome_version}/results/recal/paired/{sample}-T.bam"
     output:
-        # vcf="{project}/{genome_version}/results/vcf/paired/PoN/{sample}_pon.vcf.gz",
         table="{project}/{genome_version}/results/recal/{sample}/{sample}-T_pileupsummaries.table"
     params:
         gatk4=config['softwares']['gatk4']['call'],
         ref=config['resources'][genome_version]['REFFA'],
         temp_directory=config['params']['java']['temp_directory'],
-        af_vcf=config['resources'][genome_version]['MUTECT2_VCF']
+        af_vcf=config['resources'][genome_version]['MUTECT2_germline_vcf']
     threads: 10
     shell:
         """
@@ -89,16 +90,14 @@ rule M2_ST:
 
 rule M2_SNC:
     input:
-        log='{project}/{genome_version}/logs/paired/Mutect2_PoNDB_MM.log',
         NC="{project}/{genome_version}/results/recal/paired/{sample}-NC.bam"
     output:
-        # vcf="{project}/{genome_version}/results/vcf/paired/PoN/{sample}_pon.vcf.gz",
         table="{project}/{genome_version}/results/recal/{sample}/{sample}-NC_pileupsummaries.table"
     params:
         gatk4=config['softwares']['gatk4']['call'],
         ref=config['resources'][genome_version]['REFFA'],
         temp_directory=config['params']['java']['temp_directory'],
-        af_vcf=config['resources'][genome_version]['MUTECT2_VCF']
+        af_vcf=config['resources'][genome_version]['MUTECT2_germline_vcf']
     threads: 10
     shell:
         """
@@ -112,11 +111,9 @@ rule M2_SNC:
 
 rule M2_contam:
     input:
-        log='{project}/{genome_version}/logs/paired/Mutect2_PoNDB_MM.log',
         T="{project}/{genome_version}/results/recal/{sample}/{sample}-T_pileupsummaries.table",
         NC="{project}/{genome_version}/results/recal/{sample}/{sample}-NC_pileupsummaries.table"
     output:
-        # vcf="{project}/{genome_version}/results/vcf/paired/PoN/{sample}_pon.vcf.gz",
         seg="{project}/{genome_version}/results/recal/{sample}/{sample}_segments.table",
         ctam="{project}/{genome_version}/results/recal/{sample}/{sample}_calculatecontamination.table"
     params:
@@ -135,19 +132,19 @@ rule M2_contam:
         """
 
 
-rule call_variants_q2:
+rule mutect2:
     input:
         Tum="{project}/{genome_version}/results/recal/paired/{sample}-T.bam",
         NC="{project}/{genome_version}/results/recal/paired/{sample}-NC.bam",
         ref=config['resources'][genome_version]['REFFA'],
-        pon="{project}/{genome_version}/results/vcf/paired/PoN/MM_pon.vcf.gz",
-        pon_log='{project}/{genome_version}/logs/paired/Mutect2_PoNVCF_MM.log'
+        pon="{project}/{genome_version}/analysis/PoN/mutect2_pon_clinwgs.vcf.gz",
+        pon_log='{project}/{genome_version}/logs/paired/Mutect2_PoNVCF_clinwgs.log',
     output:
         vcf="{project}/{genome_version}/results/vcf/paired/{sample}/Mutect2.vcf"
     params:
         gatk4=config['softwares']['gatk4']['call'],
         temp_directory=config['params']['java']['temp_directory'],
-        af_vcf=config['resources'][genome_version]['MUTECT2_VCF']
+        germ_vcf=config['resources'][genome_version]['MUTECT2_germline_vcf'],
     threads: 10
     shell:
         """
@@ -159,7 +156,7 @@ rule call_variants_q2:
         -O {output.vcf} \
         -normal {wildcards.sample}_NC \
         -pon {input.pon} \
-        --germline-resource {params.af_vcf}
+        --germline-resource {params.germ_vcf}
         """
 
 rule M2_filter:

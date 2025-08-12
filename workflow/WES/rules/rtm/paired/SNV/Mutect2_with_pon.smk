@@ -1,16 +1,14 @@
 rule M2_ST:
     input:
         Tum="{project}/{genome_version}/results/recal/paired/{sample}-T.bam",
-        vcf=config['resources'][genome_version]['MUTECT2_germline_vcf'],#/public/ClinicalExam/lj_sih/resource/af-only-gnomad.raw.sites.hg19.vcf.gz
+        vcf=config['resources'][genome_version]['MUTECT2_germline_vcf'],
         ref=config['resources'][genome_version]['REFFA']
     output:
-        # vcf="{project}/{genome_version}/results/vcf/paired/PoN/{sample}_pon.vcf.gz",
         table="{project}/{genome_version}/results/recal/{sample}/{sample}-T_pileupsummaries.table"
     params:
         gatk4=config['softwares']['gatk4']['call'],
         bed=get_sample_bed,
         temp_directory=config['params']['java']['temp_directory']
-        # bed='/public/home/lijf/projects/clinmm/meta/bed/rnaseq/hg19/hg19.exon.bed',
     threads: 10
     shell:
         """
@@ -28,13 +26,11 @@ rule M2_SNC:
         ref=config['resources'][genome_version]['REFFA'],
         vcf=config['resources'][genome_version]['MUTECT2_germline_vcf']
     output:
-        # vcf="{project}/{genome_version}/results/vcf/paired/PoN/{sample}_pon.vcf.gz",
         table="{project}/{genome_version}/results/recal/{sample}/{sample}-NC_pileupsummaries.table"
     params:
         gatk4=config['softwares']['gatk4']['call'],
         temp_directory=config['params']['java']['temp_directory'],
         bed=get_sample_bed
-        # bed='/public/home/lijf/projects/clinmm/meta/bed/rnaseq/hg19/hg19.exon.bed',
     threads: 10
     shell:
         """
@@ -53,14 +49,12 @@ rule M2_contam:
         NC="{project}/{genome_version}/results/recal/{sample}/{sample}-NC_pileupsummaries.table",
         ref=config['resources'][genome_version]['REFFA'],
     output:
-        # vcf="{project}/{genome_version}/results/vcf/paired/PoN/{sample}_pon.vcf.gz",
         seg="{project}/{genome_version}/results/recal/contam/{sample}/{sample}_segments.table",
         ctam="{project}/{genome_version}/results/recal/contam/{sample}/{sample}_calculatecontamination.table"
     params:
         gatk4=config['softwares']['gatk4']['call'],
         temp_directory=config['params']['java']['temp_directory'],
         bed=get_sample_bed
-        # bed='/public/home/lijf/projects/clinmm/meta/bed/rnaseq/hg19/hg19.exon.bed'
     threads: 10
     shell:
         """
@@ -73,7 +67,7 @@ rule M2_contam:
         """
 
 
-rule call_variants_q2:
+rule mutect2:
     input:
         Tum="{project}/{genome_version}/results/recal/paired/{sample}-T.bam",
         NC="{project}/{genome_version}/results/recal/paired/{sample}-NC.bam",

@@ -3,7 +3,6 @@ rule STAR_1_pass:
         # R1="{project}/{genome_version}/results/trimmed/{sample}_R1.fastq.gz",
         # R2="{project}/{genome_version}/results/trimmed/{sample}_R2.fastq.gz",
         unpack(get_rna_fastq)
-        # SJ="{project}/{genome_version}/results/mapped/STAR/{sample}/_STARpass1/SJ.out.tab"
     output:
         pass1="{project}/{genome_version}/results/mapped/STAR/{sample}/{sample}_pass1.log",
         sj_filt='{project}/{genome_version}/results/mapped/STAR/{sample}/_STARpass1/SJ.filt'
@@ -28,8 +27,6 @@ rule STAR_1_pass:
 
 rule STAR_map:
     input:
-        # R1="{project}/{genome_version}/results/trimmed/{sample}_R1.fastq.gz",
-        # R2="{project}/{genome_version}/results/trimmed/{sample}_R2.fastq.gz",
         unpack(get_rna_fastq),
         sj_filt='{project}/{genome_version}/results/mapped/STAR/{sample}/_STARpass1/SJ.filt'
     output:
@@ -77,148 +74,70 @@ rule STAR_map:
 rule cal_exp_RSEM:
     input:
         unpack(get_rna_fastq),
-        # R1="{project}/{genome_version}/results/trimmed/{sample}_R1.fastq.gz",
-        # R2="{project}/{genome_version}/results/trimmed/{sample}_R2.fastq.gz"
     params:
         rsem_ref=config['softwares']['rsem']['index'][genome_version],
         result_prefix="{project}/{genome_version}/results/summary/RSEM"
     threads: 10
     conda:
-        config['softwares']['star']['conda']
+        config['softwares']['rsem']['conda']
     output:
         genes="{project}/{genome_version}/results/summary/RSEM/{sample}/{sample}.genes.results",
+        genes="{project}/{genome_version}/results/summary/RSEM/{sample}/{sample}.genes.results",
         bam=temp("{project}/{genome_version}/results/summary/RSEM/{sample}/{sample}.STAR.genome.bam"),
-        tx_bam=temp("{project}/{genome_version}/results/summary/RSEM/{sample}/{sample}.transcript.sorted.bam"),
-        bam_sort="{project}/{genome_version}/results/summary/RSEM/{sample}/{sample}.STAR.genome.sort.bam"
-        # bam="{project}/{genome_version}/results/summary/RSEM/{sample}/{sample}.genes.results"
+        tx_bam=temp("{project}/{genome_version}/results/summary/RSEM/{sample}/{sample}.transcript.bam"),
+        tx_sort_bam="{project}/{genome_version}/results/summary/RSEM/{sample}/{sample}.transcript.sorted.bam"
+        # bam_sort=temp("{project}/{genome_version}/results/summary/RSEM/{sample}/{sample}.STAR.genome.sorted.bam"),
     shell:
-        """{config[softwares][rsem][cal_exp]}   --paired-end \
+        """
+            rsem-calculate-expression  --paired-end \
             --star -p {threads} --star-output-genome-bam \
             --star-gzipped-read-file  --sort-bam-by-coordinate \
             {input.R1} {input.R2} \
-           {params.rsem_ref} {params.result_prefix}/{wildcards.sample}/{wildcards.sample}
-           """
+            {params.rsem_ref} {params.result_prefix}/{wildcards.sample}/{wildcards.sample}
+        """
 
-# rule RSEM_sort_bam:
-#     input:
-#         genes="{project}/{genome_version}/results/summary/RSEM/{sample}/{sample}.genes.results",
-#         bam="{project}/{genome_version}/results/summary/RSEM/{sample}/{sample}.STAR.genome.bam",
-#     threads: 10
-#     conda:
-#         'samtools114'
-#     output:
-#         sort_bam="{project}/{genome_version}/results/summary/RSEM/{sample}/{sample}.STAR.genome.sort.bam"
-#         # bam="{project}/{genome_version}/results/summary/RSEM/{sample}/{sample}.genes.results"
-#     shell:
-#         """
-#         samtools sort -@ {threads} -o {output.sort_bam} {input.bam}
-#         samtools index {output.sort_bam}
-#         """
-
-rule RSEM_bam2bigwig:
+rule RSEM_sort_genome:
     input:
-        bam="{project}/{genome_version}/results/summary/RSEM/{sample}/{sample}.STAR.genome.sort.bam"
+        bam="{project}/{genome_version}/results/summary/RSEM/{sample}/{sample}.STAR.genome.bam"
+    threads: 10
+    conda:
+        config['softwares']['rsem']['conda']
     output:
-        bw="{project}/{genome_version}/results/RSEM/bigwig/{sample}/{sample}.bw"
-    conda:'deeptools'
-    threads:10
+        bam_sort=temp("{project}/{genome_version}/results/summary/RSEM/{sample}/{sample}.STAR.genome.sorted.bam"),
     shell:
         """
-        bamCoverage -b {input.bam} -o {output.bw} -p {threads} --normalizeUsing RPKM
+        samtools sort -@ {threads} -m 1G -o {output.bam} {input.bam}
+        samtools index {output.bam}
         """
 
-
-### kallisto index 
-
-###### kallisto index 
-# rule kallisto_index:
+# rule RSEM_bam2bigwig:
 #     input:
-#         ref_cdna=config['resources'][genome_version]['CDNA']
+#         bam="{project}/{genome_version}/results/summary/RSEM/{sample}/{sample}.STAR.genome.sort.bam"
 #     output:
-#         index=config['resources'][genome_version]['CDNA'] + '.idx'
-#     threads: 10
-#     conda:
-#         config['softwares']['kallisto']['conda']
+#         bw="{project}/{genome_version}/results/RSEM/bigwig/{sample}/{sample}.bw"
+#     conda:'deeptools'
+#     threads:10
 #     shell:
 #         """
-#         kallisto index {input.ref_cdna}
+#         bamCoverage -b {input.bam} -o {output.bw} -p {threads} --normalizeUsing RPKM
 #         """
 
-           
 
 ###### kallisto quanto
-
-
-
+rule kallisto:
+    input:
+        unpack(get_rna_fastq),
+    params:
+        index=config['softwares']['kallisto']['index'][genome_version],
+        result_prefix="{project}/{genome_version}/results/summary/kallisto/{sample}"
+    threads: 10
+    conda:
+        config['softwares']['rsem']['conda']
+    output:
+        tsv="{project}/{genome_version}/results/summary/kallisto/{sample}/abundance.tsv",
+    shell:
+        """
+        kallisto quan -i {params.index} -o {params.result_prefix} {input.R1} {input.R2} -t {threads}
+        """
 ### samlom 
 
-
-# ######  summarys
-# rule bed_to_interval_list:
-#     input:
-#         bed=get_sample_bed,
-#         dict=config['resources'][genome_version]['REFFA_DICT'],
-#     output:
-#         "/public/ClinicalExam/lj_sih/projects/project_QC/data/{sample}/{sample}.interval_list",
-#     params:
-#         extra="--SORT true",  # sort output interval list before writing
-#     resources:
-#         mem_mb=1024,
-#     wrapper:
-#         "v1.7.0/bio/picard/bedtointervallist"
-
-
-# rule picard_collect_hs_metrics:
-#     input:
-#         bam="{project}/{genome_version}/results/recal/{sample}.bam",
-#         reference=config['resources'][genome_version]['REFFA'],
-#         bait_intervals="/public/ClinicalExam/lj_sih/projects/project_QC/data/{sample}/{sample}.interval_list",
-#         target_intervals="/public/ClinicalExam/lj_sih/projects/project_QC/data/{sample}/{sample}.interval_list",
-#     output:
-#         "result/stats/hs_metrics/{sample}.txt",
-#     resources:
-#         mem_mb=1024,
-#     wrapper:
-#         "v1.7.0/bio/picard/collecthsmetrics"
-
-
-# rule STAR_oneshot:
-#     input:
-#         R1="{project}/{genome_version}/results/trimmed/{sample}_R1.fastq.gz",
-#         R2="{project}/{genome_version}/results/trimmed/{sample}_R2.fastq.gz"
-#         # SJ="{project}/{genome_version}/results/mapped/STAR/{sample}/_STARpass1/SJ.out.tab"
-#     output:
-#         # oneshot="{project}/{genome_version}/results/mapped/STAR_oneshot/{sample}/{sample}_oneshot.log",
-#         bam="{project}/{genome_version}/results/mapped/STAR_oneshot/{sample}/{sample}.sorted.bam"
-#     params:
-#         out_dir="{project}/{genome_version}/results/mapped/STAR_oneshot/{sample}/", # "/"" mustq in the config string
-#         ref=config['resources'][genome_version]['REFFA'],
-#         star_index=config['softwares']['star']['index'][genome_version],
-#         rg=r"ID:{sample} PL:ILLUMINA.NovaSeq LB:RNA-Seq SM:{sample}",
-#         gtf=config['resources'][genome_version]['GTF']
-#     threads: 10
-#     conda:
-#         config['softwares']['star']['conda']
-#     shell:
-#         """ 
-#         STAR --genomeDir {params.star_index} --runThreadN={threads} \
-#             --outSAMtype None --outFileNamePrefix {params.out_dir} \
-#             --readFilesIn {input.R1} {input.R2} --readFilesCommand zcat
-#             --outSAMtype BAM SortedByCoordinate --outFileNamePrefix {params.out_dir} \
-#             --genomeLoad NoSharedMemory --outSAMunmapped Within \
-#             --outSAMattrRGline '{params.rg}' \
-#             --sjdbGTFfile {params.gtf} \
-#             --outFilterMultimapNmax 50 \
-#             --peOverlapNbasesMin 10 \
-#             --alignSplicedMateMapLminOverLmate 0.5 \
-#             --alignSJstitchMismatchNmax 5 -1 5 5 \
-#             --chimSegmentMin 10 \
-#             --chimOutType WithinBAM HardClip \
-#             --chimJunctionOverhangMin 10 \
-#             --chimScoreDropMax 30 \
-#             --chimScoreJunctionNonGTAG 0 \
-#             --chimScoreSeparation 1 \
-#             --chimSegmentReadGapMax 3 \
-#             --chimMultimapNmax 50 \
-#             --readFilesIn {input.R1} {input.R2} --readFilesCommand gunzip -c
-#         """

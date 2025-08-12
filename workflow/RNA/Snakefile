@@ -1,8 +1,3 @@
-
-
-configfile: "/public/ClinicalExam/lj_sih/projects/project_pipeline/config/config.yaml"
-
-
 def get_rna_fastq(wildcards):
     fq_files = list(samples_info.loc[wildcards.sample,['R1_file_path','R2_file_path']])
     return {

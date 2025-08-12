@@ -59,5 +59,4 @@ include: "rules/rtm/paired/CNV.smk"
 
 include: "rules/merge_loop.smk"
 include: "rules/merge_loop_germline.smk"
-include: "rules/mutationTime.smk"
 include: "rules/report/multiqc.smk"

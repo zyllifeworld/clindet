@@ -25,7 +25,6 @@ rule lofreq_norm_filter:
         # indel="{project}/{genome_version}/results/vcf/paired/{sample}/lofreq/out_somatic_final.indels.vcf.gz"
     output:
         vcf="{project}/{genome_version}/results/vcf/paired/{sample}/lofreq.vcf"
-        #bcftools filter -e 'QUAL<20 | INFO/DP[0] < 10'  {input.vcf} > {output.vcf}
     shell:
         """
          bcftools filter -e 'QUAL<20 | INFO/DP[0] < 10'  {input.snp} > {output.vcf}

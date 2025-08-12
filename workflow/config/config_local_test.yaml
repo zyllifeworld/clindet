@@ -141,20 +141,21 @@ softwares:
       # hg38: "/public/home/lijf/env/genome/broad/hg38-v2/star_index/2.7.10b/149"
       t2t: "/public/ClinicalExam/lj_sih/resource/STAR_index/human/T2T"
 
-  salom:
-    conda:
+  SALMON: ''
+  salmon:
+    conda: 'rsem'
     index:
-      hg19:
+      b37: "/public/ClinicalExam/lj_sih/projects/project_clindet/resources/ref_genome/b37/salmon/b37"
       hg38:
-      t2t:
 
+  KALLISTO: ''
   kallisto:
-    conda:
+    conda: 'rsem'
     index:
-      hg19:
-      hg38:
-      t2t:
+      b37: "/public/ClinicalExam/lj_sih/projects/project_clindet/resources/ref_genome/b37/kallisto/b37"
+      hg38: 
 
+    
   VARSCAN2: "/public/home/lijf/env/opt/bio/varscan2/VarScan.v2.4.4.jar"
   varscan2:
     conda: "clindet"
@@ -164,44 +165,19 @@ softwares:
   DELLY: "/public/ClinicalExam/lj_sih/softwares/delly116"
   delly: 
     call: "/public/ClinicalExam/lj_sih/softwares/delly116 "
-
-  SANSA: "/public/ClinicalExam/lj_sih/softwares/sansa"
-  sansa: 
-    call: "/public/ClinicalExam/lj_sih/softwares/sansa "
-    db: "/public/ClinicalExam/lj_sih/resource/SVref/gnomad_v2.1_sv.sites.vcf.gz"
-    g: "/public/ClinicalExam/lj_sih/resource/genome/human/GRCh37/Homo_sapiens.GRCh37.87.gff3.gz"
-    hg19:
-      db: "/public/ClinicalExam/lj_sih/resource/SVref/gnomad_v2.1_sv.sites.vcf.gz"
-      g: "/public/ClinicalExam/lj_sih/resource/genome/human/GRCh37/Homo_sapiens.GRCh37.87.gff3.gz"
-      t_len: 5000
-    b37:
-      db: "/public/ClinicalExam/lj_sih/resource/SVref/gnomad_v2.1_sv.sites.vcf.gz"
-      g: "/public/ClinicalExam/lj_sih/resource/genome/human/GRCh37/Homo_sapiens.GRCh37.87.gff3.gz"
-      t_len: 5000
-    WBcel235:
-      db: "/public/ClinicalExam/lj_sih/resource/SVref/gnomad_v2.1_sv.sites.vcf.gz"
-      g: "/public/ClinicalExam/lj_sih/resource/genome/human/GRCh37/Homo_sapiens.GRCh37.87.gff3.gz"
-      t_len: 5000
-    hg38:
-      db: ""
-      g: ""
-    T2T:
-      db: "/public/ClinicalExam/lj_sih/resource/genome/human/T2T_human/gnomad_v2.1_sv.sites_chr.chm13.vcf.gz"
-      g: "/public/ClinicalExam/lj_sih/resource/genome/human/T2T_human/chm13.draft_v2.0.gene_annotation.gtf.gz"
-      t_len: 5000
   
   RSEM: "/public/ClinicalExam/lj_sih/softwares/RSEM_bin/bin/"
   rsem:
+    conda: 'rsem'
     pre_ref_index: "/public/ClinicalExam/lj_sih/softwares/RSEM_bin/bin/rsem-prepare-reference "
     cal_exp: "/public/ClinicalExam/lj_sih/softwares/RSEM_bin/bin/rsem-calculate-expression "
     bam2wig: "/public/ClinicalExam/lj_sih/softwares/RSEM_bin/bin/rsem-bam2wig "
     ref:
       hg38: "/public/ClinicalExam/lj_sih/resource/genome/human/hg38/GRCh38.primary_assembly.genome.fa"
     index:
-      # hg38: "/public/ClinicalExam/lj_sih/resource/genome/human/hg38/ref/hg38"
+      b37: "/public/ClinicalExam/lj_sih/projects/project_clindet/resources/ref_genome/b37/RSEM/b37"
       hg38: "/public/ClinicalExam/lj_sih/resource/genome/human/hg38/rsem_ref/hg38"
 
-      # hg38: "/public/home/lijf/env/genome/gencode/hg38/v38/star_index/2.7.9a"
 
   ARRIBA:  "/public/ClinicalExam/lj_sih/softwares/arriba_v2.3.0/arriba"
   arriba:
@@ -302,12 +278,10 @@ singularity:
   freec:
     sif: "/public/ClinicalExam/lj_sih/softwares/control-freec-11.6.sif"
     cpu: 30
-    hg19:
-      chrFiles: "/public/ClinicalExam/lj_sih/resource/genome/human/hg19/fasta"
-      chrLenFile: "/public/ClinicalExam/lj_sih/resource/genome/human/hg19/ucsc.hg19_auto.fasta.fai"
     b37:
-      chrFiles: "/public/ClinicalExam/lj_sih/resource/genome/human/GRCh37/fasta"
-      chrLenFile: "/AbsoPath/of/clindet/folder/resources/ref_genome/b37/Homo_sapiens_assembly19_auto.fasta.fai"
+      chrFiles: "/AbsoPath/of/clindet/folder/resources/ref_genome/b37/fasta"
+      chrLenFile: "/AbsoPath/of/clindet/folder/resources/ref_genome/b37/Homo_sapiens.GRCh37.GATK.illumina.fasta.auto.fai"
+      snp_file: "/AbsoPath/of/clindet/folder/resources/ref_genome/b37/hapmap_3.3.b37.vcf.gz"
 
   cgpwgs:
     sif: "/public/ClinicalExam/lj_sih/softwares/cgpwgs.sif"

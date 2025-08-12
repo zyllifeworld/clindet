@@ -36,7 +36,6 @@ rule paired_cobalt:
         indexes="{project}/{genome_version}/results/recal/paired/{sample}-T.bam.bai",
         bed=get_sample_bed
     output:
-        # pcf="{project}/{genome_version}/results/cnv/paired/purple/{sample}/cobalt/{sample}.cobalt.ratio.pcf",
         output_dir=directory("{project}/{genome_version}/results/cnv/paired/purple/{sample}/cobalt")
     params:
         output_dir="{project}/{genome_version}/results/cnv/paired/purple/{sample}/cobalt",
