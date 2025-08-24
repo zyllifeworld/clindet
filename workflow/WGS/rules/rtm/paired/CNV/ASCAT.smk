@@ -7,10 +7,10 @@ rule CNA_ASCAT:
     params:
         # ASCAT should change config file because allelCounter need chr prefix in hg19 version
         wd="{project}/{genome_version}/results/cnv/paired/ascat/{sample}",
-        lociprefix=config['softwares']['ascat'][genome_version]['loci_1000'],
-        allelesprefix=config['softwares']['ascat'][genome_version]['alleles_1000'],
-        GCcontentfile=config['softwares']['ascat'][genome_version]['GCcontentfile'],
-        replictimingfile=config['softwares']['ascat'][genome_version]['replictimingfile'],
+        lociprefix=config['softwares']['ascat_wgs'][genome_version]['loci_1000'],
+        allelesprefix=config['softwares']['ascat_wgs'][genome_version]['alleles_1000'],
+        GCcontentfile=config['softwares']['ascat_wgs'][genome_version]['GCcontentfile'],
+        replictimingfile=config['softwares']['ascat_wgs'][genome_version]['replictimingfile'],
         # sample_index= lambda wildcards: wildcards.sample
     threads: 8
     script:

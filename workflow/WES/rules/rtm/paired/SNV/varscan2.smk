@@ -9,7 +9,7 @@ rule varscan2_mpileup:
         normal=temp("{project}/{genome_version}/results/recal/paired/{sample}-NC.mp"),
         tumor=temp("{project}/{genome_version}/results/recal/paired/{sample}-T.mp")
     threads: 2
-    conda:"samtools114"
+    conda:"clindet"
     shell:
         """
         samtools mpileup -q 1 -Q 1 -f {input.ref} -l {input.regions} {input.normal} > {output.normal}

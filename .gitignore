@@ -159,3 +159,6 @@ workflow/WES/rules/report/multiqc.smk
 workflow/WES/rules/rtm/paired/CNV/ASCATsc.smk
 build_cisx.sh
 bulid_vep_anno.sh
+workflow/WES/rules/report/test.R
+workflow/WES/rules/merge_loop_norm.smk
+workflow/WES/rules/report/cancer_report.R

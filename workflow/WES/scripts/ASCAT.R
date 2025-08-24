@@ -13,7 +13,7 @@ output_rdata <- snakemake@output[['rdata']]
 output_rdata <- getAbsolutePath(output_rdata)
 
 threads = as.numeric(snakemake@threads)
-print(threads)
+# print(threads)
 
 ## ASCAT config
 alleles.prefix <- snakemake@params[['allelesprefix']]
@@ -40,7 +40,6 @@ if(genome_version == 'T2T'){
   genome_version = 'hg19'
   f_gv = 'hg19'
 } else {
-  rp_file <- glue("/public/ClinicalExam/lj_sih/resource/ASCAT/{genome_version}/Rep_correction.txt")
   f_gv = genome_version
 }
 
@@ -50,13 +49,11 @@ ascat.prepareHTS(
   normalseqfile = input_normal_bam,
   tumourname = "Tumor",
   normalname = "Germline",
-  # loci.prefix = glue("/public/ClinicalExam/lj_sih/resource/ASCAT_chr/{genome_version}/battenberg_1000genomesloci2012_v3/1000genomesloci2012_chr"),
-  # alleles.prefix = glue("/public/ClinicalExam/lj_sih/resource/ASCAT_chr/{genome_version}/battenberg_1000genomesloci2012_v3/1000genomesAlleles2012_chr"),
   loci.prefix = loci.prefix,
   alleles.prefix = alleles.prefix,
   gender = gender,
   genomeVersion = f_gv,
-  nthreads = 8,
+  nthreads = threads,
   chrom_names = c(1:22),
   tumourLogR_file = "Tumor_LogR.txt",
   tumourBAF_file = "Tumor_BAF.txt",

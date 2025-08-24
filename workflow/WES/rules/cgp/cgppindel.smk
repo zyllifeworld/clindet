@@ -13,7 +13,6 @@ if not pindel_normal_panel:
             samtools index {output.bam}
             """
 
-
     rule PI_NP: 
         input:
             Tum="{project}/{genome_version}/results/recal/paired/{sample}-NC.bam",

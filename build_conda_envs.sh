@@ -118,12 +118,28 @@ touch build_log/conda_env_setup.log & echo -e "${GREEN_B} All Conda env built OK
 
 ## consider remove this report section, packages hard to install under "the great wall" !
 # conda activate cancer_report
-# r_mirror="https://cloud.r-project.org" ## can change to nearest location mirror
-# R -q -e "install.packages(c('BiocManager'),repos = c(CRAN = '${r_mirror}'))" &>>build_log/cancer_report.log
-# R -q -e 'devtools::install_github("umccr/gpgr")' &>>build_log/cancer_report.log
+r_mirror="https://cloud.r-project.org" ## can change to nearest location mirror
+R -q -e "install.packages(c('BiocManager'),repos = c(CRAN = '${r_mirror}'))" &>>build_log/cancer_report.log
+R -q -e 'devtools::install_github("umccr/gpgr")' &>>build_log/cancer_report.log
+R -q -e "install.packages(c('details','DT','kableExtra','patchwork'),repos = c(CRAN = '${r_mirror}'))" &>>build_log/cancer_report.log
+R -q -e 'BiocManager::install("GenomicFeatures")' &>>build_log/cancer_report.log
 # R -q -e 'devtools::install_github("umccr/sigrap")' &>>build_log/cancer_report.log
 
-# pull image from zenodo
+# pull image from zenodo/or build by singularity
+mkdir -p resources/containers
+echo "Beginning image pull ..."
+if [ ! -f "build_log/pull_zenodo.log" ]; then
+    wget -P resources/containers -c https://zenodo.org/records/15787887/files/pindel.sif
+    wget -P resources/containers -c https://zenodo.org/records/15787887/files/brass634.sif
+    wget -P resources/containers -c https://zenodo.org/records/15787887/files/caveman153.sif
+    wget -P resources/containers -c https://zenodo.org/records/15787887/files/muse230.sif
+    wget -P resources/containers -c https://zenodo.org/records/15787887/files/conpair_latest.sif
+    wget -P resources/containers -c https://zenodo.org/records/15787887/files/svaba.sif
+
+    touch build_log/pull_zenodo.log
+else
+    echo -e "${GREEN_B} pull zenodo singularity, continue ${NC}"
+fi
 
 
 conda activate gsutil
@@ -260,6 +276,7 @@ else
 fi
 
 
+
 ## download ASCAT refdata
 echo "Beginning ASCAT config files  Download ..."
 if [ ! -f "build_log/download_ascat.log" ]; then
@@ -346,16 +363,32 @@ else
     echo -e "${GREEN_B} already built Genome BWA index ${NC}"
 fi
 
+
+
+### do some mass config
 conda activate clindet 
-conda install ucsc-fasplit &>>build_log/clindet.log
-pip install snakemake-executor-plugin-cluster-generic &>>build_log/clindet.log
-pip install configparser &>>build_log/clindet.log
+echo "Do some config ..."
+if [ ! -f "build_log/download_vep.log" ]; then
+    ### install some package for snakemake slurm and freec
+    conda install ucsc-fasplit &>>build_log/clindet.log
+    pip install snakemake-executor-plugin-cluster-generic &>>build_log/clindet.log
+    pip install configparser &>>build_log/clindet.log
+
+    ### dbsnp bgzip
+    bgzip -k -o resources/ref_genome/b37/Homo_sapiens_assembly19.dbsnp138.vcf.gz resources/ref_genome/b37/Homo_sapiens_assembly19.dbsnp138.vcf
+    tabix resources/ref_genome/b37/Homo_sapiens_assembly19.dbsnp138.vcf.gz
+else
+
+fi
+
+gxf2bed --input resources/ref_genome/b37/Homo_sapiens.GRCh37.87.gtf --output resources/ref_genome/b37/Homo_sapiens.b37.genes.bed \
+-p exon -f gene_name
 # bwa index resources/ref_genome/b37/Homo_sapiens.GRCh37.GATK.illumina.fasta
 
 ### Config freeC split fasta
-mkdir -p resources/softwares/UCSC_tools
-wget -P resources/softwares/UCSC_tools -c https://hgdownload.soe.ucsc.edu/admin/exe/linux.x86_64/faSplit
-wget -P resources/ref_genome/b37 -c http://xfer.curie.fr/get/QKFgcU5caZd/hg19_snp137.SingleDiNucl.1based.txt.gz
+# mkdir -p resources/softwares/UCSC_tools
+# wget -P resources/softwares/UCSC_tools -c https://hgdownload.soe.ucsc.edu/admin/exe/linux.x86_64/faSplit
+# wget -P resources/ref_genome/b37 -c http://xfer.curie.fr/get/QKFgcU5caZd/hg19_snp137.SingleDiNucl.1based.txt.gz
 
 chmod 755 resources/softwares/UCSC_tools/faSplit
 mkdir -p resources/ref_genome/b37/fasta
@@ -385,23 +418,6 @@ mkdir -p resources/ref_genome/b37/salmon
 salmon index -t resources/ref_genome/b37/Homo_sapiens.GRCh37.cdna.all.fa.gz -i resources/ref_genome/b37/salmon/b37
 
 
-# ### STAR index
-# gsutil -m cp -r \
-#   "gs://hmf-public/HMFtools-Resources/ref_genome/37/bwa-mem2_index-2.2.1" \
-#   "gs://hmf-public/HMFtools-Resources/ref_genome/37/gridss_index-2.13.2" \
-#   resources/ref_genome/b37
-
-# ### build index
-# # Download star index
-# gsutil -m cp -r \
-#   "gs://hmf-public/HMFtools-Resources/ref_genome/37/star_index-gencode_19-2.7.3a" \
-#   resources/ref_genome/b37
-
-# # Download bwa index
-# gsutil -m cp -r \
-#   "gs://hmf-public/HMFtools-Resources/ref_genome/37/bwa-mem2_index-2.2.1" \
-#   "gs://hmf-public/HMFtools-Resources/ref_genome/37/gridss_index-2.13.2" \
-#   resources/ref_genome/b37
 
 
 # ## setup alphamissense

@@ -22,3 +22,5 @@ dependencies:
   - vcftools
   - picard
   - ucsc-fasplit
+  - bioconductor-variantannotation
+  - bedtools

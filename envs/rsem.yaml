@@ -1,0 +1,12 @@
+    name: rsem
+    channels:
+      - bioconda
+      - conda-forge
+      - defaults
+    dependencies:
+      - rsem
+      - bowtie2
+      - samtools
+      - star
+      - kallisto
+      - salmon=1.10.3

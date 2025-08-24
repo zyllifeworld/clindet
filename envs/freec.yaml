@@ -1,0 +1,14 @@
+name: rsem
+channels:
+  - bioconda
+  - conda-forge
+  - defaults
+dependencies:
+  - sambamba
+  - bicseq2-seg
+  - bicseq2-norm
+  - control-freec
+  - samtools
+  - bedtools
+  - sambamba
+  - r-mgcv

@@ -1,0 +1,894 @@
+---
+author: "Yuliang Zhang"
+date: "`r Sys.time()`"
+output:
+  html_document:
+    theme: cosmo # darkly
+    css: style.css
+    toc: false
+    code_download: false
+  rmdformats::material:
+    highlight: kate
+params:
+  ## common config
+  af_keygenes: NULL
+  batch_name: NULL
+  genome_version: NULL
+  bcftools_stats: NULL
+  conda_list: NULL
+  dragen_hrd: NULL
+  oncokb_genes: NULL
+  title: "Clindet WES analysis case Report"
+  tumor_name: NULL
+  ## virus reports #######
+  virusbreakend_tsv: NULL
+  virusbreakend_vcf: NULL
+  # copy number results
+  ascat_res_dir: NULL
+  purple_res_dir: NULL
+  purple_purity: NULL
+  purple_qc: NULL
+  purple_som_cnv: NULL
+  purple_som_gene_cnv: NULL
+  purple_som_snv_vcf: NULL
+  result_outdir: NULL
+  somatic_snv_vcf: NULL
+  somatic_snv_summary: NULL
+  somatic_sv_tsv: NULL
+  somatic_sv_vcf: NULL
+
+description: "Analysis of tumor/normal samples at Clindet"
+title: "`r paste(params$batch_name, params$title)`"
+editor_options: 
+  markdown: 
+    wrap: 72
+---
+
+<style type="text/css">
+.main-container {
+  max-width: 1400px;
+  margin-left: auto;
+  margin-right: auto;
+}
+</style>
+
+```{r knitr_opts, include=F}
+knitr::opts_chunk$set(
+  collapse = TRUE, echo = FALSE,
+  warning = FALSE, message = FALSE,
+  error = TRUE
+) # continue running report even after chunk errors
+```
+
+```{r load_pkgs}
+# Bioconductor
+# library(BSgenome, include.only = "BSgenome")
+# library(MutationalPatterns, include.only = "read_vcfs_as_granges")
+# ref_genome <- "BSgenome.Hsapiens.UCSC.hg19"
+# library(ref_genome, character.only = TRUE, include.only = ref_genome)
+# tx_ref_genome <- "TxDb.Hsapiens.UCSC.hg19.knownGene"
+# library(tx_ref_genome, character.only = TRUE, include.only = tx_ref_genome)
+# CRAN
+library(details, include.only = "details")
+library(DT, include.only = "datatable")
+library(dplyr)
+library(GenomeInfoDb, include.only = "seqlevelsStyle")
+library(GenomicFeatures, include.only = "genes")
+library(GenomicRanges, include.only = "GRanges")
+library(glue, include.only = "glue")
+library(gt, include.only = "gt")
+library(ggplot2, include.only = "ggtitle")
+library(IRanges, include.only = "IRanges")
+library(knitr)
+library(kableExtra, include.only = "kable_styling")
+library(patchwork)
+library(purrr, include.only = "map")
+library(readr, include.only = "read_tsv")
+library(rmarkdown, include.only = "render")
+library(tidyr, include.only = "pivot_longer")
+# umccr
+library(gpgr)
+```
+
+```{r funcs}
+bnm <- params$batch_name
+purple_dir <- params$purple_res_dir # should be relative to the knitting directory
+ascat_dir <- params$ascat_res_dir 
+
+result_outdir <- params$result_outdir # directory to write tables to
+blank_lines <- function(n = 10) {
+  cat(rep("&nbsp;  ", n), sep = "\n")
+}
+
+# get js indices when using in DT options
+col_ind_js <- function(dt, col) {
+  ntab <- setNames((1:ncol(dt) - 1), names(dt))
+  stopifnot(all(col %in% names(dt)))
+  sort(unname(ntab[col]))
+}
+```
+
+```{r sv_prep}
+#---- Misc ----#
+# oncokb_genes <- gpgr::read_oncokb(params$oncokb_genes)
+
+#---- Structural Variants ----#
+# sv_path <- params$somatic_sv_tsv
+# sv <- NULL
+# no_sv_found <- gpgr::tsv_is_empty(sv_path)
+# if (!no_sv_found) {
+#   sv <- gpgr::process_sv(sv_path)
+
+# Set OncoKB genes
+#   sv$annotations <- sv$annotations |>
+#     dplyr::mutate(
+#       "Genes (OncoKB)" = gpgr::get_oncokb_genes(Genes, oncokb_genes),
+#       .after = "Genes",
+#     )
+# }
+
+#---- Copy Number Variants ----#
+# cnv <- gpgr::process_cnv_tsv(params$purple_som_cnv_ann)
+
+# Set OncoKB genes
+# cnv$annotations <- cnv$annotations |>
+#   dplyr::mutate(
+#     "Genes (OncoKB)" = get_oncokb_genes(Genes, oncokb_genes),
+#     .after = "Genes",
+#   )
+
+# Set OncoKB genes for Many Genes table and transfer to the main table where appropriate
+# cnv$many_genes <- cnv$many_genes |>
+#   dplyr::mutate(
+#     `Genes (OncoKB)` = get_oncokb_genes(Genes, oncokb_genes),
+#     .before = "Genes",
+#   ) |>
+#   # Create transfer column, set entries with more than n genes as 'Many genes (m)'
+#   dplyr::rowwise() |>
+#   dplyr::mutate(
+#     gene.oncokb.count = strsplit(`Genes (OncoKB)`, ", ") |> unlist() |> unique() |> length(),
+#     gene.oncokb.tx = ifelse(gene.oncokb.count > 2, paste0("Many genes (", gene.oncokb.count, ")"), `Genes (OncoKB)`),
+#   )
+
+# # Transfer selected OncoKB gene entries
+# v.selector <- match(cnv$many_genes$`Annotation ID`, cnv$annotations$`Annotation ID`)
+# cnv$annotations$`Genes (OncoKB)`[v.selector] <- cnv$many_genes$gene.oncokb.tx
+
+# # Clean up columns
+# cnv$many_genes <- cnv$many_genes |>
+#   dplyr::select(-c(gene.oncokb.count, gene.oncokb.tx))
+```
+
+```{r purple_prep}
+#---- PURPLE QC Table ----#
+purple_qc_summary <- dplyr::bind_rows(
+  gpgr::purple_qc_read(params$purple_qc)[["summary"]] %>%
+    dplyr::filter(!variable %in% c("Purity", "Gender")),
+  gpgr::purple_purity_read(params$purple_purity)[["summary"]]
+)
+
+#---- PURPLE CNV Tables ----#
+purple_cnv_som <- gpgr::purple_cnv_som_process(params$purple_som_cnv)
+purple_cnv_som_gene <- gpgr::purple_cnv_som_gene_process(params$purple_som_gene_cnv, params$af_keygenes)
+
+gpgr::write_tsvjsongz(purple_cnv_som$tab, glue("purple/{bnm}-purple_cnv_som"), result_outdir)
+gpgr::write_tsvjsongz(purple_cnv_som_gene$tab, glue("purple/{bnm}-purple_cnv_som_gene"), result_outdir)
+```
+
+```{r, results='asis'}
+blank_lines(1)
+```
+
+## **Summary**
+
+<details>
+<summary>Description</summary>
+
+__PURPLE Summary__
+
+PURPLE outputs a QC status along with a summary
+for the inferred purity and ploidy of the somatic sample.
+The 'QC Status' field reflects how we have determined the purity of the sample.
+A 'FAIL' or 'WARN' QC status can be attributed to several factors:
+
+* `FAIL_CONTAMINATION`: measured contamination in the tumor (by Amber) is >10%
+* `FAIL_NO_TUMOR`: no evidence of tumor is found in the sample, when all
+  following criteria are satisfied:
+  - tumor has one or more HOTSPOT SV or point mutation
+  - SNV sum(allele read count) > 5000
+  - SV sum(startTumorVariantFragmentSupport) > 1000 (excluding SGL breakends)
+* `WARN_DELETED_GENES`: more than 280 homozygously deleted genes.
+  This sometimes occurs in samples with very high MB scale GC bias, and
+  particularly affects high GC content regions such as CHR 19.
+  It may also indicate a poor fit.
+* `WARN_HIGH_COPY_NUMBER_NOISE`: more than 220 copy number segments __not__
+  supported at either end by SV breakpoints.
+  Indicates samples with extreme GC bias, with differences
+  in depth of >= 10x between high and low GC regions. GC normalisation is
+  unreliable when the corrections are so extreme so it is recommended to fail
+  the sample (concerns with miscalled deletions or amplifications or have
+  poor sensitivity in high GC regions).
+* `WARN_GENDER_MISMATCH`: if the AMBER and COBALT inferred genders are
+  inconsistent then the COBALT one is used but the sample is failed.
+* `WARN_LOW_PURITY`: fitted purity < 20%
+
+</details>
+
+```{r summary_tables}
+
+# snv_summary_counts <- params$somatic_snv_summary |>
+#   jsonlite::read_json()
+
+# NOTE(QC): samples are considered hypermutated if they have more than 500k variant
+cnv_summary <-
+  list(som = purple_cnv_som$tab) %>%
+  purrr::map(~ dplyr::summarise(
+    .x,
+    Min = round(min(CN), 2),
+    Max = round(max(CN), 2),
+    N = dplyr::n(), .groups = "drop_last"
+  ))
+
+# if (no_sv_found) {
+#   sv_summary <- tibble(unmelted = c(0), melted = c(0))
+# } else {
+#   sv_summary <- list(
+#     unmelted = sv$map %>% dplyr::select(Type),
+#     melted = sv$map_melted %>% dplyr::select(Type)
+#   ) %>%
+#     purrr::map(function(x) addmargins(table(x, useNA = "ifany"))) %>%
+#     do.call("rbind", .) %>%
+#     as.data.frame() %>%
+#     tibble::rownames_to_column(var = "group") %>%
+#     tidyr::pivot_longer(-group) %>%
+#     dplyr::mutate(value = paste0(name, ": ", value)) %>%
+#     tidyr::pivot_wider(names_from = group, values_from = value) %>%
+#     dplyr::select(unmelted, melted)
+# }
+
+qc_summary_all <- dplyr::tribble(
+  ~n, ~variable, ~value, ~details,
+  20, "CNVs (Somatic)", glue::glue(
+    "Min: {cnv_summary[['som']]$Min}; ",
+    "Max: {cnv_summary[['som']]$Max}; ",
+    "N: {cnv_summary[['som']]$N} "
+  ), "",
+  # 17, "SNVs (Somatic)", snv_summary, "Summary SNV counts across main processes, in order",
+  # 19, "SVs (melted)", paste(rev(sv_summary$melted), collapse = ", "),
+  # "Summary of SVs after splitting annotations for each event into a separate variant row.",
+  22, "Genome", params$genome_version, "Human genome assembly used."
+) %>%
+  dplyr::bind_rows(
+    purple_qc_summary
+  ) %>%
+  dplyr::arrange(n) %>%
+  dplyr::select(-n)
+
+orange <- "#FED8B1"
+red <- "#FF4646"
+qc_summary_all %>%
+  gt::gt() %>%
+  gt::tab_style(
+    style = list(
+      gt::cell_fill(color = red),
+      gt::cell_text(weight = "bold")
+    ),
+    locations = gt::cells_body(
+      columns = value,
+      rows = grepl("FAIL", value) & variable == "QC_Status"
+    )
+  ) %>%
+  gt::tab_style(
+    style = list(
+      gt::cell_fill(color = orange),
+      gt::cell_text(weight = "bold")
+    ),
+    locations = gt::cells_body(
+      columns = value,
+      rows = grepl("WARN_", value) & variable == "QC_Status"
+    )
+  ) %>%
+  gt::tab_style(
+    style = list(
+      gt::cell_fill(color = orange),
+      gt::cell_text(weight = "bold")
+    ),
+    locations = gt::cells_body(
+      columns = value,
+      rows = grepl("TRUE", value) & variable == "Hypermutated"
+    )
+  ) %>%
+  gt::tab_style(
+    style = list(
+      gt::cell_text(weight = "bold")
+    ),
+    locations = list(
+      gt::cells_stub(rows = TRUE),
+      gt::cells_body(columns = variable)
+    )
+  ) %>%
+  gt::cols_align("left") %>%
+  # align rowname_col
+  gt::tab_style(
+    style = list(
+      gt::cell_text(align = "left")
+    ),
+    locations = gt::cells_stub(rows = TRUE)
+  ) %>%
+  gt::tab_style(
+    style = cell_borders(
+      sides = "right",
+      color = "grey80", style = "solid",
+      weight = px(2)
+    ),
+    locations = cells_body(
+      columns = c(variable,value) # Targets all body columns
+    )
+  ) %>%
+  gt::opt_row_striping() %>%
+  gt::tab_options(table.align = "left",column_labels.hidden = TRUE) 
+
+gpgr::write_tsvjsongz(qc_summary_all, glue("{bnm}-qc_summary"), result_outdir)
+```
+
+```{r, results='asis'}
+blank_lines(1)
+```
+
+## **Somatic Mutation Profiles**
+
+```{r, results='asis'}
+blank_lines(1)
+```
+
+### **Allelic Frequencies** {#allelic-freqs}
+
+Summarised below are the allele frequencies (AFs) for somatic variants
+detected genome-wide (**Global**) vs. within the coding sequence of
+\~1,100 UMCCR cancer genes (**Key Genes CDS**). AFs range from 0 to 1,
+or 0%-100% (we filter out all novel variants with AF \< 10%).
+
+<details>
+
+<summary>Details</summary>
+
+The following post-processing steps occur:
+
+1.  `somatic_vcf_annotate`: [annotate
+    VCF](https://github.com/umccr/vcf_stuff/blob/master/vcf_stuff/filtering/annotate_somatic_vcf.smk)
+    against databases of known hotspots, germline variants, low
+    mappability regions, UMCCR panel of normals
+2.  `somatic_vcf_filter`: [filter
+    VCF](https://github.com/umccr/vcf_stuff/blob/master/scripts/filter_somatic_vcf)
+    to remove germline variants and artefacts, but keep known hotspots
+3.  As preparation for the allelic frequencies plots:
+    -   `subset_to_giab`: keep variants in 'high confidence' regions as
+        determined by the [Genome in a Bottle
+        consortium](http://jimb.stanford.edu/giab/)
+    -   keep only variants with AF above 10%
+4.  Allele frequencies for global and keygenes:
+    -   `afs`: grab only the `INFO/TUMOR_AF` field and output to final
+        txt file
+    -   `afs_keygenes`: grab the `CHROM`, `POS`, `ID`, `REF`, `ALT` and
+        `INFO/TUMOR_AF` for variants in the UMCCR cancer gene BED file,
+        and output to final txt file
+
+</details>
+
+```{r allele_freq_stats}
+af_summary_results <- gpgr::af_summary(params$af_global, params$af_keygenes)
+af_summary_results$af_stats_gt
+```
+
+```{r, results='asis'}
+blank_lines(1)
+```
+
+```{r allele_freq_plot, fig.width=10, fig.height=3}
+af_summary_results$af_plot
+```
+
+```{r, results='asis'}
+blank_lines(1)
+```
+
+
+### **SNV** Signatures {#sig-snv .tabset .tabset-fade}
+
+
+
+## __Circos Plots__ {.tabset .tabset-fade #circos}
+
+Circos plots are generated by PURPLE.
+The first BAF plot is based on PURPLE data and configuration files.
+
+### BAF, Total/Minor CN, SVs
+
+<details>
+<summary>Description</summary>
+
+* __Track1__: Chromosomes. Darker shaded areas: gaps in reference genome
+  (centromeres, heterochromatin & missing short arms)
+* __Track2__: <span style="color:#8A2BE2">Beta Allele Frequency</span>.
+  Given that the BAF points correspond to allele frequencies of heterozygous SNPs that are common in germline samples,
+  there should not be any in chromosome Y (and chromosome X when male).
+* __Track3__: __Total__ copy number changes adjusted for tumor purity,
+  including focal and chromosomal somatic events.
+  <span style="color:red">Red</span> = Loss; <span style="color:#32CD32">Green</span> = Gain.
+  Scaled from 0 (complete loss) to 6 (high level gains).
+  If > 6, shown as 6 with a green dot on the outermost green gridline.
+* __Track4__: __Minor__ allele copy numbers. Range from 0 to 3.
+  Expected normal minor allele copy number is 1, and anything below 1 is shown
+  as a loss (<span style="color:#EE7600">Orange</span>), representing an LOH event.
+  Minor allele copy numbers above 1 (<span style="color:#7EC0EE">Blue</span>) indicate gains
+  of both A and B alleles.
+* __Track5__ (Inner circle): Observed structural variants within or between the chromosomes.
+    * <span style="color:#7EC0EE">Blue</span> = Translocations
+    * <span style="color:red">Red</span> = Deletions
+    * <span style="color:#e6e600">Yellow</span> = Insertions
+    * <span style="color:#32CD32">Green</span> = Tandem duplications
+    * <span style="color:#000000">Black</span> = Inversions
+
+</details>
+
+```{r circos_default1, out.width="80%"}
+knitr::include_graphics(file.path(purple_dir,'plot', paste0(params$tumor_name, ".circos.png")))
+```
+
+### SNVs/Indels, Total/Minor CN, SVs
+
+<details>
+<summary>Description</summary>
+
+* __Track1__: Chromosomes. Darker shaded areas: gaps in reference genome
+  (centromeres, heterochromatin & missing short arms)
+* __Track2__: Somatic variants (incl. exon, intron and intergenic regions).
+    * outer ring: SNP allele frequencies, corrected for tumor purity and scaled from 0 to 100%.
+      Each dot represents a single somatic variant, coloured according to the
+      type of base change (e.g. C>T/G>A in red).
+    * inner ring: short insertion (yellow) and deletion (red) locations.
+* __Track3__: Observed __total__ copy number changes adjusted for tumor purity,
+  including focal and chromosomal somatic events.
+  <span style="color:red">Red</span> = Loss; <span style="color:#32CD32">Green</span> = Gain.
+  Scaled from 0 (complete loss) to 6 (high level gains).
+  If > 6, shown as 6 with a green dot on the outermost green gridline.
+* __Track4__: Observed __minor__ allele copy numbers. Range from 0 to 3.
+  Expected normal minor allele copy number is 1, and anything below 1 is shown
+  as a loss (<span style="color:#EE7600">Orange</span>), representing an LOH event.
+  Minor allele copy numbers above 1 (<span style="color:#7EC0EE">Blue</span>) indicate gains
+  of both A and B alleles.
+* __Track5__ (Inner circle): Observed structural variants within or between the chromosomes.
+    * <span style="color:#7EC0EE">Blue</span> = Translocations
+    * <span style="color:red">Red</span> = Deletions
+    * <span style="color:#e6e600">Yellow</span> = Insertions
+    * <span style="color:#32CD32">Green</span> = Tandem duplications
+    * <span style="color:#000000">Black</span> = Inversions
+
+</details>
+
+### Allele Ratios, BAF
+
+<details>
+<summary>Description</summary>
+
+* __Track1__: Chromosomes. Darker shaded areas: gaps in reference genome
+  (centromeres, heterochromatin & missing short arms)
+* __Track2__: <span style="color:blue">Tumor</span> and <span style="color:#32CD32">Normal</span> Allele Ratios
+* __Track3__: <span style="color:#EE7600">Beta Allele Frequency</span>
+  Given that the BAF points correspond to allele frequencies of heterozygous SNPs that are common in germline samples,
+  there should not be any in chromosome Y (and chromosome X when male).
+
+</details>
+
+```{r circos_default2, out.width="80%"}
+knitr::include_graphics(file.path(purple_dir,'plot', paste0(params$tumor_name, ".input.png")))
+```
+
+```{r, results='asis'}
+blank_lines(1)
+```
+
+## __Structural Variants__
+
+<details>
+<summary>What do the SV tables show?</summary>
+
+Structural variants often involve deletions/insertions encompassing large
+genomic regions which can involve hundreds or even thousands of genes. The
+annotations for these genes/transcripts are included in the original SV VCF,
+but they are extremely hard to display and browse inside a HTML table, due to
+their size.
+
+Example SV with -only- 3 annotations:
+
+```
+SIMPLE_ANN=DEL|TFBS_ablation||MA0114&MA0139&MA0281|unprioritized|4,DEL|downstream_gene_variant|HFE2|ENST00000336751_exon_1/4|unprioritized|4,DEL|intergenic_region|TXNIP-HFE2|ENSG00000265972-ENSG00000168509|unprioritized|4
+```
+
+Reshaped:
+
+```
+svtype | effect                  | genes      | transcript                      | detail        | tier
+DEL    | TFBS_ablation           |            | MA0114&MA0139&MA0281            | unprioritized | 4
+DEL    | downstream_gene_variant | HFE2       | ENST00000336751_exon_1/4        | unprioritized | 4
+DEL    | intergenic_region       | TXNIP-HFE2 | ENSG00000265972-ENSG00000168509 | unprioritized | 4
+```
+
+</details>
+
+```{r}
+sv.dt <- sv |>
+  purrr::map(function(x) {
+    x |> DT::datatable(
+      filter = list(position = "top", clear = FALSE, plain = TRUE),
+      class = "cell-border display compact",
+      rownames = FALSE, extensions = c("Scroller", "Buttons", "KeyTable"),
+      options = list(
+        scroller = TRUE, scrollY = 400, scrollX = TRUE, autoWidth = FALSE, keys = TRUE,
+        buttons = c("csv", "excel"), dom = "Blfrtip"
+      )
+    )
+  })
+```
+
+### Summary {.tabset .tabset-fade #sv-summary}
+
+#### Plots
+
+```{r plot_bnd_sf_df_tot_lines, fig.width=12, fig.height=12, out.width="90%"}
+p1 <- gpgr:::plot_bnd_sf_df_tot_lines(sv$map)
+p2 <- gpgr::plot_bnd_sf_df_tot_hist(sv$map) + ggplot2::theme(legend.position = "none")
+((p1$p_all | p2) / p1$p_tier)
+```
+
+#### Counts
+
+```{r sv_summary}
+# d <-
+#   list(
+#     unmelted = sv$map %>% dplyr::select("Top Tier", Type),
+#     melted = sv$map_melted %>% dplyr::select("Top Tier", Type)
+#   ) %>%
+#   dplyr::bind_rows(.id = "group") %>%
+#   dplyr::mutate(group = factor(group, levels = c("unmelted", "melted"))) %>%
+#   dplyr::group_by(group) %>%
+#   dplyr::count(`Top Tier`, Type) %>%
+#   tidyr::pivot_wider(names_from = Type, values_from = n) %>%
+#   dplyr::ungroup() %>%
+#   dplyr::rowwise() %>%
+#   dplyr::mutate(tot = sum(dplyr::c_across(!(c(group, `Top Tier`))), na.rm = TRUE))
+
+# d %>%
+#   gt::gt(
+#     groupname_col = "group",
+#     rowname_col = "Tier"
+#   ) %>%
+#   gt::tab_header(
+#     title = "SV type counts by tier",
+#     subtitle = "(TopTier used for melted variants)"
+#   ) %>%
+#   gt::tab_stubhead(label = "Tier") %>%
+#   gt::summary_rows(
+#     groups = TRUE,
+#     fns = list(tot = ~ sum(., na.rm = TRUE)),
+#     drop_trailing_zeros = TRUE
+#   ) %>%
+#   gt::sub_missing(columns = dplyr::everything()) %>%
+#   gt::tab_style(
+#     style = list(
+#       gt::cell_text(weight = "bold")
+#     ),
+#     locations = gt::cells_stub(rows = TRUE)
+#   ) %>%
+#   gt::cols_align("right") %>%
+#   gt::tab_options(table.align = "left")
+```
+
+```{r, results='asis'}
+blank_lines(2)
+```
+
+### __SV Map__ {.tabset .tabset-fade}
+
+```{r}
+sv.dt$map
+```
+
+```{r, results='asis'}
+blank_lines(2)
+```
+
+### __Breakpoints and Breakends__ {.tabset .tabset-fade}
+
+#### Prioritised
+
+```{r}
+sv.dt$annotations
+```
+
+```{r, results='asis'}
+blank_lines(2)
+```
+
+#### Filtered
+
+```{r}
+sv.dt$annotations_filtered
+```
+
+```{r, results='asis'}
+blank_lines(2)
+```
+
+#### Many Transcripts
+
+```{r}
+sv.dt$many_transcripts
+```
+
+```{r, results='asis'}
+blank_lines(2)
+```
+
+### __Copy number variants__ {.tabset .tabset-fade}
+
+```{r}
+cnv.dt <- cnv |> purrr::map(function(x) {
+  x |> DT::datatable(
+    filter = list(position = "top", clear = FALSE, plain = TRUE),
+    class = "cell-border display compact",
+    rownames = FALSE, extensions = c("Scroller", "Buttons", "KeyTable"),
+    options = list(
+      scroller = TRUE, scrollY = 400, scrollX = TRUE, autoWidth = FALSE, keys = TRUE,
+      buttons = c("csv", "excel"), dom = "Blfrtip"
+    )
+  )
+})
+```
+
+#### Prioritised
+
+```{r}
+cnv.dt$annotations
+```
+
+```{r, results='asis'}
+blank_lines(2)
+```
+
+#### Filtered
+
+```{r}
+cnv.dt$filtered
+```
+
+```{r, results='asis'}
+blank_lines(2)
+```
+
+#### Many Genes
+
+```{r}
+cnv.dt$many_genes
+```
+
+```{r, results='asis'}
+blank_lines(2)
+```
+
+#### Many Transcripts
+
+```{r}
+cnv.dt$many_transcripts
+```
+
+```{r, results='asis'}
+blank_lines(2)
+```
+
+### UMCCR __Gene Somatic__ CNV Calls {#gene-panel-cnv}
+
+<details>
+<summary>Description</summary>
+
+PURPLE copy number alterations in the UMCCR Cancer Gene panel (~1,200 genes) - description
+is from <https://github.com/hartwigmedical/hmftools/blob/master/purity-ploidy-estimator/README.md#gene-copy-number-file>
+
+```{r purple_gene_cnv_description}
+purple_cnv_som_gene$descr %>%
+  dplyr::mutate(
+    Column = kableExtra::cell_spec(Column, bold = TRUE)
+  ) %>%
+  kableExtra::kbl(escape = FALSE) %>%
+  kableExtra::kable_paper(c("hover", "striped"), full_width = FALSE, position = "left") %>%
+  kableExtra::scroll_box(height = "200px")
+```
+
+</details>
+
+```{r purple_gene_cnv_tab}
+purple_cnv_som_gene$tab %>%
+  DT::datatable(
+    filter = list(position = "top", clear = FALSE, plain = TRUE),
+    class = "cell-border display compact",
+    rownames = FALSE, extensions = c("Scroller", "Buttons", "KeyTable"),
+    options = list(
+      scroller = TRUE, scrollY = 400, scrollX = TRUE, autoWidth = TRUE, keys = TRUE,
+      buttons = c("csv", "excel"), dom = "Bfrtip"
+    )
+  ) %>%
+  DT::formatCurrency(~ start + end, currency = "", interval = 3, mark = ",", digits = 0) %>%
+  DT::formatRound(~ minCN + maxCN, digits = 1)
+```
+
+```{r, results='asis'}
+blank_lines(2)
+```
+
+### Genome-wide __Somatic__ CNV Segments {#cnv-segments}
+
+<details>
+<summary>Description</summary>
+
+PURPLE outputs a file with the copy number profile of all contiguous segments
+of the tumor sample:
+
+PURPLE copy number profile of all (contiguous) segments of the tumor sample - description
+is from <https://github.com/hartwigmedical/hmftools/blob/master/purity-ploidy-estimator/README.md#copy-number-file>
+
+
+```{r purple_seg_description}
+purple_cnv_som$descr %>%
+  dplyr::mutate(
+    Column = kableExtra::cell_spec(Column, bold = TRUE)
+  ) %>%
+  kableExtra::kbl(escape = FALSE) %>%
+  kableExtra::kable_paper(c("hover", "striped"), full_width = FALSE, position = "left") %>%
+  kableExtra::scroll_box(height = "200px")
+```
+
+</details>
+
+```{r purple_cnv_som_tab}
+purple_cnv_som$tab %>%
+  DT::datatable(
+    filter = list(position = "top", clear = FALSE, plain = TRUE),
+    class = "cell-border display compact",
+    rownames = FALSE, extensions = c("Scroller", "Buttons", "KeyTable"),
+    options = list(
+      scroller = TRUE, scrollY = 400, scrollX = TRUE, autoWidth = TRUE, keys = TRUE,
+      buttons = c("csv", "excel"), dom = "Bfrtip"
+    )
+  ) %>%
+  DT::formatCurrency(~ Start + End, currency = "", interval = 3, mark = ",", digits = 0)
+```
+
+```{r, results='asis'}
+blank_lines(2)
+```
+
+### __PURPLE Charts__ {.tabset .tabset-fade #purple-charts}
+
+PURPLE generates charts for summarising tumor sample characteristics.
+Description is from the [PURPLE docs](https://github.com/hartwigmedical/hmftools/tree/master/purity-ploidy-estimator#charts).
+
+#### Purity/ploidy
+
+The following 'sunrise' chart shows the range of scores of all examined solutions of
+purity and ploidy. Crosshairs identify the best purity / ploidy solution.
+
+```{r purple_plot_purityrange, out.width="40%"}
+knitr::include_graphics(file.path(purple_dir,'plot', paste0(params$tumor_name, ".purity.range.png")))
+```
+
+```{r, results='asis'}
+blank_lines(2)
+```
+
+#### Copy number / Minor allele ploidy
+
+The following figures show the AMBER BAF count weighted distribution of
+copy number and minor allele ploidy throughout the fitted segments.
+Copy numbers are broken down by colour into their respective minor
+allele ploidy (MAP) while the minor allele ploidy figure is broken
+down by copy number.
+
+```{r purple_plot_copynumber, out.width="40%"}
+knitr::include_graphics(c(
+  file.path(purple_dir,'plot', paste0(params$tumor_name,".copynumber.png")),
+  file.path(purple_dir,'plot', paste0(params$tumor_name, ".map.png"))
+))
+```
+
+#### Ploidy by CN
+
+If a somatic variant VCF has been supplied, a figure will be produced
+showing the somatic variant ploidy broken down by copy number.
+
+```{r purple_plot_somatic, out.width="40%"}
+knitr::include_graphics(file.path(purple_dir,'plot', paste0(params$tumor_name, ".somatic.png")))
+```
+
+#### Clonality
+
+The following diagram illustrates the clonality model of a typical sample.
+
+The top figure shows the histogram of somatic ploidy for all SNVs and INDELs in blue.
+Superimposed are peaks in different colours fitted from the sample as described in the
+docs while the black line shows the overall fitted ploidy distribution. Red filled
+peaks are below the 0.85 subclonal threshold.
+
+We can determine the likelihood of a variant being subclonal at
+any given ploidy as shown in the bottom half of the figure.
+
+```{r purple_plot_somaticclonality, out.width="50%"}
+knitr::include_graphics(file.path(purple_dir,'plot', paste0(params$tumor_name, ".somatic.clonality.png")))
+```
+
+#### Segment
+
+The contribution of each fitted segment to the final score of the best fit is shown in
+the following figure. Each segment is divided into its major and minor allele ploidy.
+The area of each circle shows the weight (AMBER baf count) of each segment.
+
+```{r purple_plot_segment, out.width="40%"}
+knitr::include_graphics(file.path(purple_dir,'plot', paste0(params$tumor_name, ".segment.png")))
+```
+
+### __ASCAT Charts__ {.tabset .tabset-fade #ascat-charts}
+
+ASCAT generates charts for summarising tumor sample characteristics.
+Description is from the [ASCAT docs](https://www.mdanderson.org/research/departments-labs-institutes/labs/van-loo-laboratory/resources.html#ASCAT).
+
+#### Purity/ploidy
+
+The following 'sunrise' chart shows the range of scores of all examined solutions of
+purity and ploidy. Crosshairs identify the best purity / ploidy solution.
+
+```{r ascat_plot_purityrange, out.width="40%"}
+knitr::include_graphics(file.path(ascat_dir,'Tumor.sunrise.png'))
+```
+
+```{r, results='asis'}
+blank_lines(2)
+```
+
+#### Copy number / Minor allele ploidy
+
+The following figures show the segment results of ASCAT.
+
+```{r ascat_plot_copynumber, out.width="80%"}
+knitr::include_graphics(knitr::include_graphics(file.path(ascat_dir,'Tumor.ASCATprofile.png')))
+```
+
+
+### Report Inputs
+
+```{r report_inputs}
+report_inputs <- dplyr::tibble(key = names(params), value = params)
+gpgr::write_tsvjsongz(report_inputs, glue("{bnm}-report_inputs"), result_outdir)
+report_inputs %>%
+  kableExtra::kbl() %>%
+  kableExtra::kable_paper(c("hover", "striped"), full_width = TRUE, position = "left") %>%
+  kableExtra::column_spec(1, bold = TRUE) %>%
+  kableExtra::scroll_box(height = "200px")
+```
+
+### Conda Pkgs All
+
+```{r conda_list_all}
+if (is.null(params$conda_list)) {
+  cat("No conda package list provided.")
+} else {
+  conda_pkgs %>%
+    DT::datatable(
+      filter = list(position = "top", clear = FALSE, plain = TRUE),
+      rownames = FALSE, extensions = c("Scroller", "Buttons"),
+      options = list(
+        scroller = TRUE, scrollX = TRUE, scrollY = 400,
+        buttons = c("csv"), dom = "Bfrtip"
+      )
+    )
+}
+```
+

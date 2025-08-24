@@ -9,12 +9,9 @@ resources:
     DBSNP: "/AbsoPath/of/clindet/folder/resources/ref_genome/b37/Homo_sapiens_assembly19.dbsnp138.vcf"
     DBSNP_GZ: "/AbsoPath/of/clindet/folder/resources/ref_genome/b37/Homo_sapiens_assembly19.dbsnp138.vcf.gz"
     DBSNP_INDEL: "/public/ClinicalExam/lj_sih/resource/genome/human/hg19/dbsnp_151_indel.hg19.vcf.gz"
-    MUTECT2_VCF: "/public/ClinicalExam/lj_sih/resource/af-only-gnomad.raw.sites.b37.vcf.gz"
+    MUTECT2_VCF: "/AbsoPath/of/clindet/folder/resources/ref_genome/b37/af-only-gnomad.raw.sites.vcf"
     REFFA_DICT: "/AbsoPath/of/clindet/folder/resources/ref_genome/b37/Homo_sapiens_assembly19.fasta"
-    MUTECT2_germline_vcf: "/public/ClinicalExam/lj_sih/resource/af-only-gnomad.raw.sites.b37.vcf.gz"
-    common_vcf: "/public/ClinicalExam/lj_sih/resource/genome/human/GRCh37/00-common_all.vcf.gz"
-    CELLRANGER: "/public/home/lijf/env/genome/cellranger/GRCh38"
-    CELLRANGER_FASTA: "/public/home/lijf/env/genome/cellranger/GRCh38/fasta/genome.fa"
+    MUTECT2_germline_vcf: "/AbsoPath/of/clindet/folder/resources/ref_genome/b37/af-only-gnomad.raw.sites.vcf"
   varanno:
     b37:
       KNOWN_SITES1: "/AbsoPath/of/clindet/folder/resources/ref_genome/b37/1000G_phase1.snps.high_confidence.b37.vcf.gz"
@@ -115,7 +112,7 @@ softwares:
       hg38: "GRCh38"
     vep:
       b37:
-        vep_data: "/public/ClinicalExam/lj_sih/projects/project_clindet/resources/ref_genome/b37/vep"
+        vep_data: "/AbsoPath/of/clindet/folder/resources/ref_genome/b37/vep"
         vep_path: "/public/home/lijf/env/miniconda3/envs/vep105/bin"
         cache_version: "110"
         species: "homo_sapiens"
@@ -145,14 +142,14 @@ softwares:
   salmon:
     conda: 'rsem'
     index:
-      b37: "/public/ClinicalExam/lj_sih/projects/project_clindet/resources/ref_genome/b37/salmon/b37"
+      b37: "/AbsoPath/of/clindet/folder/resources/ref_genome/b37/salmon/b37"
       hg38:
 
   KALLISTO: ''
   kallisto:
     conda: 'rsem'
     index:
-      b37: "/public/ClinicalExam/lj_sih/projects/project_clindet/resources/ref_genome/b37/kallisto/b37"
+      b37: "/AbsoPath/of/clindet/folder/resources/ref_genome/b37/kallisto/b37"
       hg38: 
 
     
@@ -175,7 +172,7 @@ softwares:
     ref:
       hg38: "/public/ClinicalExam/lj_sih/resource/genome/human/hg38/GRCh38.primary_assembly.genome.fa"
     index:
-      b37: "/public/ClinicalExam/lj_sih/projects/project_clindet/resources/ref_genome/b37/RSEM/b37"
+      b37: "/AbsoPath/of/clindet/folder/resources/ref_genome/b37/RSEM/b37"
       hg38: "/public/ClinicalExam/lj_sih/resource/genome/human/hg38/rsem_ref/hg38"
 
 
@@ -223,34 +220,34 @@ softwares:
   
   ascat:
     b37:
-      loci_1000: "/public/ClinicalExam/lj_sih/projects/project_clindet/resources/ref_genome/b37/ASCAT/WES/G1000_lociAll_hg19/G1000_loci_hg19_chr"
-      alleles_1000: "/public/ClinicalExam/lj_sih/projects/project_clindet/resources/ref_genome/b37/ASCAT/WES/G1000_allelesAll_hg19/G1000_alleles_hg19_chr"
-      replictimingfile: "/public/ClinicalExam/lj_sih/projects/project_clindet/resources/ref_genome/b37/ASCAT/WES/RT_G1000_hg19.txt"
-      GCcontentfile: "/public/ClinicalExam/lj_sih/projects/project_clindet/resources/ref_genome/b37/ASCAT/WES/GC_G1000_hg19.txt"
+      loci_1000: "/AbsoPath/of/clindet/folder/resources/ref_genome/b37/ASCAT/WES/G1000_lociAll_hg19/G1000_loci_hg19_chr"
+      alleles_1000: "/AbsoPath/of/clindet/folder/resources/ref_genome/b37/ASCAT/WES/G1000_allelesAll_hg19/G1000_alleles_hg19_chr"
+      replictimingfile: "/AbsoPath/of/clindet/folder/resources/ref_genome/b37/ASCAT/WES/RT_G1000_hg19.txt"
+      GCcontentfile: "/AbsoPath/of/clindet/folder/resources/ref_genome/b37/ASCAT/WES/GC_G1000_hg19.txt"
   ascat_wgs:
     b37:
-      loci_1000: "/public/ClinicalExam/lj_sih/projects/project_clindet/resources/ref_genome/b37/ASCAT/WGS/G1000_lociAll_hg19/G1000_loci_hg19_chr"
-      alleles_1000: "/public/ClinicalExam/lj_sih/projects/project_clindet/resources/ref_genome/b37/ASCAT/WGS/G1000_allelesAll_hg19/G1000_alleles_hg19_chr"
-      replictimingfile: "/public/ClinicalExam/lj_sih/projects/project_clindet/resources/ref_genome/b37/ASCAT/WGS/RT_G1000_hg19.txt"
-      GCcontentfile: "/public/ClinicalExam/lj_sih/projects/project_clindet/resources/ref_genome/b37/ASCAT/WGS/GC_G1000_hg19.txt"
+      loci_1000: "/AbsoPath/of/clindet/folder/resources/ref_genome/b37/ASCAT/WGS/G1000_lociAll_hg19/G1000_loci_hg19_chr"
+      alleles_1000: "/AbsoPath/of/clindet/folder/resources/ref_genome/b37/ASCAT/WGS/G1000_allelesAll_hg19/G1000_alleles_hg19_chr"
+      replictimingfile: "/AbsoPath/of/clindet/folder/resources/ref_genome/b37/ASCAT/WGS/RT_G1000_hg19.txt"
+      GCcontentfile: "/AbsoPath/of/clindet/folder/resources/ref_genome/b37/ASCAT/WGS/GC_G1000_hg19.txt"
 
 singularity:
   cgppindel:
-    sif: "/public/ClinicalExam/lj_sih/softwares/pindel.sif"
+    sif: "/AbsoPath/of/clindet/folder/resources/containers/pindel.sif"
     cpu: 30
     b37:
       species: "HUMAN"
-      genes: "/public/ClinicalExam/lj_sih/resource/mutFilter/hg19.exon.bed.gz"
-      softfil: "/public/ClinicalExam/lj_sih/projects/project_clindet/resources/ref_genome/b37/Sanger/SNV_INDEL_ref/pindel/WXS_Rules.lst"
+      genes: "/AbsoPath/of/clindet/folder/resources/ref_genome/b37/Homo_sapiens.b37.bed"
+      softfil: "/AbsoPath/of/clindet/folder/resources/ref_genome/b37/Sanger/SNV_INDEL_ref/pindel/WXS_Rules.lst"
       simrep: "/AbsoPath/of/clindet/folder/resources/ref_genome/b37/SNV_INDEL_ref/pindel/simpleRepeats.bed.gz"
       normal_panel: "/AbsoPath/of/clindet/folder/resources/ref_genome/b37/SNV_INDEL_ref/pindel/pindel_np.gff3.gz"
       WES:
-        filter: "/public/ClinicalExam/lj_sih/projects/project_clindet/resources/ref_genome/b37/Sanger/SNV_INDEL_ref/pindel/WXS_Rules.lst"
+        filter: "/AbsoPath/of/clindet/folder/resources/ref_genome/b37/Sanger/SNV_INDEL_ref/pindel/WXS_Rules.lst"
       WGS:
-        filter: "/public/ClinicalExam/lj_sih/projects/project_clindet/resources/ref_genome/b37/Sanger/SNV_INDEL_ref/pindel/WGS_Rules.lst"
+        filter: "/AbsoPath/of/clindet/folder/resources/ref_genome/b37/Sanger/SNV_INDEL_ref/pindel/WGS_Rules.lst"
 
   caveman:
-    sif: "/public/ClinicalExam/lj_sih/softwares/caveman153.sif"
+    sif: "/AbsoPath/of/clindet/folder/resources/containers/caveman153.sif"
     cpu: 30
     b37:
       ignorebed: "/AbsoPath/of/clindet/folder/project_pipeline/WES/hg19_ignore-region-exon.bed"
@@ -264,7 +261,7 @@ singularity:
         s: "HUMAN"
 
   brass:
-    sif: "/public/ClinicalExam/lj_sih/softwares/brass634.sif"
+    sif: "/AbsoPath/of/clindet/folder/resources/containers/brass634.sif"
     cpu: 30
     b37:
       gc: "/AbsoPath/of/clindet/folder/resources/ref_genome/b37/Sanger/VAGrENT_ref_GRCh37d5_ensembl_75/vagrent/vagrent.cache.gz"
@@ -276,61 +273,25 @@ singularity:
       mi: "/AbsoPath/of/clindet/folder/resources/ref_genome/b37/CNV_SV_ref/brass/all_ncbi_bacteria"
 
   freec:
-    sif: "/public/ClinicalExam/lj_sih/softwares/control-freec-11.6.sif"
+    sif: "/AbsoPath/of/clindet/folder/resources/containers/control-freec-11.6.sif"
     cpu: 30
     b37:
       chrFiles: "/AbsoPath/of/clindet/folder/resources/ref_genome/b37/fasta"
       chrLenFile: "/AbsoPath/of/clindet/folder/resources/ref_genome/b37/Homo_sapiens.GRCh37.GATK.illumina.fasta.auto.fai"
       snp_file: "/AbsoPath/of/clindet/folder/resources/ref_genome/b37/hapmap_3.3.b37.vcf.gz"
 
-  cgpwgs:
-    sif: "/public/ClinicalExam/lj_sih/softwares/cgpwgs.sif"
-
-  ctat_mutation:
-    sif: "/AbsoPath/of/clindet/folder/project_clindet/resources/containers/ctat_mutations.v4.1.0.simg"
-    hg38:
-      lib: "/public/ClinicalExam/lj_sih/resource/CTAT/hg38/GRCh38_gencode_v44_CTAT_lib_Oct292023.plug-n-play/ctat_genome_lib_build_dir"
-  
   svaba:
-    sif: "/public/ClinicalExam/lj_sih/softwares/svaba.sif"
+    sif: "/AbsoPath/of/clindet/folder/resources/containers/svaba.sif"
 
-  ascat:
-    hg19:
-      sif: "/public/ClinicalExam/lj_sih/softwares/cgpbattenberg371.sif"
-      gc: "/public/ClinicalExam/lj_sih/resource/ASCAT_chr/hg19/battenberg_wgs_gc_correction_1000g_v3/"
-      impute: "/public/ClinicalExam/lj_sih/resource/ASCAT_chr/hg19/battenberg_impute_v3/impute_info.txt"
-      prob_loci: "/public/ClinicalExam/lj_sih/resource/ASCAT_chr/hg19/probloci.txt"
-      ignorebed: "/public/ClinicalExam/lj_sih/resource/genome/human/hg19/hg19.exclude.contigs.txt"
-      oci_1000: "/public/ClinicalExam/lj_sih/resource/ASCAT_chr/hg19/battenberg_1000genomesloci2012_v3/1000genomesloci2012_chr"
-      alleles_1000: "/public/ClinicalExam/lj_sih/resource/ASCAT_chr/hg19/battenberg_1000genomesloci2012_v3/1000genomesAlleles2012_chr"
-      replictimingfile: "/public/ClinicalExam/lj_sih/resource/ASCAT_chr/hg19/Rep_correction.txt"
-    b37:
-      gc: "/public/ClinicalExam/lj_sih/resource/ASCAT/hg19/battenberg_wgs_gc_correction_1000g_v3/"
-      impute: "/public/ClinicalExam/lj_sih/resource/ASCAT/hg19/battenberg_impute_v3/impute_info.txt"
-      prob_loci: "/public/ClinicalExam/lj_sih/resource/ASCAT/hg19/probloci_270415.txt"
-      ignorebed: "/public/ClinicalExam/lj_sih/resource/genome/human/hg19/hg19.exclude.contigs.txt"
-      loci_1000: "/public/ClinicalExam/lj_sih/resource/ASCAT/hg19/battenberg_1000genomesloci2012_v3/1000genomesloci2012_chr"
-      alleles_1000: "/public/ClinicalExam/lj_sih/resource/ASCAT/hg19/battenberg_1000genomesloci2012_v3/1000genomesAlleles2012_chr"
-      replictimingfile: "/public/ClinicalExam/lj_sih/resource/ASCAT/hg19/Rep_correction.txt"
-    hg38:
-      gc: 
-      impute: 
-      prob_loci: 
-      ignorebed:
-      loci_1000: 
-
-  cgpbattenberg:
-    sif: "/public/ClinicalExam/lj_sih/softwares/cgpbattenberg371.sif"
-    gc: "/public/ClinicalExam/lj_sih/resource/ASCAT_chr/hg19/battenberg_wgs_gc_correction_1000g_v3/"
-    impute: "/public/ClinicalExam/lj_sih/resource/ASCAT_chr/hg19/battenberg_impute_v3/impute_info.txt"
-    prob_loci: "/public/ClinicalExam/lj_sih/resource/ASCAT_chr/hg19/probloci.txt"
-    ignorebed: "/public/ClinicalExam/lj_sih/resource/genome/human/hg19/hg19.exclude.contigs.txt"
-    loci_1000: "/public/ClinicalExam/lj_sih/resource/ASCAT_chr/battenberg_1000genomesloci2012_v3/"
-  
   arriba:
-    sif: "/public/ClinicalExam/lj_sih/softwares/arriba240.sif"
+    sif: "/AbsoPath/of/clindet/folder/resources/containers/arriba240.sif"
     call: "/arriba_v2.4.0/arriba "
     database:
+      b37:
+        blacklist: "/arriba_v2.4.0/database/blacklist_hg19_hs37d5_GRCh37_v2.3.0.tsv.gz"
+        known_fusions: "/arriba_v2.4.0/database/known_fusions_hg19_hs37d5_GRCh37_v2.3.0.tsv.gz"
+        protein_domains: "/arriba_v2.4.0/database/protein_domains_hg19_hs37d5_GRCh37_v2.3.0.gff3"
+        cytobands: "/arriba_v2.4.0/database/cytobands_hg19_hs37d5_GRCh37_v2.4.0.tsv"
       hg19:
         blacklist: "/arriba_v2.4.0/database/blacklist_hg19_hs37d5_GRCh37_v2.3.0.tsv.gz"
         known_fusions: "/arriba_v2.4.0/database/known_fusions_hg19_hs37d5_GRCh37_v2.3.0.tsv.gz"
@@ -343,16 +304,16 @@ singularity:
         cytobands: "/arriba_v2.4.0/database/cytobands_hg38_GRCh38_v2.4.0.tsv"
     
   lofreq:
-    sif: "/public/ClinicalExam/lj_sih/softwares/lofreq215.sif"
+    sif: "/AbsoPath/of/clindet/folder/resources/containers/lofreq215.sif"
 
   muse:
-    sif: "/public/ClinicalExam/lj_sih/softwares/muse230.sif"
+    sif: "/AbsoPath/of/clindet/folder/resources/containers/muse230.sif"
 
   deepvariant_somatic:
-    sif: "/public/ClinicalExam/lj_sih/softwares/deepsomatic_160.sif"
+    sif: "/AbsoPath/of/clindet/folder/resources/containers/deepsomatic_160.sif"
 
   jasminesv:
-    sif: "/public/ClinicalExam/lj_sih/softwares/jasminesv.sif"
+    sif: "/AbsoPath/of/clindet/folder/resources/containers/jasminesv.sif"
   
 
 
@@ -360,23 +321,23 @@ singularity:
   battenberg:
 
   igcaller:
-    sif: "/public/ClinicalExam/lj_sih/softwares/igcaller-1.2.1.simg"
+    sif: "/AbsoPath/of/clindet/folder/resources/containers/igcaller-1.2.1.simg"
     hg38:
       data_dir:
 
-  rnaindel:
-    sif: "/public/ClinicalExam/lj_sih/softwares/rnaindel_v3.3.5.sif"
-    hg38:
-      data_dir: "/AbsoPath/of/clindet/folder/project_pipeline/RNA/data_dir_grch38"
+  # rnaindel:
+  #   sif: "/AbsoPath/of/clindet/folder/resources/containers/rnaindel_v3.3.5.sif"
+  #   hg38:
+  #     data_dir: "/AbsoPath/of/clindet/folder/project_pipeline/RNA/data_dir_grch38"
 
   gridss:
-    sif: "/public/ClinicalExam/lj_sih/softwares/gridss2_13_2.sif"
+    sif: "/AbsoPath/of/clindet/folder/resources/containers/gridss2_13_2.sif"
     b37:
       blacklist: "/AbsoPath/of/clindet/folder/resources/ref_genome/b37/pipeline/v5_34/ref/37/sv/gridss_blacklist.37.bed.gz"
       pondir: "/AbsoPath/of/clindet/folder/resources/ref_genome/b37/pipeline/v5_34/ref/37/sv"
 
   hmftools:
-    sif: "/public/ClinicalExam/lj_sih/softwares/hmftools.sif"
+    sif: "/AbsoPath/of/clindet/folder/resources/containers/hmftools.sif"
     conda: 'hmftools'
     b37:
       # AMBER
@@ -515,25 +476,10 @@ singularity:
         known_fusion_bed: "/AbsoPath/of/clindet/folder/project_clindet/reference/hg38/v6_0/ref/38/sv/known_fusions.38.bedpe"
         blacklist: "/AbsoPath/of/clindet/folder/project_clindet/reference/hg38/v6_0/ref/38/sv/gridss_blacklist.38.bed.gz"
 
-  hetpileups:
-    sif: "/public/ClinicalExam/lj_sih/softwares/hetpileups.sif"
-    b37:
-      hapmap_sites: "/AbsoPath/of/clindet/folder/resources/ref_genome/b37/hapmap_3.3.b37.vcf.gz"
-      filter: True
-      max_depth: 500
-    hg19:
-      hapmap_sites: 
-      filter: 
-      max_depth: 500
-    hg38:
-      hapmap_sites: 
-      filter: 
-      max_depth: 500
-
   conpair:
-    sif: "/public/ClinicalExam/lj_sih/softwares/conpair_latest.sif"
+    sif: "/AbsoPath/of/clindet/folder/resources/containers/conpair_latest.sif"
     b37:
-      ref: "/AbsoPath/of/clindet/folder/resources/ref_genome/b37/hs37d5.fa"
+      ref: "/AbsoPath/of/clindet/folder/resources/ref_genome/b37/Homo_sapiens.GRCh37.GATK.illumina.fasta"
       marker: True
     hg19:
       ref: ""
@@ -547,4 +493,4 @@ singularity:
 
 params:
   java:
-    temp_directory: "/AbsoPath/of/clindet/folder/project_pipeline/WES/_tmp"
+    temp_directory: "/AbsoPath/of/clindet/folder/_tmp"

@@ -9,6 +9,7 @@ dependencies:
   - pandoc
   - r-base >=4.4
   - r-tidyverse
+  - r-devtools
   # umccr pkgs
   # refdata pkgs
   - bioconductor-bsgenome.hsapiens.ucsc.hg38

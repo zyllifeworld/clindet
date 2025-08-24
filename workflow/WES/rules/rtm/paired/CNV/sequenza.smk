@@ -4,7 +4,6 @@ rule sequenza_bam2seqz:
         NC="{project}/{genome_version}/results/recal/paired/{sample}-NC.bam",
         ref=config['resources'][genome_version]['REFFA'],
         gc=config['softwares']['sequenza'][genome_version]['gc']
-        # gc="{project}/{genome_version}/genome/{genome_version}_gc50.wig.gz"
     output:
         seqz="{project}/{genome_version}/results/cnv/paired/sequenza/{sample}/{sample}.seqz.gz",
     threads: 8

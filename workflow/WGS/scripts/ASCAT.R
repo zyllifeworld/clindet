@@ -40,21 +40,15 @@ if(genome_version == 'T2T'){
   genome_version = 'hg19'
   f_gv = 'hg19'
 } else {
-  rp_file <- glue("/public/ClinicalExam/lj_sih/resource/ASCAT/{genome_version}/Rep_correction.txt")
   f_gv = genome_version
 }
 
 library(ASCAT)
-# input_tumor_bam = '/public/ClinicalExam/lj_sih/projects/project_pipeline/WES/results/recal/paired/MM-014-T.bam'
-# input_normal_bam = '/public/ClinicalExam/lj_sih/projects/project_pipeline/WES/results/recal/paired/MM-014-NC.bam'
 ascat.prepareHTS(
   tumourseqfile = input_tumor_bam,
   normalseqfile = input_normal_bam,
   tumourname = "Tumor",
   normalname = "Germline",
-  allelecounter_exe = "/public/ClinicalExam/lj_sih/.conda/envs/snake/bin/alleleCounter",
-  # loci.prefix = glue("/public/ClinicalExam/lj_sih/resource/ASCAT_chr/{genome_version}/battenberg_1000genomesloci2012_v3/1000genomesloci2012_chr"),
-  # alleles.prefix = glue("/public/ClinicalExam/lj_sih/resource/ASCAT_chr/{genome_version}/battenberg_1000genomesloci2012_v3/1000genomesAlleles2012_chr"),
   loci.prefix = loci.prefix,
   alleles.prefix = alleles.prefix,
   gender = gender,
@@ -78,7 +72,6 @@ ascat.bc = ascat.loadData(
 ascat.plotRawData(ascat.bc, img.prefix = "Before_correction_")
 
 ascat.bc = ascat.correctLogR(ascat.bc, 
-# GCcontentfile = glue("/public/ClinicalExam/lj_sih/resource/ASCAT_chr/{genome_version}/GC_correction.txt"), 
 GCcontentfile = GCcontentfile, 
 replictimingfile = rp_file)
 
