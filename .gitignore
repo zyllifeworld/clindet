@@ -134,7 +134,7 @@ workflow/WGS/scripts/phylogicndt_config_nocoding.R
 workflow/WGS/scripts/phylogicndt_config.R
 workflow/WGS/scripts/pinde_filter.js
 workflow/WGS/scripts/sequenza.R
-workflow/WGS/scripts/stats_ascat.R
+
 workflow/WGS/scripts/sub*
 workflow/WGS/scripts/test*
 workflow/WGS/scripts/ign_hg19.csv
