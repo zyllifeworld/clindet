@@ -316,12 +316,12 @@ qc_summary_all %>%
     locations = gt::cells_stub(rows = TRUE)
   ) %>%
   gt::tab_style(
-    style = cell_borders(
+    style = gt::cell_borders(
       sides = "right",
       color = "grey80", style = "solid",
-      weight = px(2)
+      weight = gt::px(2)
     ),
-    locations = cells_body(
+    locations = gt::cells_body(
       columns = c(variable,value) # Targets all body columns
     )
   ) %>%
@@ -345,7 +345,7 @@ blank_lines(1)
 
 Summarised below are the allele frequencies (AFs) for somatic variants
 detected genome-wide (**Global**) vs. within the coding sequence of
-\~1,100 UMCCR cancer genes (**Key Genes CDS**). AFs range from 0 to 1,
+\~1,100 cancer genes (**Key Genes CDS**). AFs range from 0 to 1,
 or 0%-100% (we filter out all novel variants with AF \< 10%).
 
 <details>
@@ -376,8 +376,8 @@ The following post-processing steps occur:
 </details>
 
 ```{r allele_freq_stats}
-af_summary_results <- gpgr::af_summary(params$af_global, params$af_keygenes)
-af_summary_results$af_stats_gt
+# af_summary_results <- gpgr::af_summary(params$af_global, params$af_keygenes)
+# af_summary_results$af_stats_gt
 ```
 
 ```{r, results='asis'}
@@ -385,7 +385,7 @@ blank_lines(1)
 ```
 
 ```{r allele_freq_plot, fig.width=10, fig.height=3}
-af_summary_results$af_plot
+# af_summary_results$af_plot
 ```
 
 ```{r, results='asis'}
@@ -686,12 +686,12 @@ cnv.dt$many_transcripts
 blank_lines(2)
 ```
 
-### UMCCR __Gene Somatic__ CNV Calls {#gene-panel-cnv}
+### PURPLE __Gene Somatic__ CNV Calls {#gene-panel-cnv}
 
 <details>
 <summary>Description</summary>
 
-PURPLE copy number alterations in the UMCCR Cancer Gene panel (~1,200 genes) - description
+PURPLE copy number alterations. - description
 is from <https://github.com/hartwigmedical/hmftools/blob/master/purity-ploidy-estimator/README.md#gene-copy-number-file>
 
 ```{r purple_gene_cnv_description}

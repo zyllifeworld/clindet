@@ -30,6 +30,15 @@ else
     exit 1 
 fi
 
+# check sdk
+command='sdk'
+if type $command >/dev/null 2>&1; then
+    echo -e "${GREEN_B}Check  OK ${NC}, ${bold} ${command} ${NC} existed, Start download and config."
+else
+    echo -e "${RED_B}ERROE:  ${NC} ${bold} ${command} ${NC} Not exited !!!!, please install it."
+    exit 1 
+fi
+
 # check singularity
 command='singularity'
 if type $command >/dev/null 2>&1; then
@@ -83,13 +92,43 @@ else
 	idx=$(($idx+1));
 fi
 
-ENV_NAME="rsem"
+ENV_NAME="strelka"
+if conda env list | grep -q "^${ENV_NAME}\s"; then
+    echo -e "${GREEN_B}Check  OK ${NC}, ${bold} ${ENV_NAME} ${NC} existed." & pids[$idx]=$!;
+	idx=$(($idx+1));
+else
+    echo -e "${RED_B} ${ENV_NAME} ${NC} not exist，Start build..."
+    conda env create -f envs/strelka.yaml -y &>build_log/${ENV_NAME}.log &  pids[$idx]=$!;
+	idx=$(($idx+1));
+fi
+
+ENV_NAME="clindet_rsem"
 if conda env list | grep -q "^${ENV_NAME}\s"; then
     echo -e "${GREEN_B}Check  OK ${NC}, ${bold} ${ENV_NAME} ${NC} existed." & pids[$idx]=$!;
 	idx=$(($idx+1));
 else
     echo -e "${RED_B} ${ENV_NAME} ${NC} not exist，Start build..."
     conda env create -f envs/rsem.yaml -y &>build_log/${ENV_NAME}.log &  pids[$idx]=$!;
+	idx=$(($idx+1));
+fi
+
+ENV_NAME="cancer_report"
+if conda env list | grep -q "^${ENV_NAME}\s"; then
+    echo -e "${GREEN_B}Check  OK ${NC}, ${bold} ${ENV_NAME} ${NC} existed." & pids[$idx]=$!;
+	idx=$(($idx+1));
+else
+    echo -e "${RED_B} ${ENV_NAME} ${NC} not exist，Start build..."
+    conda env create -f envs/cancer_report.yaml -y &>build_log/${ENV_NAME}.log &  pids[$idx]=$!;
+	idx=$(($idx+1));
+fi
+
+ENV_NAME="clindet_multiqc"
+if conda env list | grep -q "^${ENV_NAME}\s"; then
+    echo -e "${GREEN_B}Check  OK ${NC}, ${bold} ${ENV_NAME} ${NC} existed." & pids[$idx]=$!;
+	idx=$(($idx+1));
+else
+    echo -e "${RED_B} ${ENV_NAME} ${NC} not exist，Start build..."
+    conda env create -f envs/multiqc.yaml -y &>build_log/${ENV_NAME}.log &  pids[$idx]=$!;
 	idx=$(($idx+1));
 fi
 
@@ -117,17 +156,23 @@ touch build_log/conda_env_setup.log & echo -e "${GREEN_B} All Conda env built OK
 # R -q -e 'devtools::install_github("VanLoo-lab/ascat/ASCAT")' &>>build_log/clindet.log
 
 ## consider remove this report section, packages hard to install under "the great wall" !
-# conda activate cancer_report
-r_mirror="https://cloud.r-project.org" ## can change to nearest location mirror
-R -q -e "install.packages(c('BiocManager'),repos = c(CRAN = '${r_mirror}'))" &>>build_log/cancer_report.log
-R -q -e 'devtools::install_github("umccr/gpgr")' &>>build_log/cancer_report.log
-R -q -e "install.packages(c('details','DT','kableExtra','patchwork'),repos = c(CRAN = '${r_mirror}'))" &>>build_log/cancer_report.log
-R -q -e 'BiocManager::install("GenomicFeatures")' &>>build_log/cancer_report.log
-# R -q -e 'devtools::install_github("umccr/sigrap")' &>>build_log/cancer_report.log
+conda activate cancer_report
+echo "Install some R packages of env cancer_report ..."
+if [ ! -f "build_log/cancer_report_install_r.log" ]; then
+    r_mirror="https://cloud.r-project.org" ## can change to nearest location mirror
+    R -q -e "install.packages(c('BiocManager'),repos = c(CRAN = '${r_mirror}'))" &>>build_log/cancer_report.log
+    R -q -e 'devtools::install_github("umccr/gpgr")' &>>build_log/cancer_report.log
+    R -q -e "install.packages(c('details','DT','kableExtra','patchwork'),repos = c(CRAN = '${r_mirror}'))" &>>build_log/cancer_report.log
+    R -q -e 'BiocManager::install("GenomicFeatures")' &>>build_log/cancer_report.log
+    # R -q -e 'devtools::install_github("umccr/sigrap")' &>>build_log/cancer_report.log
+    echo -e "${GREEN_B} Install custome R packages of env cancer_report finished, continue ....${NC}"
+else
+    echo -e "${GREEN_B} pull zenodo singularity, continue ${NC}"
+fi
 
 # pull image from zenodo/or build by singularity
 mkdir -p resources/containers
-echo "Beginning image pull ..."
+echo "Beginning singularity image pull ..."
 if [ ! -f "build_log/pull_zenodo.log" ]; then
     wget -P resources/containers -c https://zenodo.org/records/15787887/files/pindel.sif
     wget -P resources/containers -c https://zenodo.org/records/15787887/files/brass634.sif
@@ -135,7 +180,6 @@ if [ ! -f "build_log/pull_zenodo.log" ]; then
     wget -P resources/containers -c https://zenodo.org/records/15787887/files/muse230.sif
     wget -P resources/containers -c https://zenodo.org/records/15787887/files/conpair_latest.sif
     wget -P resources/containers -c https://zenodo.org/records/15787887/files/svaba.sif
-
     touch build_log/pull_zenodo.log
 else
     echo -e "${GREEN_B} pull zenodo singularity, continue ${NC}"
@@ -163,7 +207,6 @@ if [ ! -f "build_log/download_b37.log" ]; then
       "gs://hmf-public/HMFtools-Resources/ref_genome/37/Homo_sapiens.GRCh37.GATK.illumina.fasta" \
       "gs://hmf-public/HMFtools-Resources/ref_genome/37/Homo_sapiens.GRCh37.GATK.illumina.fasta.dict" \
       "gs://hmf-public/HMFtools-Resources/ref_genome/37/Homo_sapiens.GRCh37.GATK.illumina.fasta.fai" \
-      "gs://hmf-public/HMFtools-Resources/ref_genome/37/Homo_sapiens.GRCh37.GATK.illumina.fasta.img" \
       resources/ref_genome/b37
     echo "Done"
     touch build_log/download_b37.log
@@ -183,6 +226,9 @@ if [ ! -f "build_log/download_b37_hmftools.log" ]; then
       resources/ref_genome/b37
     echo -e "${GREEN_B} Download Done ${NC}"
 
+    wget -P resources/ref_genome/b37/hmf_pipeline_resources -c https://www.bcgsc.ca/downloads/morinlab/hmftools-references/amber/GermlineHetPon.37.vcf.gz
+    wget -P resources/ref_genome/b37/hmf_pipeline_resources -c https://www.bcgsc.ca/downloads/morinlab/hmftools-references/amber/Amber.snpcheck.37.vcf
+    
     mkdir -p resources/ref_genome/b37/hmf_pipeline_resources
     tar -xzvf resources/ref_genome/b37/hmf_panel_resources.tso500.37_v2.0.0--3.tar.gz --strip-components 1 -C resources/ref_genome/b37/hmf_pipeline_resources/
     tar -xzvf resources/ref_genome/b37/hmf_pipeline_resources.37_v2.0.0--3.tar.gz --strip-components 1 -C resources/ref_genome/b37/hmf_pipeline_resources/
@@ -211,7 +257,7 @@ if [ ! -f "build_log/download_b37_gatk.log" ]; then
       "gs://gcp-public-data--broad-references/hg19/v0/Homo_sapiens_assembly19.dbsnp138.vcf.idx" \
       resources/ref_genome/b37
 
-    gsutil -m cp -n \
+    gsutil -m cp -n -r \
         "gs://gatk-best-practices/somatic-b37/Mutect2-WGS-panel-b37.vcf" \
         "gs://gatk-best-practices/somatic-b37/Mutect2-WGS-panel-b37.vcf.idx" \
         "gs://gatk-best-practices/somatic-b37/Mutect2-exome-panel.vcf" \
@@ -232,7 +278,7 @@ if [ ! -f "build_log/download_b37_gatk.log" ]; then
     # wget -P resources/ref_genome/b37 -c ftp://gsapubftp-anonymous@ftp.broadinstitute.org/bundle/b37/1000G_phase3_v4_20130502.sites.vcf.gz
     # wget -P resources/ref_genome/b37 -c ftp://gsapubftp-anonymous@ftp.broadinstitute.org/bundle/b37/1000G_phase3_v4_20130502.sites.vcf.gz.md5
 
-    wget -P resources/ref_genome/b37 -c https://figshare.com/ndownloader/files/45168565 -O 
+    # wget -P resources/ref_genome/b37 -c https://figshare.com/ndownloader/files/45168565 -O 
     gsutil -m cp -n \
         "gs://gatk-legacy-bundles/b37/1000G_omni2.5.b37.vcf" \
         "gs://gatk-legacy-bundles/b37/1000G_omni2.5.b37.vcf.gz" \
@@ -241,18 +287,26 @@ if [ ! -f "build_log/download_b37_gatk.log" ]; then
         "gs://gatk-legacy-bundles/b37/1000G_phase3_v4_20130502.sites.vcf.gz.tbi" \
         "gs://gatk-legacy-bundles/b37/Mills_and_1000G_gold_standard.indels.b37.vcf.gz" \
         "gs://gatk-legacy-bundles/b37/Mills_and_1000G_gold_standard.indels.b37.vcf.gz.md5" \
-        "gs://gatk-legacy-bundles/b37/1000G_phase1.snps.high_confidence.b37.vcf" \
-        "gs://gatk-legacy-bundles/b37/1000G_phase1.snps.high_confidence.b37.vcf.gz" \
-        "gs://gatk-legacy-bundles/b37/1000G_phase1.snps.high_confidence.b37.vcf.idx" \
-        "gs://gatk-legacy-bundles/b37/1000G_phase1.snps.high_confidence.b37.vcf.idx.gz" \
-        "gs://gatk-legacy-bundles/b37/dbsnp_138.b37.vcf.gz" \
         "gs://gatk-legacy-bundles/b37/dbsnp_138.b37.vcf" \
         "gs://gatk-legacy-bundles/b37/hapmap_3.3.b37.vcf" \
-        "gs://gatk-legacy-bundles/b37/hapmap_3.3.b37.vcf.gz" \
         resources/ref_genome/b37
 
     echo -e "${GREEN_B} download GATK tools b37 resources Done ${NC}"
     touch build_log/download_b37_gatk.log
+else
+    echo -e "${GREEN_B} already download GATK tools b37 resources, continue ${NC}"
+fi
+
+## Convert gzip to bgzip
+echo "Beginning convert b37 GATK gzip files to bgzip ..."
+conda activate clindet
+if [ ! -f "build_log/b37_convert_to_bgzip.log" ]; then
+    gzip -d resources/ref_genome/b37/1000G_phase1.indels.b37.vcf.gz
+    bgzip -k -o resources/ref_genome/b37/1000G_phase1.indels.b37.vcf.gz resources/ref_genome/b37/1000G_phase1.indels.b37.vcf
+    tabix resources/ref_genome/b37/1000G_phase1.indels.b37.vcf.gz
+
+    echo -e "${GREEN_B} Convert to b37 Done ${NC}"
+    touch build_log/b37_convert_to_bgzip.log
 else
     echo -e "${GREEN_B} already download GATK tools b37 resources, continue ${NC}"
 fi
@@ -263,6 +317,9 @@ fi
 echo "Beginning GATK Download ..."
 if [ ! -f "build_log/download_gatk.log" ]; then
     mkdir -p resources/softwares
+    ## instal java first this version gatk work on at least java 17.0.15 
+    ## sdk install java 17.0.15-tem
+    ## sdk default java 17.0.15-tem
     GATK_version="4.6.2.0"
     wget -P resources/softwares -c https://github.com/broadinstitute/gatk/releases/download/${GATK_version}/gatk-${GATK_version}.zip
     unzip resources/softwares/gatk-${GATK_version}.zip -d resources/softwares
@@ -274,8 +331,6 @@ if [ ! -f "build_log/download_gatk.log" ]; then
 else
     echo -e "${GREEN_B} already download GATK tools softwares, continue ${NC}"
 fi
-
-
 
 ## download ASCAT refdata
 echo "Beginning ASCAT config files  Download ..."
@@ -363,12 +418,19 @@ else
     echo -e "${GREEN_B} already built Genome BWA index ${NC}"
 fi
 
-
+### STAR index
+echo "Beginning STAR genome index build ..."
+if [ ! -f "resources/ref_genome/b37/Homo_sapiens.GRCh37.GATK.illumina.fasta.amb" ]; then
+    conda activate clindet_rsem
+    bwa index resources/ref_genome/b37/Homo_sapiens.GRCh37.GATK.illumina.fasta
+else
+    echo -e "${GREEN_B} already built Genome BWA index ${NC}"
+fi
 
 ### do some mass config
 conda activate clindet 
-echo "Do some config ..."
-if [ ! -f "build_log/download_vep.log" ]; then
+echo "Do some mass config ..."
+if [ ! -f "build_log/mass_config.log" ]; then
     ### install some package for snakemake slurm and freec
     conda install ucsc-fasplit &>>build_log/clindet.log
     pip install snakemake-executor-plugin-cluster-generic &>>build_log/clindet.log
@@ -377,12 +439,23 @@ if [ ! -f "build_log/download_vep.log" ]; then
     ### dbsnp bgzip
     bgzip -k -o resources/ref_genome/b37/Homo_sapiens_assembly19.dbsnp138.vcf.gz resources/ref_genome/b37/Homo_sapiens_assembly19.dbsnp138.vcf
     tabix resources/ref_genome/b37/Homo_sapiens_assembly19.dbsnp138.vcf.gz
+
+    ### gatk CreateSequenceDictionary
+    resources/softwares/gatk/gatk CreateSequenceDictionary -R resources/ref_genome/b37/Homo_sapiens.GRCh37.GATK.illumina.fasta
+    ### download TRUST4 ref
+    git clone https://github.com/liulab-dfci/TRUST4.git resources/softwares/TRUST4
+    ### download delly
+
+    ### download varscan2
+    ### pull strelka
+
+    ### download common_vcf
+    wget -P resources/ref_genome/b37 -c https://ftp.ncbi.nlm.nih.gov/snp/organisms/human_9606_b151_GRCh37p13/VCF/00-common_all.vcf.gz
+    wget -P resources/ref_genome/b37 -c https://ftp.ncbi.nlm.nih.gov/snp/organisms/human_9606_b151_GRCh37p13/VCF/00-common_all.vcf.gz.tbi
 else
 
 fi
 
-gxf2bed --input resources/ref_genome/b37/Homo_sapiens.GRCh37.87.gtf --output resources/ref_genome/b37/Homo_sapiens.b37.genes.bed \
--p exon -f gene_name
 # bwa index resources/ref_genome/b37/Homo_sapiens.GRCh37.GATK.illumina.fasta
 
 ### Config freeC split fasta
@@ -390,40 +463,61 @@ gxf2bed --input resources/ref_genome/b37/Homo_sapiens.GRCh37.87.gtf --output res
 # wget -P resources/softwares/UCSC_tools -c https://hgdownload.soe.ucsc.edu/admin/exe/linux.x86_64/faSplit
 # wget -P resources/ref_genome/b37 -c http://xfer.curie.fr/get/QKFgcU5caZd/hg19_snp137.SingleDiNucl.1based.txt.gz
 
-chmod 755 resources/softwares/UCSC_tools/faSplit
-mkdir -p resources/ref_genome/b37/fasta
-resources/softwares/UCSC_tools/faSplit byname resources/ref_genome/b37/Homo_sapiens.GRCh37.GATK.illumina.fasta resources/ref_genome/b37/fasta/
-head -n 22 resources/ref_genome/b37/Homo_sapiens.GRCh37.GATK.illumina.fasta.fai > resources/ref_genome/b37/Homo_sapiens.GRCh37.GATK.illumina.fasta.auto.fai
+# chmod 755 resources/softwares/UCSC_tools/faSplit
+# mkdir -p resources/ref_genome/b37/fasta
+# resources/softwares/UCSC_tools/faSplit byname resources/ref_genome/b37/Homo_sapiens.GRCh37.GATK.illumina.fasta resources/ref_genome/b37/fasta/
+# head -n 22 resources/ref_genome/b37/Homo_sapiens.GRCh37.GATK.illumina.fasta.fai > resources/ref_genome/b37/Homo_sapiens.GRCh37.GATK.illumina.fasta.auto.fai
 
 ### RSME STAR index
-wget -P resources/ref_genome/b37/ -c https://ftp.ensembl.org/pub/grch37/release-114/gtf/homo_sapiens/Homo_sapiens.GRCh37.87.gtf.gz
-conda activate rsem
+conda activate clindet_rsem
+echo "Beginning RSEM star indexing ..."
+if [ ! -f "build_log/rsem_star_index.log" ]; then
+    wget -P resources/ref_genome/b37/ -c https://ftp.ensembl.org/pub/grch37/release-114/gtf/homo_sapiens/Homo_sapiens.GRCh37.87.gtf.gz
+    gzip -c -d resources/ref_genome/b37/Homo_sapiens.GRCh37.87.gtf.gz > resources/ref_genome/b37/Homo_sapiens.GRCh37.87.gtf
+    rsem-prepare-reference \
+    --gtf resources/ref_genome/b37/Homo_sapiens.GRCh37.87.gtf \
+    --star -p 20 \
+    resources/ref_genome/b37/Homo_sapiens.GRCh37.GATK.illumina.fasta \
+    resources/ref_genome/b37/RSEM/b37
+    touch build_log/rsem_star_index.log
+else
+    echo -e "${GREEN_B} already built RSEM STAR index ${NC}"
+fi
 
-gzip -c -d resources/ref_genome/b37/Homo_sapiens.GRCh37.87.gtf.gz > resources/ref_genome/b37/Homo_sapiens.GRCh37.87.gtf
-rsem-prepare-reference \
---gtf resources/ref_genome/b37/Homo_sapiens.GRCh37.87.gtf \
---star -p 20 \
-resources/ref_genome/b37/Homo_sapiens.GRCh37.GATK.illumina.fasta \
-resources/ref_genome/b37/RSEM/b37
+conda activate clindet_rsem
+echo "Beginning STAR indexing ..."
+if [ ! -f "build_log/star_index.log" ]; then
+    STAR \
+    --runThreadN 20 \
+    --runMode genomeGenerate \
+    --genomeFastaFiles resources/ref_genome/b37/Homo_sapiens.GRCh37.GATK.illumina.fasta \
+    --sjdbOverhang 100 --genomeSAindexNbases 2 \
+    --sjdbGTFfile resources/ref_genome/b37/Homo_sapiens.GRCh37.87.gtf \
+    --genomeDir  resources/ref_genome/b37/STAR/b37 
 
+    touch build_log/star_index.log
+else
+    echo -e "${GREEN_B} already built STAR index ${NC}"
+fi
 
 ### build kallisto index
-wget -P resources/ref_genome/b37/ -c https://ftp.ensembl.org/pub/grch37/release-114/fasta/homo_sapiens/cdna/Homo_sapiens.GRCh37.cdna.all.fa.gz
-gzip -c -d resources/ref_genome/b37/Homo_sapiens.GRCh37.cdna.all.fa.gz > resources/ref_genome/b37/Homo_sapiens.GRCh37.cdna.all.fa
-mkdir -p resources/ref_genome/b37/kallisto
-kallisto index -i resources/ref_genome/b37/kallisto/b37 resources/ref_genome/b37/Homo_sapiens.GRCh37.cdna.all.fa -t 20
+echo "Beginning kallisto & salmon indexing ..."
+if [ ! -f "build_log/kallisto_salmon_index.log" ]; then
+    wget -P resources/ref_genome/b37/ -c https://ftp.ensembl.org/pub/grch37/release-114/fasta/homo_sapiens/cdna/Homo_sapiens.GRCh37.cdna.all.fa.gz
+    gzip -c -d resources/ref_genome/b37/Homo_sapiens.GRCh37.cdna.all.fa.gz > resources/ref_genome/b37/Homo_sapiens.GRCh37.cdna.all.fa
+    mkdir -p resources/ref_genome/b37/kallisto
+    kallisto index -i resources/ref_genome/b37/kallisto/b37 resources/ref_genome/b37/Homo_sapiens.GRCh37.cdna.all.fa -t 20
+    ### build salmon index
+    mkdir -p resources/ref_genome/b37/salmon
+    salmon index -t resources/ref_genome/b37/Homo_sapiens.GRCh37.cdna.all.fa.gz -i resources/ref_genome/b37/salmon/b37
 
-### build salmon index
-mkdir -p resources/ref_genome/b37/salmon
-salmon index -t resources/ref_genome/b37/Homo_sapiens.GRCh37.cdna.all.fa.gz -i resources/ref_genome/b37/salmon/b37
+    touch build_log/kallisto_salmon_index.log
+else
+    echo -e "${GREEN_B} already built STAR index ${NC}"
+fi
 
+PWD=$(pwd)
+echo " \n \n"
+echo -e "Now that Clindet has been set up, replace ${RED_B} '/AbsoPath/of/clindet/folder' ${NC}in the workflow/config/config_local_test.yaml file with the absolute path to your Clindet folder."
+echo -e "${GREEN_B} ${PWD} ${NC}"
 
-
-
-# ## setup alphamissense
-# gsutil -m cp \
-#   "gs://dm_alphamissense/AlphaMissense_hg19.tsv.gz" \
-#   "gs://dm_alphamissense/AlphaMissense_hg38.tsv.gz" \
-#   resources/ref_genome/b37/vep/
-# tabix -s 1 -b 2 -e 2 -f -S 1 resources/ref_genome/b37/vep/AlphaMissense_hg19.tsv.gz
-# tabix -s 1 -b 2 -e 2 -f -S 1 resources/ref_genome/b37/vep/AlphaMissense_hg38.tsv.gz

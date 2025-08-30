@@ -15,12 +15,14 @@ dependencies:
   - htslib
   - python
   - samtools
+  - varscan=2.4.6
   - snakemake=9.9.0
-  - vardict
-  - vardict-java=1.8.3
   - vcflib
   - vcftools
   - picard
   - ucsc-fasplit
   - bioconductor-variantannotation
   - bedtools
+  - fastp
+  - r-exomedepth
+  - r-r.utils

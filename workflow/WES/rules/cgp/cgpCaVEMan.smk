@@ -31,7 +31,7 @@ rule CM_call:
         out_dir='{project}/{genome_version}/results/vcf/paired/{sample}/caveman',
         s=config['singularity']['caveman'][genome_version]['flag']['s']
     singularity:
-        config['singularity']['cgpwgs']['sif']
+        config['singularity']['caveman']['sif']
     shell:
         """
         caveman.pl \

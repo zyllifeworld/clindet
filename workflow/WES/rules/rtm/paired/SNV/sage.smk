@@ -13,7 +13,7 @@ rule paired_sage:
         panel_bed=config['singularity']['hmftools'][genome_version]['sage']['panel_bed'],
         ref_genome_version=config['singularity']['hmftools'][genome_version]['sage']['ref_genome_version'],
     threads: 30
-    singularity:config['singularity']['hmftools']['sif']
+    conda:config['singularity']['hmftools']['conda']
     shell:
         """
         sage \
@@ -23,6 +23,7 @@ rule paired_sage:
         -ref_genome {input.ref_genome} \
         -ensembl_data_dir {params.ensembl_data_dir} \
         -threads {threads} \
+        -skip_msi_jitter \
         -coverage_bed {params.coverage_bed} \
         -hotspots  {params.hotspots} \
         -panel_bed {params.panel_bed} \

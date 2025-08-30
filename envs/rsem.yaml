@@ -1,4 +1,4 @@
-    name: rsem
+    name: clindet_rsem
     channels:
       - bioconda
       - conda-forge

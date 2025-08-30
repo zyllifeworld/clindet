@@ -10,5 +10,4 @@ dependencies:
   - control-freec
   - samtools
   - bedtools
-  - sambamba
   - r-mgcv

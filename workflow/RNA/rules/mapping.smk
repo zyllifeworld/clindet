@@ -82,7 +82,7 @@ rule cal_exp_RSEM:
         config['softwares']['rsem']['conda']
     output:
         genes="{project}/{genome_version}/results/summary/RSEM/{sample}/{sample}.genes.results",
-        genes="{project}/{genome_version}/results/summary/RSEM/{sample}/{sample}.genes.results",
+        isoforms="{project}/{genome_version}/results/summary/RSEM/{sample}/{sample}.isoforms.results",
         bam=temp("{project}/{genome_version}/results/summary/RSEM/{sample}/{sample}.STAR.genome.bam"),
         tx_bam=temp("{project}/{genome_version}/results/summary/RSEM/{sample}/{sample}.transcript.bam"),
         tx_sort_bam="{project}/{genome_version}/results/summary/RSEM/{sample}/{sample}.transcript.sorted.bam"

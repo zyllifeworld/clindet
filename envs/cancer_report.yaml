@@ -12,8 +12,3 @@ dependencies:
   - r-devtools
   # umccr pkgs
   # refdata pkgs
-  - bioconductor-bsgenome.hsapiens.ucsc.hg38
-  - bioconductor-txdb.hsapiens.ucsc.hg38.knowngene
-  - bioconductor-bsgenome.hsapiens.ucsc.hg19
-  - bioconductor-txdb.hsapiens.ucsc.hg19.knowngene
-  - bioconductor-genomeinfodbdata

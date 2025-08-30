@@ -52,7 +52,7 @@ rule run_cancer_report:
         # conda_list          = lambda wc, input: abspath(input.conda_list),
         # img_dir_abs         = lambda wc, output: abspath(output.img_dir),
     output:
-        report_html = '{project}/{genome_version}/results/reprot/{sample}/{sample}_cancer_report.html',
+        report_html = '{project}/{genome_version}/results/report/{sample}/{sample}_cancer_report.html',
         # img_dir = directory('{project}/{genome_version}/results/reprot/{sample}/img'),
     resources:
         mem_mb=lambda wildcards, attempt: attempt * 10000

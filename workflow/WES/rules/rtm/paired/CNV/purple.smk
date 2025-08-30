@@ -1,7 +1,8 @@
 ### for amber, only work for genome without chr prefix, it will not be add to the pipeline in hg19 version test
 ### purple
 ### amber first
-
+# purple_mem = max(min(31000, 4000+2000*threads_per_batch), 8000)
+# amber_mem  = max(min(31000, 4000+3000*threads_per_batch), 8000)
 rule paired_amber:
     input:
         Tum="{project}/{genome_version}/results/recal/paired/{sample}-T.bam",
@@ -18,7 +19,7 @@ rule paired_amber:
         chunksize=100000,  # reference genome chunk size for parallelization (default: 100000)
         normalize=False,  # optional flag to use bcftools norm to normalize indels (Valid params are -a, -f, -m, -D or -d)
     threads: 10
-    singularity:config['singularity']['hmftools']['sif']
+    conda:config['singularity']['hmftools']['conda']
     shell:
         """
         amber  -tumor {wildcards.sample} -tumor_bam {input.Tum} \
@@ -42,7 +43,8 @@ rule paired_cobalt:
         tumor_only_diploid_bed=config['singularity']['hmftools'][genome_version]['cobalt']['tumor_only_diploid_bed'],
         gc_profile=config['singularity']['hmftools'][genome_version]['cobalt']['gc_profile'],
     threads: 10
-    singularity:config['singularity']['hmftools']['sif']
+    # singularity:config['singularity']['hmftools']['sif']
+    conda:config['singularity']['hmftools']['conda']
     shell:
         """
         cobalt -tumor {wildcards.sample} -tumor_bam {input.Tum} \
@@ -76,10 +78,16 @@ rule paired_purple:
         driver_gene_panel=config['singularity']['hmftools'][genome_version]['purple']['driver_gene_panel'],
         ref_genome_version=config['singularity']['hmftools'][genome_version]['purple']['ref_genome_version'],
     threads: 10
-    singularity:config['singularity']['hmftools']['sif']
+    # singularity:config['singularity']['hmftools']['sif']
+    conda:config['singularity']['hmftools']['conda']
+    params:
+        xms=2000,
+        xmx=2000
+    resources:
+        # mem_mb=int(amber_mem * 1.1),
     shell:
         """
-        purple \
+        purple -Xms{params.xms}m -Xmx{params.xmx}m \
         -tumor {wildcards.sample} \
         -reference {wildcards.sample}_NC \
         -amber {input.amber} \
@@ -93,6 +101,5 @@ rule paired_purple:
         -somatic_vcf {input.sage_vcf} \
         -somatic_hotspots {params.somatic_hotspots} \
         -driver_gene_panel {params.driver_gene_panel} \
-        -circos /opt/circos-0.69-2/bin/circos \
         -output_dir {output.output_dir}
         """

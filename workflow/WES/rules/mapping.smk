@@ -62,8 +62,7 @@ rule apply_base_quality_recalibration:
         recal_table="{project}/{genome_version}/results/recal/{sample_type}/{sample}-{group}.grp",
     output:
         bam="{project}/{genome_version}/results/recal/{sample_type}/{sample}-{group}.bam",
-    conda:
-        config['softwares']['samtools']['conda']
+        bai="{project}/{genome_version}/results/recal/{sample_type}/{sample}-{group}.bam.bai",
     params:
         temp_directory=config['params']['java']['temp_directory']
     shell:

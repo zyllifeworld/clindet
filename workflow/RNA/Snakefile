@@ -44,7 +44,6 @@ include: "rules/mapping.smk"
 
 #include: "rules/merge.smk"
 # include: "rules/merge_loop.smk"
-include: "rules/CNV.smk"
 include: "rules/SV.smk"
 include: "rules/findvirus.smk"
 include: "rules/fusion.smk"
