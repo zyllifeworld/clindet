@@ -180,6 +180,8 @@ if [ ! -f "build_log/pull_zenodo.log" ]; then
     wget -P resources/containers -c https://zenodo.org/records/15787887/files/muse230.sif
     wget -P resources/containers -c https://zenodo.org/records/15787887/files/conpair_latest.sif
     wget -P resources/containers -c https://zenodo.org/records/15787887/files/svaba.sif
+    wget -P resources/containers -c https://zenodo.org/records/16892396/files/deepsomatic_160.sif
+
     touch build_log/pull_zenodo.log
 else
     echo -e "${GREEN_B} pull zenodo singularity, continue ${NC}"
@@ -446,8 +448,6 @@ if [ ! -f "build_log/mass_config.log" ]; then
     git clone https://github.com/liulab-dfci/TRUST4.git resources/softwares/TRUST4
     ### download delly
 
-    ### download varscan2
-    ### pull strelka
 
     ### download common_vcf
     wget -P resources/ref_genome/b37 -c https://ftp.ncbi.nlm.nih.gov/snp/organisms/human_9606_b151_GRCh37p13/VCF/00-common_all.vcf.gz
@@ -515,6 +515,23 @@ if [ ! -f "build_log/kallisto_salmon_index.log" ]; then
 else
     echo -e "${GREEN_B} already built STAR index ${NC}"
 fi
+
+conda activate clindet
+echo "Download RNA editing VCF ..."
+if [ ! -f "build_log/rna_edit_vcf.log" ]; then
+    wget -P resources/ref_genome/b37/ -c https://data.broadinstitute.org/Trinity/CTAT_RESOURCE_LIB/MUTATION_LIB_SUPPLEMENT/rna_editing/GRCh37.RNAediting.vcf.gz
+    wget -P resources/ref_genome/b37/ -c https://raw.githubusercontent.com/lindenb/jvarkit/refs/heads/master/src/main/resources/chromnames/hg19_to_g1kv37.tsv
+    gunzip resources/ref_genome/b37/GRCh37.RNAediting.vcf.gz
+    bgzip resources/ref_genome/b37/GRCh37.RNAediting.vcf
+    tabix resources/ref_genome/b37/GRCh37.RNAediting.vcf.gz
+    bcftools annotate --rename-chrs resources/ref_genome/b37/hg19_to_g1kv37.tsv resources/ref_genome/b37/GRCh37.RNAediting.vcf.gz -Ov -o resources/ref_genome/b37/b37.RNAediting.vcf
+    bgzip resources/ref_genome/b37/b37.RNAediting.vcf
+    tabix resources/ref_genome/b37/b37.RNAediting.vcf.gz
+    touch build_log/rna_edit_vcf.log
+else
+    echo -e "${GREEN_B} already Download RNA-EDITing vcf ${NC}"
+fi
+
 
 PWD=$(pwd)
 echo " \n \n"

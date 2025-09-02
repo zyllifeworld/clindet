@@ -7,6 +7,6 @@
       - rsem
       - bowtie2
       - samtools
-      - star
+      - star=2.7.11b
       - kallisto
       - salmon=1.10.3

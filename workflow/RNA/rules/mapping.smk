@@ -25,7 +25,7 @@ rule STAR_1_pass:
 
 
 
-rule STAR_map:
+rule STAR_arriba_map:
     input:
         unpack(get_rna_fastq),
         sj_filt='{project}/{genome_version}/results/mapped/STAR/{sample}/_STARpass1/SJ.filt'
@@ -70,6 +70,57 @@ rule STAR_map:
 
         touch {output.stamp}
         """
+
+# maybe sort by samtools,STAR always face RAM error
+rule STAR_mut_map:
+    input:
+        unpack(get_rna_fastq),
+    output:
+        bam="{project}/{genome_version}/results/mut/STAR/{sample}/{sample}.sorted.bam",
+        unsort_bam="{project}/{genome_version}/results/mut/STAR/{sample}/Aligned.out.bam",
+    params:
+        out_dir="{project}/{genome_version}/results/mut/STAR/{sample}/", # "/"" must in the config string
+        ref=config['resources'][genome_version]['REFFA'],
+        gtf=config['resources'][genome_version]['GTF'],
+        star_index=config['softwares']['star']['index'][genome_version],
+        rg="ID:{sample} -r PL:ILLUMINA.NovaSeq -r LB:RNA-Seq -r SM:{sample}",
+        sort_mem_per_thread='1G'
+    threads: 10
+    conda:
+        config['softwares']['star']['conda']
+    shell:
+        """ 
+        STAR --genomeDir {params.star_index} --runThreadN={threads} \
+            --outSAMtype BAM Unsorted --outFileNamePrefix {params.out_dir} \
+            --outReadsUnmapped Fastx \
+            --sjdbGTFfile {params.gtf} \
+            --alignIntronMax 1000000 \
+            --alignIntronMin 20 \
+            --alignMatesGapMax 1000000 \
+            --alignSJDBoverhangMin 1 \
+            --alignSJoverhangMin 8 \
+            --alignSoftClipAtReferenceEnds Yes \
+            --chimJunctionOverhangMin 15 \
+            --chimMainSegmentMultNmax 1 \
+            --chimOutJunctionFormat 1 \
+            --chimSegmentMin 15 \
+            --limitSjdbInsertNsj 1200000 \
+            --outFilterIntronMotifs None \
+            --outFilterMatchNminOverLread 0.33 \
+            --outFilterMismatchNmax 999 \
+            --outFilterMismatchNoverLmax 0.1 \
+            --outFilterMultimapNmax 20 \
+            --outFilterScoreMinOverLread 0.33 \
+            --twopassMode Basic \
+            --outSAMmapqUnique 60 \
+            --readFilesIn {input.R1} {input.R2} --readFilesCommand gunzip -c
+        samtools addreplacerg -@ -{threads} -o {params.out_dir}/addRG.bam {params.out_dir}/Aligned.out.bam
+        samtools sort -n -@ {threads} -m 1G -o {output.bam} {params.out_dir}/addRG.bam
+        samtools index {output.bam}
+
+        rm {params.out_dir}/addRG.bam
+        """
+
 
 rule cal_exp_RSEM:
     input:
@@ -132,7 +183,7 @@ rule kallisto:
         result_prefix="{project}/{genome_version}/results/summary/kallisto/{sample}"
     threads: 10
     conda:
-        config['softwares']['rsem']['conda']
+        config['softwares']['kallisto']['conda']
     output:
         tsv="{project}/{genome_version}/results/summary/kallisto/{sample}/abundance.tsv",
     shell:
@@ -140,4 +191,18 @@ rule kallisto:
         kallisto quan -i {params.index} -o {params.result_prefix} {input.R1} {input.R2} -t {threads}
         """
 ### samlom 
-
+rule salmon:
+    input:
+        unpack(get_rna_fastq),
+    params:
+        index=config['softwares']['salmon']['index'][genome_version],
+        result_prefix="{project}/{genome_version}/results/summary/salmon/{sample}"
+    threads: 10
+    conda:
+        config['softwares']['salmon']['conda']
+    output:
+        tsv="{project}/{genome_version}/results/summary/salmon/{sample}/quant.sf",
+    shell:
+        """
+        salmon quant -i {params.index} -l A -o {params.result_prefix} -1 {input.R1} -2 {input.R2} -p {threads}
+        """

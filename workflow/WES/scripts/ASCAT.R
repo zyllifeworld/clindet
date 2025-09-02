@@ -49,6 +49,7 @@ ascat.prepareHTS(
   normalseqfile = input_normal_bam,
   tumourname = "Tumor",
   normalname = "Germline",
+  allelecounter_exe = 'alleleCounter',
   loci.prefix = loci.prefix,
   alleles.prefix = alleles.prefix,
   gender = gender,

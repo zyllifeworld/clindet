@@ -55,7 +55,6 @@ workflow/RNA/rules/common.smk
 workflow/RNA/rules/findvirus.smk
 workflow/RNA/rules/kraken2.smk
 workflow/RNA/rules/liftover.smk
-workflow/RNA/rules/merge_loop.smk
 workflow/RNA/rules/merge.smk
 workflow/RNA/rules/SV.smk
 workflow/RNA/rules/TCGA_star.smk
@@ -162,3 +161,4 @@ bulid_vep_anno.sh
 workflow/WES/rules/report/test.R
 workflow/WES/rules/merge_loop_norm.smk
 workflow/WES/rules/report/cancer_report.R
+build_hg38.sh

@@ -13,6 +13,7 @@ resources:
     REFFA_DICT: "/AbsoPath/of/clindet/folder/resources/ref_genome/b37/Homo_sapiens.GRCh37.GATK.illumina.fasta"
     MUTECT2_germline_vcf: "/AbsoPath/of/clindet/folder/resources/ref_genome/b37/af-only-gnomad.raw.sites.vcf"
     common_vcf: "/AbsoPath/of/clindet/folder/resources/ref_genome/b37/00-common_all_hg19.vcf.gz"
+    RNA_EDIT_VCF: "/AbsoPath/of/clindet/folder/resources/ref_genome/b37/b37.RNAediting.vcf.gz"
   varanno:
     b37:
       KNOWN_SITES1: "/AbsoPath/of/clindet/folder/resources/ref_genome/b37/1000G_phase1.snps.high_confidence.b37.vcf.gz"
@@ -413,7 +414,6 @@ singularity:
         blacklist: "/AbsoPath/of/clindet/folder/resources/ref_genome/b37/hmf_pipeline_resources/dna/sv/gridss_blacklist.37.bed.gz"
       orange:
 
-    
   conpair:
     sif: "/AbsoPath/of/clindet/folder/resources/containers/conpair_latest.sif"
     b37:

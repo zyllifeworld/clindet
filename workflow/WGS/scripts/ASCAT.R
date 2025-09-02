@@ -13,7 +13,6 @@ output_rdata <- snakemake@output[['rdata']]
 output_rdata <- getAbsolutePath(output_rdata)
 
 threads = as.numeric(snakemake@threads)
-print(threads)
 
 ## ASCAT config
 alleles.prefix <- snakemake@params[['allelesprefix']]
@@ -51,6 +50,7 @@ ascat.prepareHTS(
   normalname = "Germline",
   loci.prefix = loci.prefix,
   alleles.prefix = alleles.prefix,
+    allelecounter_exe = 'alleleCounter',
   gender = gender,
   genomeVersion = f_gv,
   nthreads = 8,
