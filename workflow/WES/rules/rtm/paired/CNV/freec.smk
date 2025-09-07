@@ -1,4 +1,4 @@
-rule freec_config:
+rule unpair_freec_config:
     input:
         Tum="{project}/{genome_version}/results/recal/paired/{sample}-T.bam",
         NC="{project}/{genome_version}/results/recal/paired/{sample}-NC.bam",

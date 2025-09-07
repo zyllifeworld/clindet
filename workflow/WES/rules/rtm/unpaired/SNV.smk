@@ -1,0 +1,11 @@
+## rtm
+include: "SNV/vardict.smk"
+include: "SNV/HaplotypeCaller.smk"
+include: "SNV/Mutect2.smk"
+include: "SNV/Strelka.smk"
+include: "SNV/varscan2.smk"
+include: "SNV/sage.smk"
+include: "SNV/lofreq.smk"
+include: "SNV/deepvariant.smk"
+include: "SNV/pindel.smk"
+include: "SNV/freebayes.smk"

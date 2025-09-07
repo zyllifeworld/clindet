@@ -16,3 +16,5 @@ dependencies:
   - bioconda::hmftools-purple=4.1
   - bioconda::hmftools-virus-interpreter=1.7
   - bioconda::hmftools-sage=4.0
+  - bioconda::hmftools-isofox=1.7.2
+  - bioconda::hmftools-lilac=1.7.1

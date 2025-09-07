@@ -44,16 +44,16 @@ rule loop_vcf2maf_unpaired:
         species=config['softwares']['vcf2maf']['vep'][genome_version]['species']
     shell:
         """
-       {config[softwares][vcf2maf][call]} --input-vcf {input.vcf} \
-       --output-maf {output.maf} --ref-fasta {input.ref} \
-       {params.name} \
-       --vep-path $(realpath $(dirname $(which vep))) \
-       --vep-data {params.vep_data} \
-       --vep-fork 40 \
-       --vep-overwrite \
-       --species {params.species}
-       --ncbi-build {params.ncbi_build} \
-       --cache-version {params.cache_version}
+        vcf2maf.pl --input-vcf {input.vcf} \
+        --output-maf {output.maf} --ref-fasta {input.ref} \
+        {params.name} \
+        --vep-path $(realpath $(dirname $(which vep))) \
+        --vep-data {params.vep_data} \
+        --vep-fork 40 \
+        --vep-overwrite \
+        --species {params.species} \
+        --ncbi-build {params.ncbi_build} \
+        --cache-version {params.cache_version}
         """
 
 

@@ -6,3 +6,5 @@ channels:
 dependencies:
   - strelka
   - manta
+  - bgzip
+  - tabix

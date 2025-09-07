@@ -26,3 +26,4 @@ dependencies:
   - fastp
   - r-exomedepth
   - r-r.utils
+  - configparser

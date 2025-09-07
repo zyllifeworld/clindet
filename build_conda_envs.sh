@@ -26,7 +26,7 @@ command='conda'
 if type $command >/dev/null 2>&1; then
     echo -e "${GREEN_B}Check  OK ${NC}, ${bold} ${command} ${NC} existed, Start download and config."
 else
-    echo -e "${RED_B}ERROE:  ${NC} ${bold} ${command} ${NC} Not exited !!!!, please install it."
+    echo -e "${RED_B}ERROE:  ${NC} ${bold} ${command} ${NC} Not existed !!!!, please install it."
     exit 1 
 fi
 
@@ -35,7 +35,7 @@ command='sdk'
 if type $command >/dev/null 2>&1; then
     echo -e "${GREEN_B}Check  OK ${NC}, ${bold} ${command} ${NC} existed, Start download and config."
 else
-    echo -e "${RED_B}ERROE:  ${NC} ${bold} ${command} ${NC} Not exited !!!!, please install it."
+    echo -e "${RED_B}ERROE:  ${NC} ${bold} ${command} ${NC} Not existed !!!!, please install it."
     exit 1 
 fi
 
@@ -44,7 +44,7 @@ command='singularity'
 if type $command >/dev/null 2>&1; then
     echo -e "${GREEN_B}Check  OK ${NC}, ${bold} ${command} ${NC} existed, Start download and config."
 else
-    echo -e "${RED_B}ERROE:  ${NC} ${bold} ${command} ${NC} Not exited !!!!, please install it."
+    echo -e "${RED_B}ERROE:  ${NC} ${bold} ${command} ${NC} Not existed !!!!, please install it."
     exit 1 
 fi
 
@@ -165,6 +165,7 @@ if [ ! -f "build_log/cancer_report_install_r.log" ]; then
     R -q -e "install.packages(c('details','DT','kableExtra','patchwork'),repos = c(CRAN = '${r_mirror}'))" &>>build_log/cancer_report.log
     R -q -e 'BiocManager::install("GenomicFeatures")' &>>build_log/cancer_report.log
     # R -q -e 'devtools::install_github("umccr/sigrap")' &>>build_log/cancer_report.log
+    touch build_log/cancer_report_install_r.log
     echo -e "${GREEN_B} Install custome R packages of env cancer_report finished, continue ....${NC}"
 else
     echo -e "${GREEN_B} pull zenodo singularity, continue ${NC}"
@@ -196,7 +197,7 @@ command='gsutil'
 if type $command >/dev/null 2>&1; then
     echo -e "${GREEN_B}Check  OK ${NC}, ${bold} ${command} ${NC} existed, Start download and config."
 else
-    echo -e "${RED_B}ERROE:  ${NC} ${bold} ${command} ${NC} Not exited !!!!"
+    echo -e "${RED_B}ERROE:  ${NC} ${bold} ${command} ${NC} Not existed !!!!"
     exit 1 
 fi
 
@@ -453,7 +454,7 @@ if [ ! -f "build_log/mass_config.log" ]; then
     wget -P resources/ref_genome/b37 -c https://ftp.ncbi.nlm.nih.gov/snp/organisms/human_9606_b151_GRCh37p13/VCF/00-common_all.vcf.gz
     wget -P resources/ref_genome/b37 -c https://ftp.ncbi.nlm.nih.gov/snp/organisms/human_9606_b151_GRCh37p13/VCF/00-common_all.vcf.gz.tbi
 else
-
+    echo -e "${GREEN_B} Some Mass configuration finished. ${NC}"
 fi
 
 # bwa index resources/ref_genome/b37/Homo_sapiens.GRCh37.GATK.illumina.fasta

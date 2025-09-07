@@ -6,13 +6,15 @@ rule call_config_strelka:
         bed=get_sample_bed
     output:
         dir=directory("{project}/{genome_version}/results/vcf/paired/{sample}/Manta"),
-        tamp="{project}/{genome_version}/results/logs/strelka/paired/{sample}-Manta.log",
+        tamp="{project}/{genome_version}/results/logs/strelka/paired/{sample}/{sample}-Manta.log",
         indelcd="{project}/{genome_version}/results/vcf/paired/{sample}/Manta/results/variants/candidateSmallIndels.vcf.gz"
     params:
     conda:
         "strelka"
     shell:
         """
+            [ ! -f {input.bed}.gz ] && bgzip -k {input.bed} -o {input.bed}.gz
+            [ ! -f {input.bed}.gz.tbi ] && tabix {input.bed}.gz
             configManta.py \
             --tumorBam {input.Tum} \
             --bam {input.NC} \
@@ -34,13 +36,15 @@ rule call_strelka_manta:
         bed=get_sample_bed
     output:
         dir=directory("{project}/{genome_version}/results/vcf/paired/{sample}/StrelkaManta"),
-        tamp="{project}/{genome_version}/results/logs/strelka/paired/{sample}-StrelkaManta.log"
+        tamp="{project}/{genome_version}/results/logs/strelka/paired/{sample}/{sample}-StrelkaManta.log"
     params:
     threads:8
     conda:
         "strelka"
     shell:
         """
+        [ ! -f {input.bed}.gz ] && bgzip -k {input.bed} -o {input.bed}.gz
+        [ ! -f {input.bed}.gz.tbi ] && tabix {input.bed}.gz
         configureStrelkaGermlineWorkflow.py \
         --bam {input.Tum} \
         --bam {input.NC} \
@@ -62,13 +66,15 @@ rule call_strelka_somatic_manta:
         bed=get_sample_bed
     output:
         dir=directory("{project}/{genome_version}/results/vcf/paired/{sample}/StrelkaSomaticManta"),
-        tamp="{project}/{genome_version}/results/logs/strelka/paired/{sample}-StrelkaSomaticeManta.log"
+        tamp="{project}/{genome_version}/results/logs/strelka/paired/{sample}/{sample}-StrelkaSomaticeManta.log"
     params:
     threads:8
     conda:
         "strelka"
     shell:
         """
+        [ ! -f {input.bed}.gz ] && bgzip -k {input.bed} -o {input.bed}.gz
+        [ ! -f {input.bed}.gz.tbi ] && tabix {input.bed}.gz
         configureStrelkaSomaticWorkflow.py \
         --tumorBam {input.Tum} \
         --normalBam {input.NC} \
@@ -123,12 +129,14 @@ rule call_strelka:
         bed=get_sample_bed
     output:
         dir=directory("{project}/{genome_version}/results/vcf/paired/{sample}/Strelka"),
-        tamp="{project}/{genome_version}/results/logs/strelka/paired/{sample}-Strelka.log"
+        tamp="{project}/{genome_version}/results/logs/strelka/paired/{sample}/{sample}-Strelka.log"
     params:
     conda:
         "strelka"
     shell:
         """
+        [ ! -f {input.bed}.gz ] && bgzip -k {input.bed} -o {input.bed}.gz
+        [ ! -f {input.bed}.gz.tbi ] && tabix {input.bed}.gz
         configureStrelkaGermlineWorkflow.py \
         --bam {input.Tum} \
         --bam {input.NC} \
@@ -154,6 +162,8 @@ rule call_strelka_somatic:
         "strelka"
     shell:
         """
+        [ ! -f {input.bed}.gz ] && bgzip -k {input.bed} -o {input.bed}.gz
+        [ ! -f {input.bed}.gz.tbi ] && tabix {input.bed}.gz
         configureStrelkaSomaticWorkflow.py \
         --tumorBam {input.Tum} \
         --normalBam {input.NC} \

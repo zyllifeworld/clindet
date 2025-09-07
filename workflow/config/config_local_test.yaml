@@ -245,6 +245,7 @@ singularity:
 
   freec:
     sif: "/AbsoPath/of/clindet/folder/resources/containers/control-freec-11.6.sif"
+    config_wes: "/AbsoPath/of/clindet/folder/workflow/WES/scripts/freec/config_exome.ini"
     cpu: 30
     b37:
       chrFiles: "/AbsoPath/of/clindet/folder/resources/ref_genome/b37/fasta"

@@ -38,6 +38,7 @@ def get_vcf_file(wildcards):
 
 include: "rules/qc.smk"
 include: "rules/mapping.smk"
+# include: "rules/isofox.smk"
 # include: "rules/calling_paired.smk"
 # include: "rules/calling_paired_strelka.smk"
 # include: "rules/calling_unpaired.smk"

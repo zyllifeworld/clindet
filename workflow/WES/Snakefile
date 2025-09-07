@@ -57,6 +57,11 @@ include: "rules/cgp/cgpBattenberg.smk"
 include: "rules/rtm/paired/SNV.smk"
 include: "rules/rtm/paired/CNV.smk"
 
+# rtm unpaired caller
+include: "rules/rtm/unpaired/SNV.smk"
+include: "rules/rtm/unpaired/CNV.smk"
+
+# post process steps
 include: "rules/merge_loop.smk"
 include: "rules/merge_loop_germline.smk"
 include: "rules/report/multiqc.smk"

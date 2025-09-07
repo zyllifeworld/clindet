@@ -53,11 +53,7 @@ rule sentieon_call:
     input:
         bam="{project}/{genome_version}/results/dedup/{sample}.split.bam",
         #bai="{project}/{genome_version}/{project}/{genome_version}/results/dedup/{sample_type}/{sample}-{group}.sorted.bam.bai",
-        # ref=config['resources'][genome_version]['REFFA'],
-        rsem_ref=config['softwares']['rsem']['ref'][genome_version],
-        # dbsnp=
-        # known_1=config['resources']['varanno'][genome_version]['KNOWN_SITES1'],
-        # known_2=config['resources']['varanno'][genome_version]['KNOWN_SITES2']
+        ref=config['resources'][genome_version]['REFFA'],
     output:
         vcf_raw="{project}/{genome_version}/results/vcf/{sample}/sentieon_raw.vcf",
         vcf="{project}/{genome_version}/results/vcf/{sample}/sentieon.vcf",

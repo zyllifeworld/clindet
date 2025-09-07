@@ -1,6 +1,5 @@
 library(VariantAnnotation)
 library(tidyverse)
-# vcf<-readVcf("~/Desktop/MM-014_T_vs_MM-014_NC.flagged.vcf.gz")
 
 
 output_vcf <- snakemake@output[['vcf']]
@@ -9,7 +8,6 @@ caller <- snakemake@params[['caller']]
 # cgppindel vardict varscan2 need filter
 if(caller == 'vardict') {
     input_vcf <- snakemake@input[['vcf']]
-    # input_vcf <- '/public/ClinicalExam/lj_sih/projects/project_pipeline/WES/results/vcf/paired/MM-014/vardict.vcf'
     vcf <- readVcf(input_vcf)
 
     status_filter <- c('LikelySomatic','StrongSomatic')
@@ -35,7 +33,6 @@ if(caller == 'vardict') {
     writeVcf(filter_vcf,output_vcf,index = F)
 } else if (caller == 'varscan2') {
     input_vcf <- snakemake@input[['vcf']]
-    # input_vcf <- '/public/ClinicalExam/lj_sih/projects/project_pipeline/WES/results/vcf/paired/MM-014/varscan2.snp.vcf'
     vcf <- readVcf(input_vcf)
 
 } else {

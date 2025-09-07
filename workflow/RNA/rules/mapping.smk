@@ -83,7 +83,7 @@ rule STAR_mut_map:
         ref=config['resources'][genome_version]['REFFA'],
         gtf=config['resources'][genome_version]['GTF'],
         star_index=config['softwares']['star']['index'][genome_version],
-        rg="ID:{sample} -r PL:ILLUMINA.NovaSeq -r LB:RNA-Seq -r SM:{sample}",
+        rg="'ID:{sample}' -r 'PL:ILLUMINA.NovaSeq' -r 'LB:RNA-Seq' -r 'SM:{sample}'",
         sort_mem_per_thread='1G'
     threads: 10
     conda:
@@ -114,8 +114,8 @@ rule STAR_mut_map:
             --twopassMode Basic \
             --outSAMmapqUnique 60 \
             --readFilesIn {input.R1} {input.R2} --readFilesCommand gunzip -c
-        samtools addreplacerg -@ -{threads} -o {params.out_dir}/addRG.bam {params.out_dir}/Aligned.out.bam
-        samtools sort -n -@ {threads} -m 1G -o {output.bam} {params.out_dir}/addRG.bam
+        samtools addreplacerg -@ {threads} -r {params.rg} -o {params.out_dir}/addRG.bam {params.out_dir}/Aligned.out.bam
+        samtools sort -@ {threads} -m 1G -o {output.bam} {params.out_dir}/addRG.bam
         samtools index {output.bam}
 
         rm {params.out_dir}/addRG.bam
@@ -188,7 +188,7 @@ rule kallisto:
         tsv="{project}/{genome_version}/results/summary/kallisto/{sample}/abundance.tsv",
     shell:
         """
-        kallisto quan -i {params.index} -o {params.result_prefix} {input.R1} {input.R2} -t {threads}
+        kallisto quant -i {params.index} -o {params.result_prefix} {input.R1} {input.R2} -t {threads}
         """
 ### samlom 
 rule salmon:

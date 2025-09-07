@@ -12,7 +12,7 @@ rule deepvariant_somatic_call:
     shell:
         """
         /opt/deepvariant/bin/deepsomatic/run_deepsomatic \
-        --model_type=WGS \
+        --model_type=WES \
         --ref={params.ref} \
         --reads_normal={input.NC} \
         --reads_tumor={input.Tum} \
