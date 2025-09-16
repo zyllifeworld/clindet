@@ -16,7 +16,7 @@ rule paired_sage:
         ref_genome_version=config['singularity']['hmftools'][genome_version]['sage']['ref_genome_version'],
     threads: 30
     conda:config['singularity']['hmftools']['conda']
-    singularity:config['singularity']['hmftools']['sif']
+    # singularity:config['singularity']['hmftools']['sif']
     shell:
         """
         sage \
@@ -24,6 +24,7 @@ rule paired_sage:
         -reference {wildcards.sample}_NC -reference_bam {input.NC} \
         -ref_genome_version {params.ref_genome_version} \
         -ref_genome {input.ref_genome} \
+        -skip_msi_jitter \
         -ensembl_data_dir {params.ensembl_data_dir} \
         -threads {threads} \
         -coverage_bed {params.coverage_bed} \

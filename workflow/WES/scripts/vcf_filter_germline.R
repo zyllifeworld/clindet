@@ -1,3 +1,9 @@
+if (!require("BiocManager", quietly = TRUE))
+    install.packages("BiocManager")
+    
+if (!require("BiocManager", quietly = TRUE))
+    BiocManager::install("VariantAnnotation")
+    
 library(VariantAnnotation)
 library(tidyverse)
 # vcf<-readVcf("~/Desktop/MM-014_T_vs_MM-014_NC.flagged.vcf.gz")

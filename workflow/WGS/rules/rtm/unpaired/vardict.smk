@@ -1,6 +1,6 @@
 rule unpaired_vardict_single_mode:
     input:
-        reference=config['resources']['hg19']['REFFA'],
+        reference=config['resources'][genome_version]['REFFA'],
         regions=get_sample_bed,
         bam="{project}/{genome_version}/results/recal/unpaired/{sample}-T.bam",
     output:

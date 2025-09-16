@@ -1,7 +1,11 @@
 rule run_cancer_report:
     input:
-        rmd_file="workflow/WES/rules/report/cancer_report.Rmd",
-        af_keygenes="workflow/WES/rules/report/somatic_panel.tsv",
+        # rmd_file="workflow/WES/rules/report/cancer_report.Rmd",
+        # af_keygenes="workflow/WES/rules/report/somatic_panel.tsv",
+        af_keygenes=Path(str(workflow.current_basedir) + '/./somatic_panel.tsv'),
+        rmd_file=Path(str(workflow.current_basedir) + "/./cancer_report.Rmd"),
+        ## SNVs results
+        merge_maf="{project}/{genome_version}/results/maf/paired/{sample}/merge/{sample}.maf",
         ## CNV results
         ascat_res_dir='{project}/{genome_version}/results/cnv/paired/ascat/{sample}',
         purple_res_dir='{project}/{genome_version}/results/cnv/paired/purple/{sample}/purple',

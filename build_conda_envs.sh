@@ -435,11 +435,13 @@ conda activate clindet
 echo "Do some mass config ..."
 if [ ! -f "build_log/mass_config.log" ]; then
     ### install some package for snakemake slurm and freec
+    echo -e "${GREEN_B} And some tool to clinet env ${NC}"
     conda install ucsc-fasplit &>>build_log/clindet.log
     pip install snakemake-executor-plugin-cluster-generic &>>build_log/clindet.log
     pip install configparser &>>build_log/clindet.log
-
+    echo -e "OK!!!"
     ### dbsnp bgzip
+    echo -e "${GREEN_B} bgzip dbsnp vcf which is needed by Muse ${NC}"
     bgzip -k -o resources/ref_genome/b37/Homo_sapiens_assembly19.dbsnp138.vcf.gz resources/ref_genome/b37/Homo_sapiens_assembly19.dbsnp138.vcf
     tabix resources/ref_genome/b37/Homo_sapiens_assembly19.dbsnp138.vcf.gz
 

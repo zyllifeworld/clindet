@@ -122,6 +122,7 @@ rule CM_flag:
         -u  {params.u} \
         -g  {params.g} \
         -b  {params.b} \
+        -umv $(dirname {params.g}) \
         -ab {params.ab}
         """
 

@@ -66,10 +66,23 @@ rule paired_purple:
         ref_genome=config['resources'][genome_version]['REFFA'],
         bed=get_sample_bed
     output:
+        purple_som_snv_vcf   = '{project}/{genome_version}/results/cnv/paired/purple/{sample}/purple/{sample}.purple.somatic.vcf.gz',
+        purple_som_cnv       = '{project}/{genome_version}/results/cnv/paired/purple/{sample}/purple/{sample}.purple.cnv.somatic.tsv',
+        purple_som_gene_cnv  = '{project}/{genome_version}/results/cnv/paired/purple/{sample}/purple/{sample}.purple.cnv.gene.tsv',
+        purple_circos_png    = '{project}/{genome_version}/results/cnv/paired/purple/{sample}/purple/plot/{sample}.circos.png',
+        purple_input_png     = '{project}/{genome_version}/results/cnv/paired/purple/{sample}/purple/plot/{sample}.input.png',
+        purple_cn_png        = '{project}/{genome_version}/results/cnv/paired/purple/{sample}/purple/plot/{sample}.copynumber.png',
+        purple_ma_png        = '{project}/{genome_version}/results/cnv/paired/purple/{sample}/purple/plot/{sample}.map.png',
+        purple_purity_png    = '{project}/{genome_version}/results/cnv/paired/purple/{sample}/purple/plot/{sample}.purity.range.png',
+        purple_segment_png   = '{project}/{genome_version}/results/cnv/paired/purple/{sample}/purple/plot/{sample}.segment.png',
+        purple_clonality_png = '{project}/{genome_version}/results/cnv/paired/purple/{sample}/purple/plot/{sample}.somatic.clonality.png',
+        purple_ploidy_png    = '{project}/{genome_version}/results/cnv/paired/purple/{sample}/purple/plot/{sample}.somatic.png',
         qc="{project}/{genome_version}/results/cnv/paired/purple/{sample}/purple/{sample}.purple.qc",
         pp='{project}/{genome_version}/results/cnv/paired/purple/{sample}/purple/{sample}.purple.purity.tsv',
         output_dir=directory("{project}/{genome_version}/results/cnv/paired/purple/{sample}/purple")
     params:
+        xms=2000,
+        xmx=2000,
         output_dir="{project}/{genome_version}/results/cnv/paired/purple/{sample}/purple",
         tumor_only_diploid_bed=config['singularity']['hmftools'][genome_version]['purple']['tumor_only_diploid_bed'],
         gc_profile=config['singularity']['hmftools'][genome_version]['purple']['gc_profile'],
@@ -80,9 +93,6 @@ rule paired_purple:
     threads: 10
     # singularity:config['singularity']['hmftools']['sif']
     conda:config['singularity']['hmftools']['conda']
-    params:
-        xms=2000,
-        xmx=2000
     resources:
         # mem_mb=int(amber_mem * 1.1),
     shell:
@@ -101,5 +111,6 @@ rule paired_purple:
         -somatic_vcf {input.sage_vcf} \
         -somatic_hotspots {params.somatic_hotspots} \
         -driver_gene_panel {params.driver_gene_panel} \
+        -circos $(readlink -f $(which circos)) \
         -output_dir {output.output_dir}
         """

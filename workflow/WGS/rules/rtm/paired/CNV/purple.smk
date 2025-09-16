@@ -34,7 +34,8 @@ rule paired_amber:
         chunksize=100000,  # reference genome chunk size for parallelization (default: 100000)
         normalize=False,  # optional flag to use bcftools norm to normalize indels (Valid params are -a, -f, -m, -D or -d)
     threads: 10
-    singularity:config['singularity']['hmftools']['sif']
+    # singularity:config['singularity']['hmftools']['sif']
+    conda:config['singularity']['hmftools']['conda']
     shell:
         """
         amber  -tumor {wildcards.sample} -tumor_bam {input.Tum} \
@@ -57,7 +58,8 @@ rule paired_cobalt:
         output_dir="{project}/{genome_version}/results/cnv/paired/purple/{sample}/cobalt",
         gc_profile=config['singularity']['hmftools'][genome_version]['cobalt']['gc_profile'],
     threads: 10
-    singularity:config['singularity']['hmftools']['sif']
+    # singularity:config['singularity']['hmftools']['sif']
+    conda:config['singularity']['hmftools']['conda']
     shell:
         """
         cobalt -tumor {wildcards.sample} -tumor_bam {input.Tum} \
@@ -95,7 +97,8 @@ if purple_run_with_sv:
             ref_genome_version=config['singularity']['hmftools'][genome_version]['purple']['ref_genome_version'],
             sv_vcf=get_purple_sv_vcf
         threads: 10
-        singularity:config['singularity']['hmftools']['sif']
+        # singularity:config['singularity']['hmftools']['sif']
+        conda:config['singularity']['hmftools']['conda']
         shell:
             """
             purple \
@@ -141,7 +144,8 @@ else:
             ref_genome_version=config['singularity']['hmftools'][genome_version]['purple']['ref_genome_version'],
             sv_vcf=get_purple_sv_vcf
         threads: 10
-        singularity:config['singularity']['hmftools']['sif']
+        # singularity:config['singularity']['hmftools']['sif']
+        conda:config['singularity']['hmftools']['conda']
         shell:
             """
             purple \

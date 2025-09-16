@@ -107,7 +107,8 @@ else:
             NP_gff3=config['singularity']['cgppindel'][genome_version]['WES']['normal_panel']
         output:
             out_dir=directory('{project}/{genome_version}/results/vcf/paired/{sample}/cgppindel'),
-            log='{project}/{genome_version}/results/logs/paired/cgppindel_{sample}.log'
+            log='{project}/{genome_version}/results/logs/paired/cgppindel_{sample}.log',
+            vcf='{project}/{genome_version}/results/vcf/paired/{sample}/cgppindel/{sample}_T_vs_{sample}_NC.flagged.vcf.gz'
         threads: 20
         params:
             ref=config['resources'][genome_version]['REFFA'],
@@ -153,14 +154,35 @@ rule PI_ggz:
         touch {output.log}
         """
 ## filter an format DP and AD tag
+# rule cgppindel_filter_somatic:
+#     input:
+#         vcf='{project}/{genome_version}/results/logs/paired/cgppindel_{sample}.log'
+#     output:
+#         vcf="{project}/{genome_version}/results/vcf/paired/{sample}/cgppindel_filter.vcf"
+#     threads: 1
+#     params:
+#         caller='cgppindel',
+#         vcf='{project}/{genome_version}/results/vcf/paired/{sample}/cgppindel/{sample}_T_vs_{sample}_NC.flagged.vcf.gz'
+#     script:
+#         "../../scripts/vcf_filter_somtic.R"
+
 rule cgppindel_filter_somatic:
     input:
-        vcf='{project}/{genome_version}/results/logs/paired/cgppindel_{sample}.log'
+        vcf='{project}/{genome_version}/results/vcf/paired/{sample}/cgppindel/{sample}_T_vs_{sample}_NC.flagged.vcf.gz'
     output:
         vcf="{project}/{genome_version}/results/vcf/paired/{sample}/cgppindel_filter.vcf"
     threads: 1
     params:
         caller='cgppindel',
         vcf='{project}/{genome_version}/results/vcf/paired/{sample}/cgppindel/{sample}_T_vs_{sample}_NC.flagged.vcf.gz'
-    script:
-        "../../scripts/vcf_filter_somtic.R"
+    shell:
+        """
+        bcftools view -e 'FILTER~"FF010"' {input.vcf} -Ov -o {output.vcf}
+        """
+        # loose filter rules, only filter FF010
+        # 'FF010' 'Variant must not exist within the Unmatched Normal Panel'
+        # 'FF001' 'Pass if Mt > Wt Reads: Likely GERMLINE',
+        # 'FF003'  'Tum low call count strand bias check'
+        # 'FF006' 'Small call excessive repeat check: Fail if Length <= 4 and Repeats > 9'
+        # 'FF008' Wildtype contamination: Fail when wt reads > 5% mt reads.
+        # 'FF017' 'Variant must not overlap with a simple repeat'

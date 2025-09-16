@@ -1,3 +1,9 @@
+if (!require("BiocManager", quietly = TRUE))
+    install.packages("BiocManager")
+    
+if (!require("BiocManager", quietly = TRUE))
+    BiocManager::install("VariantAnnotation")
+
 library(VariantAnnotation)
 library(tidyverse)
 

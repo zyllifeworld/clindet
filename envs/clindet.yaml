@@ -21,7 +21,6 @@ dependencies:
   - vcftools
   - picard
   - ucsc-fasplit
-  - bioconductor-variantannotation
   - bedtools
   - fastp
   - r-exomedepth

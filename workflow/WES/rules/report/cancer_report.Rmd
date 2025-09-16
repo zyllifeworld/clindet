@@ -34,6 +34,8 @@ params:
   result_outdir: NULL
   somatic_snv_vcf: NULL
   somatic_snv_summary: NULL
+  # structural variants results
+  sv_available: NULL
   somatic_sv_tsv: NULL
   somatic_sv_vcf: NULL
 
@@ -95,6 +97,16 @@ bnm <- params$batch_name
 purple_dir <- params$purple_res_dir # should be relative to the knitting directory
 ascat_dir <- params$ascat_res_dir 
 
+if(is.null(sv_available) | !sv_available) {
+  no_sv_found <- FALSE
+}
+
+if(is.null(sv_available) | !sv_available) {
+  report_sv <- FALSE
+} else {
+  report_sv <- TRUE
+}
+
 result_outdir <- params$result_outdir # directory to write tables to
 blank_lines <- function(n = 10) {
   cat(rep("&nbsp;  ", n), sep = "\n")
@@ -108,55 +120,62 @@ col_ind_js <- function(dt, col) {
 }
 ```
 
-```{r sv_prep}
+```{r sv_prep,eval=report_sv}
 #---- Misc ----#
-# oncokb_genes <- gpgr::read_oncokb(params$oncokb_genes)
+oncokb_genes <- gpgr::read_oncokb(params$oncokb_genes)
 
 #---- Structural Variants ----#
-# sv_path <- params$somatic_sv_tsv
-# sv <- NULL
-# no_sv_found <- gpgr::tsv_is_empty(sv_path)
-# if (!no_sv_found) {
-#   sv <- gpgr::process_sv(sv_path)
+sv_path <- params$somatic_sv_tsv
+
+if(is.null(sv_available) | !sv_available) {
+  no_sv_found <- FALSE
+} else {
+  no_sv_found <- gpgr::tsv_is_empty(sv_path)
+  if (!no_sv_found) {
+    sv <- gpgr::process_sv(sv_path)
+}
+
+
 
 # Set OncoKB genes
-#   sv$annotations <- sv$annotations |>
-#     dplyr::mutate(
-#       "Genes (OncoKB)" = gpgr::get_oncokb_genes(Genes, oncokb_genes),
-#       .after = "Genes",
-#     )
-# }
+  sv$annotations <- sv$annotations |>
+    dplyr::mutate(
+      "Genes (OncoKB)" = gpgr::get_oncokb_genes(Genes, oncokb_genes),
+      .after = "Genes",
+    )
+}
 
 #---- Copy Number Variants ----#
-# cnv <- gpgr::process_cnv_tsv(params$purple_som_cnv_ann)
+oncokb_genes <- gpgr::read_oncokb(params$oncokb_genes)
+cnv <- gpgr::process_cnv_tsv(params$purple_som_cnv_ann)
 
 # Set OncoKB genes
-# cnv$annotations <- cnv$annotations |>
-#   dplyr::mutate(
-#     "Genes (OncoKB)" = get_oncokb_genes(Genes, oncokb_genes),
-#     .after = "Genes",
-#   )
+cnv$annotations <- cnv$annotations |>
+  dplyr::mutate(
+    "Genes (OncoKB)" = get_oncokb_genes(Genes, oncokb_genes),
+    .after = "Genes",
+  )
 
 # Set OncoKB genes for Many Genes table and transfer to the main table where appropriate
-# cnv$many_genes <- cnv$many_genes |>
-#   dplyr::mutate(
-#     `Genes (OncoKB)` = get_oncokb_genes(Genes, oncokb_genes),
-#     .before = "Genes",
-#   ) |>
-#   # Create transfer column, set entries with more than n genes as 'Many genes (m)'
-#   dplyr::rowwise() |>
-#   dplyr::mutate(
-#     gene.oncokb.count = strsplit(`Genes (OncoKB)`, ", ") |> unlist() |> unique() |> length(),
-#     gene.oncokb.tx = ifelse(gene.oncokb.count > 2, paste0("Many genes (", gene.oncokb.count, ")"), `Genes (OncoKB)`),
-#   )
+cnv$many_genes <- cnv$many_genes |>
+  dplyr::mutate(
+    `Genes (OncoKB)` = get_oncokb_genes(Genes, oncokb_genes),
+    .before = "Genes",
+  ) |>
+  # Create transfer column, set entries with more than n genes as 'Many genes (m)'
+  dplyr::rowwise() |>
+  dplyr::mutate(
+    gene.oncokb.count = strsplit(`Genes (OncoKB)`, ", ") |> unlist() |> unique() |> length(),
+    gene.oncokb.tx = ifelse(gene.oncokb.count > 2, paste0("Many genes (", gene.oncokb.count, ")"), `Genes (OncoKB)`),
+  )
 
-# # Transfer selected OncoKB gene entries
-# v.selector <- match(cnv$many_genes$`Annotation ID`, cnv$annotations$`Annotation ID`)
-# cnv$annotations$`Genes (OncoKB)`[v.selector] <- cnv$many_genes$gene.oncokb.tx
+# Transfer selected OncoKB gene entries
+v.selector <- match(cnv$many_genes$`Annotation ID`, cnv$annotations$`Annotation ID`)
+cnv$annotations$`Genes (OncoKB)`[v.selector] <- cnv$many_genes$gene.oncokb.tx
 
-# # Clean up columns
-# cnv$many_genes <- cnv$many_genes |>
-#   dplyr::select(-c(gene.oncokb.count, gene.oncokb.tx))
+# Clean up columns
+cnv$many_genes <- cnv$many_genes |>
+  dplyr::select(-c(gene.oncokb.count, gene.oncokb.tx))
 ```
 
 ```{r purple_prep}
@@ -179,7 +198,7 @@ gpgr::write_tsvjsongz(purple_cnv_som_gene$tab, glue("purple/{bnm}-purple_cnv_som
 blank_lines(1)
 ```
 
-## **Summary**
+## **Summary** {#summary}
 
 <details>
 <summary>Description</summary>
@@ -229,22 +248,22 @@ cnv_summary <-
     N = dplyr::n(), .groups = "drop_last"
   ))
 
-# if (no_sv_found) {
-#   sv_summary <- tibble(unmelted = c(0), melted = c(0))
-# } else {
-#   sv_summary <- list(
-#     unmelted = sv$map %>% dplyr::select(Type),
-#     melted = sv$map_melted %>% dplyr::select(Type)
-#   ) %>%
-#     purrr::map(function(x) addmargins(table(x, useNA = "ifany"))) %>%
-#     do.call("rbind", .) %>%
-#     as.data.frame() %>%
-#     tibble::rownames_to_column(var = "group") %>%
-#     tidyr::pivot_longer(-group) %>%
-#     dplyr::mutate(value = paste0(name, ": ", value)) %>%
-#     tidyr::pivot_wider(names_from = group, values_from = value) %>%
-#     dplyr::select(unmelted, melted)
-# }
+if (no_sv_found|!report_sv) {
+  sv_summary <- tibble(unmelted = c(0), melted = c(0))
+} else {
+  sv_summary <- list(
+    unmelted = sv$map %>% dplyr::select(Type),
+    melted = sv$map_melted %>% dplyr::select(Type)
+  ) %>%
+    purrr::map(function(x) addmargins(table(x, useNA = "ifany"))) %>%
+    do.call("rbind", .) %>%
+    as.data.frame() %>%
+    tibble::rownames_to_column(var = "group") %>%
+    tidyr::pivot_longer(-group) %>%
+    dplyr::mutate(value = paste0(name, ": ", value)) %>%
+    tidyr::pivot_wider(names_from = group, values_from = value) %>%
+    dplyr::select(unmelted, melted)
+}
 
 qc_summary_all <- dplyr::tribble(
   ~n, ~variable, ~value, ~details,
@@ -326,7 +345,7 @@ qc_summary_all %>%
     )
   ) %>%
   gt::opt_row_striping() %>%
-  gt::tab_options(table.align = "left",column_labels.hidden = TRUE) 
+  gt::tab_options(table.align = "left",column_labels.hidden = TRUE,table.width = gt::pct(40)) 
 
 gpgr::write_tsvjsongz(qc_summary_all, glue("{bnm}-qc_summary"), result_outdir)
 ```
@@ -335,7 +354,7 @@ gpgr::write_tsvjsongz(qc_summary_all, glue("{bnm}-qc_summary"), result_outdir)
 blank_lines(1)
 ```
 
-## **Somatic Mutation Profiles**
+## **Somatic Mutation Profiles** {#snv-summary}
 
 ```{r, results='asis'}
 blank_lines(1)
@@ -392,11 +411,6 @@ blank_lines(1)
 blank_lines(1)
 ```
 
-
-### **SNV** Signatures {#sig-snv .tabset .tabset-fade}
-
-
-
 ## __Circos Plots__ {.tabset .tabset-fade #circos}
 
 Circos plots are generated by PURPLE.
@@ -431,7 +445,7 @@ The first BAF plot is based on PURPLE data and configuration files.
 
 </details>
 
-```{r circos_default1, out.width="80%"}
+```{r circos_default1, out.width="50%"}
 knitr::include_graphics(file.path(purple_dir,'plot', paste0(params$tumor_name, ".circos.png")))
 ```
 
@@ -466,6 +480,10 @@ knitr::include_graphics(file.path(purple_dir,'plot', paste0(params$tumor_name, "
 
 </details>
 
+```{r purple_rainfall, out.width="50%"}
+knitr::include_graphics(file.path(purple_dir,'plot', paste0(params$tumor_name, ".somatic.rainfall.png")))
+```
+
 ### Allele Ratios, BAF
 
 <details>
@@ -480,7 +498,7 @@ knitr::include_graphics(file.path(purple_dir,'plot', paste0(params$tumor_name, "
 
 </details>
 
-```{r circos_default2, out.width="80%"}
+```{r circos_default2, out.width="50%"}
 knitr::include_graphics(file.path(purple_dir,'plot', paste0(params$tumor_name, ".input.png")))
 ```
 
@@ -516,7 +534,7 @@ DEL    | intergenic_region       | TXNIP-HFE2 | ENSG00000265972-ENSG00000168509 
 
 </details>
 
-```{r}
+```{r,eval=report_sv}
 sv.dt <- sv |>
   purrr::map(function(x) {
     x |> DT::datatable(
@@ -535,7 +553,7 @@ sv.dt <- sv |>
 
 #### Plots
 
-```{r plot_bnd_sf_df_tot_lines, fig.width=12, fig.height=12, out.width="90%"}
+```{r plot_bnd_sf_df_tot_lines, fig.width=12, fig.height=12, out.width="90%",eval=report_sv}
 p1 <- gpgr:::plot_bnd_sf_df_tot_lines(sv$map)
 p2 <- gpgr::plot_bnd_sf_df_tot_hist(sv$map) + ggplot2::theme(legend.position = "none")
 ((p1$p_all | p2) / p1$p_tier)
@@ -543,45 +561,45 @@ p2 <- gpgr::plot_bnd_sf_df_tot_hist(sv$map) + ggplot2::theme(legend.position = "
 
 #### Counts
 
-```{r sv_summary}
-# d <-
-#   list(
-#     unmelted = sv$map %>% dplyr::select("Top Tier", Type),
-#     melted = sv$map_melted %>% dplyr::select("Top Tier", Type)
-#   ) %>%
-#   dplyr::bind_rows(.id = "group") %>%
-#   dplyr::mutate(group = factor(group, levels = c("unmelted", "melted"))) %>%
-#   dplyr::group_by(group) %>%
-#   dplyr::count(`Top Tier`, Type) %>%
-#   tidyr::pivot_wider(names_from = Type, values_from = n) %>%
-#   dplyr::ungroup() %>%
-#   dplyr::rowwise() %>%
-#   dplyr::mutate(tot = sum(dplyr::c_across(!(c(group, `Top Tier`))), na.rm = TRUE))
+```{r sv_summary,eval=report_sv}
+d <-
+  list(
+    unmelted = sv$map %>% dplyr::select("Top Tier", Type),
+    melted = sv$map_melted %>% dplyr::select("Top Tier", Type)
+  ) %>%
+  dplyr::bind_rows(.id = "group") %>%
+  dplyr::mutate(group = factor(group, levels = c("unmelted", "melted"))) %>%
+  dplyr::group_by(group) %>%
+  dplyr::count(`Top Tier`, Type) %>%
+  tidyr::pivot_wider(names_from = Type, values_from = n) %>%
+  dplyr::ungroup() %>%
+  dplyr::rowwise() %>%
+  dplyr::mutate(tot = sum(dplyr::c_across(!(c(group, `Top Tier`))), na.rm = TRUE))
 
-# d %>%
-#   gt::gt(
-#     groupname_col = "group",
-#     rowname_col = "Tier"
-#   ) %>%
-#   gt::tab_header(
-#     title = "SV type counts by tier",
-#     subtitle = "(TopTier used for melted variants)"
-#   ) %>%
-#   gt::tab_stubhead(label = "Tier") %>%
-#   gt::summary_rows(
-#     groups = TRUE,
-#     fns = list(tot = ~ sum(., na.rm = TRUE)),
-#     drop_trailing_zeros = TRUE
-#   ) %>%
-#   gt::sub_missing(columns = dplyr::everything()) %>%
-#   gt::tab_style(
-#     style = list(
-#       gt::cell_text(weight = "bold")
-#     ),
-#     locations = gt::cells_stub(rows = TRUE)
-#   ) %>%
-#   gt::cols_align("right") %>%
-#   gt::tab_options(table.align = "left")
+d %>%
+  gt::gt(
+    groupname_col = "group",
+    rowname_col = "Tier"
+  ) %>%
+  gt::tab_header(
+    title = "SV type counts by tier",
+    subtitle = "(TopTier used for melted variants)"
+  ) %>%
+  gt::tab_stubhead(label = "Tier") %>%
+  gt::summary_rows(
+    groups = TRUE,
+    fns = list(tot = ~ sum(., na.rm = TRUE)),
+    drop_trailing_zeros = TRUE
+  ) %>%
+  gt::sub_missing(columns = dplyr::everything()) %>%
+  gt::tab_style(
+    style = list(
+      gt::cell_text(weight = "bold")
+    ),
+    locations = gt::cells_stub(rows = TRUE)
+  ) %>%
+  gt::cols_align("right") %>%
+  gt::tab_options(table.align = "left")
 ```
 
 ```{r, results='asis'}
@@ -590,7 +608,7 @@ blank_lines(2)
 
 ### __SV Map__ {.tabset .tabset-fade}
 
-```{r}
+```{r,,eval=report_sv}
 sv.dt$map
 ```
 
@@ -602,31 +620,31 @@ blank_lines(2)
 
 #### Prioritised
 
-```{r}
+```{r,,eval=report_sv}
 sv.dt$annotations
 ```
 
-```{r, results='asis'}
+```{r, results='asis',eval=report_sv}
 blank_lines(2)
 ```
 
 #### Filtered
 
-```{r}
+```{r,eval=report_sv}
 sv.dt$annotations_filtered
 ```
 
-```{r, results='asis'}
+```{r, results='asis',eval=report_sv}
 blank_lines(2)
 ```
 
 #### Many Transcripts
 
-```{r}
+```{r,eval=report_sv}
 sv.dt$many_transcripts
 ```
 
-```{r, results='asis'}
+```{r, results='asis',eval=report_sv}
 blank_lines(2)
 ```
 
@@ -659,27 +677,27 @@ blank_lines(2)
 #### Filtered
 
 ```{r}
-cnv.dt$filtered
+# cnv.dt$filtered
 ```
 
 ```{r, results='asis'}
-blank_lines(2)
+# blank_lines(2)
 ```
 
 #### Many Genes
 
 ```{r}
-cnv.dt$many_genes
+# cnv.dt$many_genes
 ```
 
 ```{r, results='asis'}
-blank_lines(2)
+# blank_lines(2)
 ```
 
 #### Many Transcripts
 
 ```{r}
-cnv.dt$many_transcripts
+# cnv.dt$many_transcripts
 ```
 
 ```{r, results='asis'}
@@ -687,7 +705,6 @@ blank_lines(2)
 ```
 
 ### PURPLE __Gene Somatic__ CNV Calls {#gene-panel-cnv}
-
 <details>
 <summary>Description</summary>
 
@@ -726,6 +743,101 @@ blank_lines(2)
 ```
 
 ### Genome-wide __Somatic__ CNV Segments {#cnv-segments}
+#### QC, Purity and Ploidy Summary
+
+PURPLE outputs a QC status along with a summary
+for the inferred purity and ploidy of the somatic sample.
+A failed QC status can be attributed to several factors
+(see `Description` below).
+
+<details>
+<summary>Description</summary>
+
+__QC Status__
+
+The QC Status field reflects how we have determined the purity of the sample:
+
+* `NORMAL` - PURPLE fit the purity using COBALT and AMBER output.
+* `HIGHLY_DIPLOID` - The fitted purity solution is highly diploid (> 95%)
+  with a large range of potential solutions, but somatic variants are unable to
+  help either because they were not supplied or because their implied purity was too low.
+* `SOMATIC` - Somatic variants have improved the otherwise highly diploid solution.
+* `NO_TUMOR` - PURPLE failed to find any aneuploidy and somatic variants were
+  supplied but there were fewer than 300 with observed VAF > 0.1.
+
+__QC Failure__
+
+There are several reasons PURPLE may classify a sample as failed:
+
+* `FAIL_SEGMENT`: more than 220 copy number segments __not__ supported at either end
+  by SV breakpoints. Indicates samples with extreme GC bias, with differences
+  in depth of >= 10x between high and low GC regions. GC normalisation is
+  unreliable when the corrections are so extreme so it is recommended to fail
+  the sample (concerns with miscalled deletions or amplifications or have
+  poor sensitivity in high GC regions.
+* `NO_TUMOR`: no aneuploidy found and the number of somatic SNVs found is
+  less than 1,000
+* `MIN_PURITY`: fitted purity < 20%
+* `FAIL_DELETED_GENES`: more than 280 deleted genes. This QC step was added
+  after observing that in a handful of samples with high MB scale positive GC
+  bias we sometimes systematically underestimate the copy number in high GC
+  regions. This can lead us to incorrectly infer homozygous loss of entire
+  chromosomes, particularly on chromosomes 17 and 19.
+* `FAIL_GENDER`: if the AMBER and COBALT inferred genders are inconsistent
+  then the COBALT one is used but the sample is failed.
+
+</details>
+
+<p>&nbsp;</p>
+
+```{r purple_qc_summary}
+purple_qc_summary %>%
+  dplyr::select(variable,value) %>% 
+  gt::gt() %>%
+  gt::tab_style(
+    style = cell_text(weight = "bold"),
+    locations = cells_body(columns = Variable)
+  ) %>%
+  gt::tab_style(
+    style = cell_text(weight = "bold"),
+    locations = cells_body(columns = value)
+  ) %>%
+  gt::tab_style(
+    style = cell_text(color = "green"),
+    locations = cells_body(
+      columns = value,
+      rows = value == "PASS" | value == "TRUE"
+    )
+  ) %>%
+  gt::tab_style(
+    style = cell_text(color = "red"),
+    locations = cells_body(
+      columns = value,
+      rows = grepl("FAIL", value) | 
+             value == "FALSE" | 
+             value == "MALE_KLINEFELTER"
+    )
+  ) %>%
+  gt::tab_style(
+    style = cell_text(color = "purple"),
+    locations = cells_body(
+      columns = value,
+      rows = value == "FEMALE"
+    )
+  ) %>%
+  gt::tab_style(
+    style = cell_text(color = "blue"),
+    locations = cells_body(
+      columns = value,
+      rows = value == "MALE"
+    )
+  ) %>%
+  gt::tab_options(
+    table.width = gt::pct(30),  # table width
+    table.align = "left"    # 左对齐
+  )
+```
+
 
 <details>
 <summary>Description</summary>
@@ -891,4 +1003,3 @@ if (is.null(params$conda_list)) {
     )
 }
 ```
-

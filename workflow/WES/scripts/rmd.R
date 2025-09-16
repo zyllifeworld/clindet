@@ -34,10 +34,12 @@ report_rmd <- snakemake@params[['report_rmd']]
 output_file <- snakemake@params[['output_file']]
 out_dir <- dirname(output_file)
 result_outdir <- dirname(output_file)
+sv_available = FALSE # will not report SVs in WES and target panel
 pars <- list(
   batch_name = snakemake@params[['batch_name']],
   af_keygenes = snakemake@params[['af_keygenes']],
   genome_version = snakemake@params[['genome_version']],
+  sv_available = sv_available,
   # bcftools_stats = snakemake@params[['bcftools_stats']],
   # key_genes = snakemake@params[['key_genes']],
   # somatic_snv_vcf = snakemake@params[['somatic_snv_vcf']],
