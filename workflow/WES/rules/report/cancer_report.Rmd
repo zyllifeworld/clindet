@@ -40,7 +40,7 @@ params:
   somatic_sv_vcf: NULL
 
 description: "Analysis of tumor/normal samples at Clindet"
-title: "`r paste(params$batch_name, params$title)`"
+title: "`r paste(params$tumor_name, params$title)`"
 editor_options: 
   markdown: 
     wrap: 72
@@ -267,6 +267,7 @@ if (no_sv_found|!report_sv) {
 
 qc_summary_all <- dplyr::tribble(
   ~n, ~variable, ~value, ~details,
+  1, "Sample Name", tumor_name, "Sample Name of this run",
   20, "CNVs (Somatic)", glue::glue(
     "Min: {cnv_summary[['som']]$Min}; ",
     "Max: {cnv_summary[['som']]$Max}; ",
@@ -795,23 +796,23 @@ purple_qc_summary %>%
   dplyr::select(variable,value) %>% 
   gt::gt() %>%
   gt::tab_style(
-    style = cell_text(weight = "bold"),
-    locations = cells_body(columns = Variable)
+    style = gt::cell_text(weight = "bold"),
+    locations = gt::cells_body(columns = variable)
   ) %>%
   gt::tab_style(
-    style = cell_text(weight = "bold"),
-    locations = cells_body(columns = value)
+    style = gt::cell_text(weight = "bold"),
+    locations = gt::cells_body(columns = value)
   ) %>%
   gt::tab_style(
-    style = cell_text(color = "green"),
-    locations = cells_body(
+    style = gt::cell_text(color = "green"),
+    locations = gt::cells_body(
       columns = value,
       rows = value == "PASS" | value == "TRUE"
     )
   ) %>%
   gt::tab_style(
-    style = cell_text(color = "red"),
-    locations = cells_body(
+    style = gt::cell_text(color = "red"),
+    locations = gt::cells_body(
       columns = value,
       rows = grepl("FAIL", value) | 
              value == "FALSE" | 
@@ -819,15 +820,15 @@ purple_qc_summary %>%
     )
   ) %>%
   gt::tab_style(
-    style = cell_text(color = "purple"),
-    locations = cells_body(
+    style = gt::cell_text(color = "purple"),
+    locations = gt::cells_body(
       columns = value,
       rows = value == "FEMALE"
     )
   ) %>%
   gt::tab_style(
-    style = cell_text(color = "blue"),
-    locations = cells_body(
+    style = gt::cell_text(color = "blue"),
+    locations = gt::cells_body(
       columns = value,
       rows = value == "MALE"
     )
