@@ -25,6 +25,8 @@ def get_vcf_name(wildcards):
     if wildcards.sample in paired_samples:
         if wildcards.caller == 'vardict' or wildcards.caller == 'vardict_filter' or wildcards.caller == 'vardict_germline':          
             name =  "--tumor-id " + wildcards.sample + '-T' + " --normal-id " + wildcards.sample + '-NC'
+        elif wildcards.caller == 'sage' or wildcards.caller == 'pave':
+            name =  "--tumor-id " + wildcards.sample + " --normal-id " + wildcards.sample + '_NC'
         elif wildcards.caller == 'cgppindel_filter':
             name = "--tumor-id TUMOUR --normal-id NORMAL"
         elif wildcards.caller == 'caveman':

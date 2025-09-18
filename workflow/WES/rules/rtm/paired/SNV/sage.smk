@@ -52,9 +52,11 @@ rule pave_anno_sage:
         panel_bed=config['singularity']['hmftools'][genome_version]['sage']['panel_bed'],
         ref_genome_version=config['singularity']['hmftools'][genome_version]['sage']['ref_genome_version'],
     threads: 8
+    resources:
+        mem_mb=lambda wildcards, input: max(100 * min(f.size_mb for f in input), 1000) # 100 times vcf file size
     shell:
         """
-        pave \
+        pave -Xms{resources.mem_mb}m -Xmx{resources.mem_mb}m \
         -sample {wildcards.sample} \
         -vcf_file {input.vcf} \
         -ensembl_data_dir {params.ensembl_data_dir} \

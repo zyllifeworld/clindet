@@ -15,20 +15,22 @@ rule unpaired_sage:
         panel_bed=config['singularity']['hmftools'][genome_version]['sage']['panel_bed'],
         ref_genome_version=config['singularity']['hmftools'][genome_version]['sage']['ref_genome_version'],
     threads: 10
-    singularity:config['singularity']['hmftools']['sif']
+    # singularity:config['singularity']['hmftools']['sif']
+    conda:config['singularity']['hmftools']['conda']
     shell:
         """
         sage \
-        -tumor {wildcards.sample}_T -tumor_bam {input.Tum} \
+        -tumor {wildcards.sample} -tumor_bam {input.Tum} \
         -ref_genome_version {params.ref_genome_version} \
         -ref_genome {input.ref_genome} \
         -ensembl_data_dir {params.ensembl_data_dir} \
         -threads {threads} \
+        -skip_msi_jitter \
         -coverage_bed {params.coverage_bed} \
         -hotspots  {params.hotspots} \
         -panel_bed {params.panel_bed} \
         -high_confidence_bed {params.high_confidence_bed} \
-        -output_vcf {output.vcf}
+        -output_vcf {output.vcf} -write_bqr_plot
         """
 
 rule unpaired_sage_filter_pass:
@@ -63,9 +65,11 @@ rule unpaired_pave_anno_sage:
         panel_bed=config['singularity']['hmftools'][genome_version]['sage']['panel_bed'],
         ref_genome_version=config['singularity']['hmftools'][genome_version]['sage']['ref_genome_version'],
     threads: 8
+    resources:
+        mem_mb=lambda wildcards, input: max(100 * input.size_files_mb[0], 1000) # 100 times vcf file size
     shell:
         """
-        pave \
+        pave -Xms{resources.mem_mb}m -Xmx{resources.mem_mb}m \
         -sample {wildcards.sample} \
         -vcf_file {input.vcf} \
         -ensembl_data_dir {params.ensembl_data_dir} \
