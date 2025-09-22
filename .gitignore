@@ -145,7 +145,6 @@ workflow/WGS/rules/datavard.smk
 workflow/WGS/rules/rtm/paired/SV/jabba.smk
 workflow/WGS/rules/rtm/paired/SV/MELT.smk
 workflow/WES/rules/rtm/liftover_reanno.smk
-workflow/WES/rules/rtm/paired/CNV/cnv_facets.smk
 workflow/WES/rules/rtm/paired/purple.smk
 workflow/WES/scripts/ASCATsc.R
 workflow/WGS/rules/rtm/paired/SNV/Mutect2_filter_tmp.smk
@@ -154,7 +153,6 @@ workflow/WGS/scripts/caveman/mutect2_to_caveman.R
 workflow/WGS/scripts/caveman/un_cavman_cmds.R
 workflow/WGS/scripts/sample_check.R
 workflow/WGS/scripts/svclone_pre.R
-workflow/WES/rules/report/multiqc.smk
 workflow/WES/rules/rtm/paired/CNV/ASCATsc.smk
 build_cisx.sh
 bulid_vep_anno.sh
