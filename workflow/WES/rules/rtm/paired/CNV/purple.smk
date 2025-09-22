@@ -1,8 +1,6 @@
 ### for amber, only work for genome without chr prefix, it will not be add to the pipeline in hg19 version test
 ### purple
 ### amber first
-# purple_mem = max(min(31000, 4000+2000*threads_per_batch), 8000)
-# amber_mem  = max(min(31000, 4000+3000*threads_per_batch), 8000)
 rule paired_amber:
     input:
         Tum="{project}/{genome_version}/results/recal/paired/{sample}-T.bam",
@@ -44,10 +42,14 @@ rule paired_cobalt:
         gc_profile=config['singularity']['hmftools'][genome_version]['cobalt']['gc_profile'],
     threads: 10
     # singularity:config['singularity']['hmftools']['sif']
+    resources:
+        mem_mb=lambda wildcards, input: max(0.4 * input.size_files_mb[0], 1000) 
+    # singularity:config['singularity']['hmftools']['sif']
     conda:config['singularity']['hmftools']['conda']
     shell:
         """
-        cobalt -tumor {wildcards.sample} -tumor_bam {input.Tum} \
+        cobalt -Xms{resources.mem_mb}m -Xmx{resources.mem_mb}m \
+        -tumor {wildcards.sample} -tumor_bam {input.Tum} \
         -reference {wildcards.sample}_NC -reference_bam {input.NC} \
         -output_dir {params.output_dir} \
         -threads {threads} \
@@ -81,8 +83,6 @@ rule paired_purple:
         pp='{project}/{genome_version}/results/cnv/paired/purple/{sample}/purple/{sample}.purple.purity.tsv',
         output_dir=directory("{project}/{genome_version}/results/cnv/paired/purple/{sample}/purple")
     params:
-        xms=2000,
-        xmx=2000,
         output_dir="{project}/{genome_version}/results/cnv/paired/purple/{sample}/purple",
         tumor_only_diploid_bed=config['singularity']['hmftools'][genome_version]['purple']['tumor_only_diploid_bed'],
         gc_profile=config['singularity']['hmftools'][genome_version]['purple']['gc_profile'],
@@ -94,10 +94,10 @@ rule paired_purple:
     # singularity:config['singularity']['hmftools']['sif']
     conda:config['singularity']['hmftools']['conda']
     resources:
-        # mem_mb=int(amber_mem * 1.1),
+        mem_mb=lambda wildcards, input: max(0.45 * input.size_files_mb[0], 1000) 
     shell:
         """
-        purple -Xms{params.xms}m -Xmx{params.xmx}m \
+        purple -Xms{resources.mem_mb}m -Xmx{resources.mem_mb}m \
         -tumor {wildcards.sample} \
         -reference {wildcards.sample}_NC \
         -amber {input.amber} \

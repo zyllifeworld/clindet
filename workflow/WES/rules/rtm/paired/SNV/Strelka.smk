@@ -104,7 +104,7 @@ rule merge_strelka_manta:
 
 rule merge_strelka_somatic_manta:
     input:
-        tamp="{project}/{genome_version}/results/logs/strelka/paired/{sample}-StrelkaSomaticeManta.log"
+        tamp="{project}/{genome_version}/results/logs/strelka/paired/{sample}/{sample}-StrelkaSomaticeManta.log"
     output:
         "{project}/{genome_version}/results/vcf/paired/{sample}/strelkasomaticmanta.vcf"
     params:

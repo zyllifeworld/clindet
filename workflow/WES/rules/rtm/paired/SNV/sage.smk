@@ -53,7 +53,7 @@ rule pave_anno_sage:
         ref_genome_version=config['singularity']['hmftools'][genome_version]['sage']['ref_genome_version'],
     threads: 8
     resources:
-        mem_mb=lambda wildcards, input: max(100 * min(f.size_mb for f in input), 1000) # 100 times vcf file size
+        mem_mb=lambda wildcards, input: max(100 * input.size_files_mb[0], 1000) # 100 times vcf file size
     shell:
         """
         pave -Xms{resources.mem_mb}m -Xmx{resources.mem_mb}m \
@@ -73,6 +73,19 @@ rule sage_filter_pass:
         vcf="{project}/{genome_version}/results/vcf/paired/{sample}/sage/{sample}.sage.vcf.gz",
     output:
         vcf="{project}/{genome_version}/results/vcf/paired/{sample}/sage.vcf"
+    params:
+        ref=config['resources'][genome_version]['REFFA']
+    threads: 1
+    shell:
+        """
+        bcftools filter -i 'FILTER="PASS"'  {input.vcf} > {output.vcf} 
+        """
+
+rule paired_pave_filter_pass:
+    input:
+        vcf="{project}/{genome_version}/results/vcf/paired/{sample}/sage/{sample}.sage.pave.vcf.gz",
+    output:
+        vcf="{project}/{genome_version}/results/vcf/paired/{sample}/pave.vcf"
     params:
         ref=config['resources'][genome_version]['REFFA']
     threads: 1

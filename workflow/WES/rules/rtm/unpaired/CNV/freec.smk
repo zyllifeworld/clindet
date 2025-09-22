@@ -1,4 +1,4 @@
-rule freec_config:
+rule unpair_freec_config:
     input:
         Tum="{project}/{genome_version}/results/recal/unpaired/{sample}-T.bam",
         ini_template=config['singularity']['freec']['config_wes']

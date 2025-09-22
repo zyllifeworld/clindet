@@ -60,6 +60,7 @@ config['general']['maxThreads'] = snakemake.params['maxThreads']
 # config['BAF']['SNPfile'] = snakemake.params['snp_file']
 
 config['sample']['mateFile'] = tumor_bam
+config['control']['mateFile'] = normal_bam
 if "NC" not in snakemake.input.keys():
     config.remove_section('control')
 

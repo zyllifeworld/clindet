@@ -1,8 +1,8 @@
-rule unpair_freec_config:
+rule freec_config:
     input:
         Tum="{project}/{genome_version}/results/recal/paired/{sample}-T.bam",
         NC="{project}/{genome_version}/results/recal/paired/{sample}-NC.bam",
-        ini_template="workflow/WES/scripts/freec/config_exome.ini"
+        ini_template=config['singularity']['freec']['config_wes']
     output:
         config="{project}/{genome_version}/results/cnv/paired/freec/{sample}/{sample}_config_freec.ini",
     params:
