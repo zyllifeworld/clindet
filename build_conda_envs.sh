@@ -435,8 +435,8 @@ conda activate clindet
 echo "Do some mass config ..."
 if [ ! -f "build_log/mass_config.log" ]; then
     ### install some package for snakemake slurm and freec
-    echo -e "${GREEN_B} And some tool to clinet env ${NC}"
-    conda install ucsc-fasplit &>>build_log/clindet.log
+    echo -e "${GREEN_B} Add some tools to clinet env ${NC}"
+    conda install ucsc-fasplit -y &>>build_log/clindet.log
     pip install snakemake-executor-plugin-cluster-generic &>>build_log/clindet.log
     pip install configparser &>>build_log/clindet.log
     echo -e "OK!!!"
@@ -444,9 +444,11 @@ if [ ! -f "build_log/mass_config.log" ]; then
     echo -e "${GREEN_B} bgzip dbsnp vcf which is needed by Muse ${NC}"
     bgzip -k -o resources/ref_genome/b37/Homo_sapiens_assembly19.dbsnp138.vcf.gz resources/ref_genome/b37/Homo_sapiens_assembly19.dbsnp138.vcf
     tabix resources/ref_genome/b37/Homo_sapiens_assembly19.dbsnp138.vcf.gz
-
+    echo -e "OK!!!"
     ### gatk CreateSequenceDictionary
+    echo -e "${GREEN_B} create sequence dict for fasta ${NC}"
     resources/softwares/gatk/gatk CreateSequenceDictionary -R resources/ref_genome/b37/Homo_sapiens.GRCh37.GATK.illumina.fasta
+    echo -e "OK!!!"
     ### download TRUST4 ref
     git clone https://github.com/liulab-dfci/TRUST4.git resources/softwares/TRUST4
     ### download delly
@@ -455,26 +457,23 @@ if [ ! -f "build_log/mass_config.log" ]; then
     ### download common_vcf
     wget -P resources/ref_genome/b37 -c https://ftp.ncbi.nlm.nih.gov/snp/organisms/human_9606_b151_GRCh37p13/VCF/00-common_all.vcf.gz
     wget -P resources/ref_genome/b37 -c https://ftp.ncbi.nlm.nih.gov/snp/organisms/human_9606_b151_GRCh37p13/VCF/00-common_all.vcf.gz.tbi
+
+    touch build_log/mass_config.log
 else
     echo -e "${GREEN_B} Some Mass configuration finished. ${NC}"
 fi
 
-# bwa index resources/ref_genome/b37/Homo_sapiens.GRCh37.GATK.illumina.fasta
-
 ### Config freeC split fasta
-# mkdir -p resources/softwares/UCSC_tools
-# wget -P resources/softwares/UCSC_tools -c https://hgdownload.soe.ucsc.edu/admin/exe/linux.x86_64/faSplit
-# wget -P resources/ref_genome/b37 -c http://xfer.curie.fr/get/QKFgcU5caZd/hg19_snp137.SingleDiNucl.1based.txt.gz
-
-# chmod 755 resources/softwares/UCSC_tools/faSplit
+# conda activate clindet
 # mkdir -p resources/ref_genome/b37/fasta
-# resources/softwares/UCSC_tools/faSplit byname resources/ref_genome/b37/Homo_sapiens.GRCh37.GATK.illumina.fasta resources/ref_genome/b37/fasta/
+# faSplit byname resources/ref_genome/b37/Homo_sapiens.GRCh37.GATK.illumina.fasta resources/ref_genome/b37/fasta/
 # head -n 22 resources/ref_genome/b37/Homo_sapiens.GRCh37.GATK.illumina.fasta.fai > resources/ref_genome/b37/Homo_sapiens.GRCh37.GATK.illumina.fasta.auto.fai
 
 ### RSME STAR index
 conda activate clindet_rsem
 echo "Beginning RSEM star indexing ..."
 if [ ! -f "build_log/rsem_star_index.log" ]; then
+    mkdir -p resources/ref_genome/b37/RSEM/b37
     wget -P resources/ref_genome/b37/ -c https://ftp.ensembl.org/pub/grch37/release-114/gtf/homo_sapiens/Homo_sapiens.GRCh37.87.gtf.gz
     gzip -c -d resources/ref_genome/b37/Homo_sapiens.GRCh37.87.gtf.gz > resources/ref_genome/b37/Homo_sapiens.GRCh37.87.gtf
     rsem-prepare-reference \

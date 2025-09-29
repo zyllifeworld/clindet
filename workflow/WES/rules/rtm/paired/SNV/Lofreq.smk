@@ -21,11 +21,11 @@ rule lofreq_somatic:
 rule lofreq_norm_filter:
     input:
         ref=config['resources'][genome_version]['REFFA'],
-        snp="{project}/{genome_version}/results/vcf/paired/{sample}/lofreq/out_tumor_stringent.snvs.vcf.gz",
-        # indel="{project}/{genome_version}/results/vcf/paired/{sample}/lofreq/out_somatic_final.indels.vcf.gz"
+        snp="{project}/{genome_version}/results/vcf/paired/{sample}/lofreq/out_somatic_final.snvs.vcf.gz",
+        indel="{project}/{genome_version}/results/vcf/paired/{sample}/lofreq/out_somatic_final.indels.vcf.gz"
     output:
         vcf="{project}/{genome_version}/results/vcf/paired/{sample}/lofreq.vcf"
     shell:
         """
-         bcftools filter -e 'QUAL<20 | INFO/DP[0] < 10'  {input.snp} > {output.vcf}
+        bcftools concat -a {input.snp} {input.indel} | bcftools filter -e 'QUAL<20 | INFO/DP[0] < 10' -o {output.vcf}
         """

@@ -26,3 +26,4 @@ dependencies:
   - r-exomedepth
   - r-r.utils
   - configparser
+  - sra-tools

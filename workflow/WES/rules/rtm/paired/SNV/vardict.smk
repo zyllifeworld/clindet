@@ -5,31 +5,46 @@ rule vardict_paired_mode:
         bam="{project}/{genome_version}/results/recal/paired/{sample}-T.bam",
         normal="{project}/{genome_version}/results/recal/paired/{sample}-NC.bam",
     output:
-        vcf="{project}/{genome_version}/results/vcf/paired/{sample}/vardict.vcf"
+        vcf="{project}/{genome_version}/results/vcf/paired/{sample}/vardict_raw.vcf"
     params:
         extra="",
+        bed_columns="-c 1 -S 2 -E 3 -g 4",  # Optional, default is -c 1 -S 2 -E 3 -g 4
+        allele_frequency_threshold="0.01",  # Optional, default is 0.01
+        post_scripts="testsomatic.R | var2vcf_paired.pl -N "
     threads: 10
-    wrapper:
-        "v1.7.0/bio/vardict"
+    shell:
+        """
+        vardict-java -G {input.reference} \
+        {params.extra} \
+        -th {threads} \
+        {params.bed_columns} \
+        -f {params.allele_frequency_threshold} -N '{wildcards.sample}_T|{wildcards.sample}_NC' \
+        -b "{input.bam}|{input.normal}" \
+        {input.regions} | {params.post_scripts} '{wildcards.sample}_T|{wildcards.sample}_NC' -f {params.allele_frequency_threshold} > {output.vcf}
+        """
 
 rule vardict_filter_somatic:
     input:
-        vcf="{project}/{genome_version}/results/vcf/paired/{sample}/vardict.vcf"
+        vcf="{project}/{genome_version}/results/vcf/paired/{sample}/vardict_raw.vcf"
     output:
-        vcf="{project}/{genome_version}/results/vcf/paired/{sample}/vardict_filter.vcf"
+        vcf="{project}/{genome_version}/results/vcf/paired/{sample}/vardict.vcf"
     threads: 1
     params:
         caller='vardict'
-    script:
-        "../../../../scripts/vcf_filter_somtic.R"
+    shell:
+        """
+        bcftools view -i '(INFO/STATUS~"StrongSomatic" || INFO/STATUS~"LikelySomatic") && FILTER="PASS" && INFO/SSF <= 0.05' {input.vcf} > {output.vcf} 
+        """
 
 rule vardict_filter_germline:
     input:
-        vcf="{project}/{genome_version}/results/vcf/paired/{sample}/vardict.vcf"
+        vcf="{project}/{genome_version}/results/vcf/paired/{sample}/vardict_raw.vcf"
     output:
         vcf="{project}/{genome_version}/results/vcf_germline/paired/{sample}/vardict_germline.vcf"
     threads: 1
     params:
         caller='vardict'
-    script:
-        "../../../../scripts/vcf_filter_germline.R"
+    shell:
+        """
+        bcftools view -i 'INFO/STATUS~"Germline" && FILTER="PASS"' {input.vcf} > {output.vcf} 
+        """

@@ -9,6 +9,7 @@ rule call_variants_HaplotypeCaller:
     params:
         gatk4=config['softwares']['gatk4']['call'],
         temp_directory=config['params']['java']['temp_directory'],
+    threads:10
     shell:
         """
         export _JAVA_OPTIONS=-Djava.io.tmpdir={params.temp_directory} && {params.gatk4} \
@@ -17,7 +18,7 @@ rule call_variants_HaplotypeCaller:
         -I {input.NC} \
         -O {output.vcf} \
         --intervals {input.bed} \
-        --native-pair-hmm-threads 1 --annotate-with-num-discovered-alleles -A UniqueAltReadCount -A ReferenceBases \
+        --native-pair-hmm-threads {threads} --annotate-with-num-discovered-alleles -A UniqueAltReadCount -A ReferenceBases \
         -A PossibleDeNovo -A Coverage -A DepthPerAlleleBySample -A DepthPerSampleHC -A StrandBiasBySample -A StrandOddsRatio
         """
 

@@ -33,6 +33,8 @@ def get_vcf_name(wildcards):
             name = "--tumor-id TUMOUR --normal-id NORMAL"
         elif wildcards.caller == 'muse':
             name = "--tumor-id TUMOR --normal-id NORMAL"
+        elif wildcards.caller == 'varsca2':
+            name = "--tumor-id TUMOR --normal-id NORMAL"
         else: 
             name =  "--tumor-id " + wildcards.sample + '_T' + " --normal-id " + wildcards.sample + '_NC'
     else:
