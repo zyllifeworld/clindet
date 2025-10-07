@@ -1,17 +1,20 @@
 rule unpaired_freebayes:
     input:
         ref=config['resources'][genome_version]['REFFA'],
-        samples="{project}/{genome_version}/results/mut/dedup/{sample}.split.bam",
-        indexes="{project}/{genome_version}/results/mut/dedup/{sample}.split.bam.bai",
+        bam="{project}/{genome_version}/results/mut/dedup/{sample}.split.bam",
+        bam_bai="{project}/{genome_version}/results/mut/dedup/{sample}.split.bam.bai",
+        regions=config['resources'][genome_version]['WES_BED'],
     output:
-        "{project}/{genome_version}/results/mut/vcf/{sample}/freebayes.vcf",
+        vcf="{project}/{genome_version}/results/mut/vcf/{sample}/freebayes.vcf",
     params:
         extra="",  # optional parameters
         chunksize=100000,  # reference genome chunk size for parallelization (default: 100000)
         normalize=False,  # optional flag to use bcftools norm to normalize indels (Valid params are -a, -f, -m, -D or -d)
     threads: 10
-    wrapper:
-        "v1.7.0/bio/freebayes"
+    shell:
+        """
+        freebayes -f {input.ref} -t {input.regions} --min-coverage 10 -C 3 --pooled-continuous {input.bam} > {output.vcf}
+        """
 
 
 rule norm_filter_freebayes:

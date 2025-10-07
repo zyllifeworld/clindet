@@ -24,7 +24,7 @@ def get_gender(wildcards):
 def get_vcf_name(wildcards):
     if wildcards.sample in paired_samples:
         if wildcards.caller == 'vardict' or wildcards.caller == 'vardict_filter' or wildcards.caller == 'vardict_germline':          
-            name =  "--tumor-id " + wildcards.sample + '-T' + " --normal-id " + wildcards.sample + '-NC'
+            name =  "--tumor-id " + wildcards.sample + '_T' + " --normal-id " + wildcards.sample + '_NC'
         elif wildcards.caller == 'sage' or wildcards.caller == 'pave':
             name =  "--tumor-id " + wildcards.sample + " --normal-id " + wildcards.sample + '_NC'
         elif wildcards.caller == 'cgppindel_filter':

@@ -93,3 +93,5 @@ rule paired_pave_filter_pass:
         """
         bcftools filter -i 'FILTER="PASS"'  {input.vcf} > {output.vcf} 
         """
+
+#### Sage germline calling

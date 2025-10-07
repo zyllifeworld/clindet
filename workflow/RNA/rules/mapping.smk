@@ -7,7 +7,7 @@ rule STAR_1_pass:
         pass1="{project}/{genome_version}/results/mapped/STAR/{sample}/{sample}_pass1.log",
         sj_filt='{project}/{genome_version}/results/mapped/STAR/{sample}/_STARpass1/SJ.filt'
     params:
-        out_dir="{project}/{genome_version}/results/mapped/STAR/{sample}/_STARpass1/", # "/"" mustq in the config string
+        out_dir="{project}/{genome_version}/results/mapped/STAR/{sample}/_STARpass1/", # "/"" must in the config string
         ref=config['resources'][genome_version]['REFFA'],
         star_index=config['softwares']['star']['index'][genome_version],
         rg=r"ID:{sample} PL:ILLUMINA.NovaSeq LB:RNA-Seq SM:{sample}"
@@ -19,7 +19,7 @@ rule STAR_1_pass:
         STAR --genomeDir {params.star_index} --runThreadN={threads} \
             --outSAMtype None --outFileNamePrefix {params.out_dir} \
             --readFilesIn {input.R1} {input.R2} --readFilesCommand zcat
-        awk '$1~/chr[1-2XY]/ && $6==0 && $5>0 && $7>0' {params.out_dir}SJ.out.tab > {output.sj_filt}
+        awk '$1~/(chr)?[1-2XY]/ && $6==0 && $5>0 && $7>0' {params.out_dir}SJ.out.tab > {output.sj_filt}
         touch {output.pass1}
         """
 
@@ -46,9 +46,9 @@ rule STAR_arriba_map:
     shell:
         """ 
         STAR --genomeDir {params.star_index} --runThreadN={threads} \
-            --outSAMtype BAM SortedByCoordinate --outFileNamePrefix {params.out_dir} \
+            --outSAMtype BAM Unsorted --outFileNamePrefix {params.out_dir} \
             --outReadsUnmapped Fastx \
-            --outSAMattrRGline '{params.rg}' --sjdbFileChrStartEnd {input.sj_filt}\
+            --sjdbFileChrStartEnd {input.sj_filt}\
             --sjdbGTFfile {params.gtf} \
             --outFilterMultimapNmax 50 \
             --peOverlapNbasesMin 10 \
@@ -64,10 +64,10 @@ rule STAR_arriba_map:
             --chimMultimapNmax 50 \
             --readFilesIn {input.R1} {input.R2} --readFilesCommand gunzip -c
 
-        mv {params.out_dir}/Aligned.sortedByCoord.out.bam {output.bam}
+        samtools sort -@ {threads} -m 1G -o {output.bam} {params.out_dir}/Aligned.out.bam
+        samtools index {output.bam}
         mv {params.out_dir}/Unmapped.out.mate1 {output.um_fq1}
         mv {params.out_dir}/Unmapped.out.mate2 {output.um_fq2}
-
         touch {output.stamp}
         """
 

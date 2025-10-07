@@ -29,13 +29,13 @@ rule loop_vcf2maf_rna:
 
 rule merge_rna_maf:
     input:
-        vcf1=expand("{project}/{genome_version}/results/mut/vcf/{{sample}}/{caller}.vcf",caller = tumor_only_caller,project = project,genome_version = genome_version),
-        maf1=expand("{project}/{genome_version}/results/mut/maf/{{sample}}/{caller}.vcf.maf",caller = tumor_only_caller,project = project,genome_version = genome_version),
+        vcf1=expand("{project}/{genome_version}/results/mut/vcf/{{sample}}/{caller}.vcf",caller = rna_caller_list,project = project,genome_version = genome_version),
+        maf1=expand("{project}/{genome_version}/results/mut/maf/{{sample}}/{caller}.vcf.maf",caller = rna_caller_list,project = project,genome_version = genome_version),
         ref=config['resources'][genome_version]['REFFA']
     output:
         maf="{project}/{genome_version}/results/mut/maf/{sample}/merge/{sample}.maf",
         # filter_maf="{project}/{genome_version}/results/maf/unpaired/{sample}/merge/{sample}_filter.maf"
     params:
-        dir="{project}/{genome_version}/results/mut/maf/unpaired/{sample}"
+        dir="{project}/{genome_version}/results/mut/maf/{sample}"
     script:
         "../scripts/merge_maf.R"

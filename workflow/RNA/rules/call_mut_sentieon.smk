@@ -51,20 +51,19 @@ rule SplitNCigarReads:
 
 rule sentieon_call:
     input:
-        bam="{project}/{genome_version}/results/dedup/{sample}.split.bam",
+        bam="{project}/{genome_version}/results/mut/dedup/{sample}.split.bam",
         #bai="{project}/{genome_version}/{project}/{genome_version}/results/dedup/{sample_type}/{sample}-{group}.sorted.bam.bai",
         ref=config['resources'][genome_version]['REFFA'],
     output:
-        vcf_raw="{project}/{genome_version}/results/vcf/{sample}/sentieon_raw.vcf",
-        vcf="{project}/{genome_version}/results/vcf/{sample}/sentieon.vcf",
+        vcf_raw="{project}/{genome_version}/results/mut/vcf/{sample}/sentieon_raw.vcf",
+        vcf="{project}/{genome_version}/results/mut/vcf/{sample}/sentieon.vcf",
     params:
         temp_directory=config['params']['java']['temp_directory'],
         bed=config['resources'][genome_version]['WES_BED'],
-        rsem_ref='/public/ClinicalExam/lj_sih/resource/genome/human/hg38/Homo_sapiens_assembly38.fasta'
     threads:10
     shell:
         """ 
-        {config[softwares][sentieon][call]}  driver -t {threads} -r {params.rsem_ref} \
+        {config[softwares][sentieon][call]}  driver -t {threads} -r {input.ref} \
         -i {input.bam} --interval {params.bed} --algo Haplotyper --trim_soft_clip  \
         --call_conf 20 --emit_conf 20 {output.vcf_raw}
         bcftools filter -i 'FORMAT/DP[0] > 10' {output.vcf_raw} > {output.vcf}
@@ -73,9 +72,9 @@ rule sentieon_call:
 
 rule sentieon_anno_rna_edit:
     input:
-        vcf="{project}/{genome_version}/results/vcf/{sample}/sentieon.vcf",
+        vcf="{project}/{genome_version}/results/mut/vcf/{sample}/sentieon.vcf",
     output:
-        vcf="{project}/{genome_version}/results/vcf/{sample}/sentieon_anno_rnaedit.vcf",
+        vcf="{project}/{genome_version}/results/mut/vcf/{sample}/sentieon_anno_rnaedit.vcf",
     params:
         temp_directory=config['params']['java']['temp_directory'],
         bed=config['resources'][genome_version]['WES_BED'],

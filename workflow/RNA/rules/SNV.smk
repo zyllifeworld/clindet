@@ -1,0 +1,7 @@
+include: "SNV/Mutect2.smk"
+include: "SNV/freebayes.smk"
+include: "SNV/HaplotypeCaller.smk"
+include: "SNV/Strelka.smk"
+include: "SNV/Lofreq.smk"
+include: "SNV/vardict.smk"
+include: "SNV/varscan2.smk"

@@ -20,9 +20,6 @@ callers_vcf <- callers_vcf[!str_detect(callers_vcf,'strelkasomatic.vcf.maf')]
 
 
 final <- NULL
-#callers <- c("Mutect2", "HaplotypeCaller", "Strelka", "VarDict", "Pindel", "UnifiedGenoTyper", "Freebayes", "Varscan2", "Lofreq")
-#callers <- c("Mutect2", "HaplotypeCaller", "Strelka", "StrelkaSomatic", "UnifiedGenoTyper")
-
 index_name <- c("Chromosome", "Start_Position", "End_Position", "Reference_Allele", "Tumor_Seq_Allele2")
 
 final.tmp <- NULL
@@ -53,6 +50,8 @@ for(caller_file in callers_vcf) {
   # fil2 <- str_detect(dat$all_effects, "missense_variant|stop|splice|inframe|frameshift")
   fil1 <- !dat$Variant_Classification %in% c("Targeted_Region")
   fil2 <- str_detect(dat$all_effects, "missense_variant|stop|splice|inframe|frameshift|synonymous")
+  fil2[is.na(fil2)] <- FALSE
+  if (sum(fil1 | fil2) == 0) next ## PASS when did not call any exome variants
   dat <- dat[fil1 | fil2,]
   # dat <- dat[is.na(dat$gnomAD_AF) | dat$gnomAD_AF <= 0.1,]
   if (is.null(dat$gnomAD_AF) & !(is.null(dat$gnomADe_AF))){

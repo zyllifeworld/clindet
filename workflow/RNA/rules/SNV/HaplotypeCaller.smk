@@ -1,14 +1,15 @@
 rule call_variants_HaplotypeCaller:
     input:
         # Tum="{project}/{genome_version}/results/recal/{sample}.bam",
-        Tum="{project}/{genome_version}/results/mut/dedup/{sample}.split.bam"
+        Tum="{project}/{genome_version}/results/mut/dedup/{sample}.split.bam",
         ref=config['resources'][genome_version]['REFFA'],
     output:
         vcf="{project}/{genome_version}/results/mut/vcf/{sample}/HaplotypeCaller.vcf",
+    threads:10
     params:
         gatk4=config['softwares']['gatk4']['call'],
         temp_directory=config['params']['java']['temp_directory'],
-        bed="/public/ClinicalExam/lj_sih/projects/project_clindet/reference/hg38/Twist_Exome_Core_Covered_Targets_hg38.bed"
+        bed=config['resources'][genome_version]['WES_BED']
     shell:
         """
         export _JAVA_OPTIONS=-Djava.io.tmpdir={params.temp_directory} && {params.gatk4} \
@@ -17,13 +18,13 @@ rule call_variants_HaplotypeCaller:
         -I {input.Tum} \
         -O {output.vcf} \
         -DF MappingQualityAvailableReadFilter \
-        --native-pair-hmm-threads 1 --annotate-with-num-discovered-alleles -A UniqueAltReadCount -A ReferenceBases \
+        --native-pair-hmm-threads {threads} --annotate-with-num-discovered-alleles -A UniqueAltReadCount -A ReferenceBases \
         -A PossibleDeNovo -A Coverage -A DepthPerAlleleBySample -A DepthPerSampleHC -A StrandBiasBySample -A StrandOddsRatio
         """
 
 rule norm_filter_HaplotypeCaller:
     input:
-        vcf="{project}/{genome_version}/results/vcf/{sample}/HaplotypeCaller.vcf",
+        vcf="{project}/{genome_version}/results/mut/vcf/{sample}/HaplotypeCaller.vcf",
         ref=config['resources'][genome_version]['REFFA'],
     output:
         vcf="{project}/{genome_version}/results/vcf_nf/{sample}/HaplotypeCaller.vcf",
