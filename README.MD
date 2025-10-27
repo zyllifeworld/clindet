@@ -57,7 +57,9 @@ To facilitate user adoption, ClinDet includes a variety of use cases. These exam
 3. **Use case IV**: Quantifying​​ the contributions of DNA repair defective gene mutations to mutational signatures（***C. elegans***） 
 
 ## ClinDet Development Visualized​
-<iframe src="//player.bilibili.com/player.html?bvid=BV1eTsUzuEFo&page=1" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true"> </iframe>
+
+<a href="https://www.bilibili.com/video/BV1eTsUzuEFo" target="_blank" style="display: block; text-align: center;"><img src="images/bilibili.jpg" 
+alt="ClinDet" width="640" border="4" /></a>
 
 ## Credits
 The `ClinDet` pipeline was written and is maintained by Yuliang Zhang ([@Yuliang Zhang](https://github.com/zyllifeworld)) , Junyi Zhang and Jianfeng Li from
