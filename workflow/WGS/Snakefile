@@ -67,8 +67,6 @@ include: "rules/merge_loop.smk"
 include: "rules/merge_loop_germline.smk"
 
 ## SV call rules
-BRASS_CNV = config['singularity']['brass'].get("CNV", 'ASCAT')
-        
+BRASS_CNV = config['singularity']['brass'].get("CNV", 'ASCAT')     
 include: "rules/rtm/paired/SV.smk"
-include: "rules/rtm/paired/svclone.smk"
 include: "rules/report/multiqc.smk"

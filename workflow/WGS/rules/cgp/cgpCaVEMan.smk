@@ -11,8 +11,10 @@ if genome_version in ['hg19','b37','hg38','hg38_EBV']:
             # gender=,
             sample_index= lambda wildcards: wildcards.sample
         threads: 1
+        conda: config['conda']['clindet_main']
         script:
             "../../scripts/caveman/cnv_bed.R"
+    
     rule CM_call: 
         input:
             Tum="{project}/{genome_version}/results/recal/paired/{sample}-T.bam",
@@ -164,18 +166,3 @@ rule CM_germ_flag:
         """
 
 
-# # rule CM_UM: 
-# #     input:
-# #         vcfs=expand("analysis/pindel_normal/log/{sample}_pindel_NC.log",sample = paired_samples)
-# #     output:
-# #         'analysis/normalPanel/pindel_{sample}.gff3.gz'
-# #     threads: 20
-# #     params:
-# #         ref=config['resources'][genome_version]['REFFA'],
-# #         gff3='analysis/normalPanel/pindel_{sample}',
-# #     singularity:
-# #         config['singularity']['caveman']['sif']
-# #         # '/public/ClinicalExam/lj_sih/softwares/pindel.sif'
-# #     shell:
-# #         """  
-# #         """

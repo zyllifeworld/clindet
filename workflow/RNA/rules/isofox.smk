@@ -57,7 +57,7 @@ rule isofox_call:
         # Allocate memory based on input file size, with a minimum of 300 MB
         mem_mb=lambda wildcards, input: max(1.5 * input.size_mb, 300),
     conda:
-        config['softwares']['star']['conda']
+        config['singularity']['hmftools']['conda']
     shell:
         """ 
         isofox -Xms{resources.mem_mb}m -Xmx{resources.mem_mb}m \

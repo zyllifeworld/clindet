@@ -10,6 +10,7 @@ rule CM_cnv:
         # gender=,
         sample_index=lambda wildcards: wildcards.sample,
         genome_version=lambda wildcards: wildcards.genome_version
+    conda: config['conda']['clindet_main']
     threads: 1
     script:
         "../../scripts/caveman/cnv_bed.R"

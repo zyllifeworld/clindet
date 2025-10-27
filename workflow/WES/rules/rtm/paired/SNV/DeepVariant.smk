@@ -35,6 +35,7 @@ rule deepvariant_filter_germline:
         ref=config['resources'][genome_version]['REFFA'],
         out_prefix="{project}/{genome_version}/results/vcf/paired/{sample}/deepvariant",
     threads: 1
+    conda: config['conda']['clindet_main']
     shell:
         """
         bcftools filter -i 'FILTER="GERMLINE"'  {input.vcf} > {output.vcf} 
@@ -50,6 +51,7 @@ rule deepvariant_filter_somatic:
         ref=config['resources'][genome_version]['REFFA'],
         out_prefix="{project}/{genome_version}/results/vcf/paired/{sample}/deepvariant",
     threads: 1
+    conda: config['conda']['clindet_main']
     shell:
         """
         bcftools filter -i 'FILTER="PASS"'  {input.vcf} > {output.vcf} 

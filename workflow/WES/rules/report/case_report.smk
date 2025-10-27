@@ -1,3 +1,4 @@
+import os
 rule run_cancer_report:
     input:
         # rmd_file="workflow/WES/rules/report/cancer_report.Rmd",
@@ -7,7 +8,7 @@ rule run_cancer_report:
         ## SNVs results
         merge_maf="{project}/{genome_version}/results/maf/paired/{sample}/merge/{sample}.maf",
         ## CNV results
-        ascat_res_dir='{project}/{genome_version}/results/cnv/paired/ascat/{sample}',
+        ascat_rdata="{project}/{genome_version}/results/cnv/paired/ascat/{sample}/{sample}_ASCAT.rdata",
         purple_res_dir='{project}/{genome_version}/results/cnv/paired/purple/{sample}/purple',
         # somatic_snv_summary  = rules.somatic_snv_summary.output.json,
         # somatic_snv_vcf      = '{batch}/small_variants/{batch}-somatic-PASS.vcf.gz',
@@ -43,7 +44,7 @@ rule run_cancer_report:
         af_keygenes  = lambda wc, input: abspath(input.af_keygenes),
         output_file         = lambda wc, output: join(os.getcwd(), output['report_html']),
         ### CNV results dir
-        ascat_res_dir=lambda wc, input: abspath(input.ascat_res_dir),
+        ascat_res_dir=lambda wc, input: os.path.basename(abspath(input.ascat_rdata)),
         purple_res_dir=lambda wc, input: abspath(input.purple_res_dir),
         ## purple results
         purple_som_snv_vcf  = lambda wc, input: abspath(input.purple_som_snv_vcf),

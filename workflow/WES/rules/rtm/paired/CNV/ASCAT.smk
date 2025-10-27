@@ -12,6 +12,7 @@ rule CNA_ASCAT:
         GCcontentfile=config['softwares']['ascat'][genome_version]['GCcontentfile'],
         replictimingfile=config['softwares']['ascat'][genome_version]['replictimingfile'],
     threads: 8
+    conda: config['conda']['clindet_main']
     script:
         "../../../../scripts/ASCAT.R"
 
@@ -20,7 +21,7 @@ rule ASCAT_GISTIC:
         cnv_rdata="{project}/{genome_version}/results/cnv/paired/ascat/{sample}/{sample}_ASCAT.rdata"
     output:
         seg="{project}/{genome_version}/results/cnv/paired/GISTIC2_seg/{sample}/{sample}.seg"
-    conda:'clindet'
+    conda: config['conda']['clindet_main']
     params:
         wd="{project}/{genome_version}/results/cnv/paired/{sample}",
         # gender=,

@@ -1,0 +1,18 @@
+executor: cluster-generic
+cluster-generic-submit-cmd:
+  mkdir -p logs/{wildcards.project}/pbs &&
+  qsub
+    -q SVC
+    -l select=1:ncpus={threads}
+    -N {rule}
+    -o logs/{wildcards.project}/pbs/{wildcards.sample}_{rule}.$PBS_JOBID.out
+    -e logs/{wildcards.project}/pbs/{wildcards.sample}_{rule}.$PBS_JOBID.err
+default-resources:
+  - partition=SVC
+latency-wait: 60
+jobs: 50
+keep-going: True
+rerun-incomplete: True
+printshellcmds: True
+scheduler: greedy
+use-conda: True

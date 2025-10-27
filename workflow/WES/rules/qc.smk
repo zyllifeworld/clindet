@@ -42,7 +42,7 @@ rule fastp_tumor_sample:
             -o {output.R1} -O {output.R2}
         """
 
-conpair_marker_defalut=True
+conpair_marker_defalut=config['singularity']['conpair'][genome_version]['marker']
 rule conpair_pileup:
     input:
         Tum="{project}/{genome_version}/results/recal/paired/{sample}-T.bam",
@@ -52,7 +52,7 @@ rule conpair_pileup:
         NC_pileup="{project}/{genome_version}/results/qc/conpair/paired/{sample}/{sample}-NC.pileup",
     params:
         ref=config['resources'][genome_version]['REFFA'],
-        marker = '' if conpair_marker_defalut else '-M ' + config['singularity']['conpair'][genome_version]['marker']
+        marker = '' if isinstance(conpair_marker_defalut, bool) and conpair_marker_defalut is True else '-M ' + config['singularity']['conpair'][genome_version]['marker']
     singularity: config['singularity']['conpair']['sif']
     shell:
         """
@@ -67,6 +67,8 @@ rule conpair_concordance:
     output:
         txt="{project}/{genome_version}/results/qc/conpair/paired/{sample}/{sample}-T_concordance.txt",
     singularity: config['singularity']['conpair']['sif']
+    params:
+        marker = '' if isinstance(conpair_marker_defalut, bool) and conpair_marker_defalut is True else '-M ' + config['singularity']['conpair'][genome_version]['marker']
     shell:
         """
         /Conpair-0.2/scripts/verify_concordance.py -T {input.Tum_pileup} -N {input.NC_pileup} --outfile {output.txt}
@@ -79,11 +81,11 @@ rule conpair_contamination:
     output:
         txt="{project}/{genome_version}/results/qc/conpair/paired/{sample}/{sample}-T_contamination.txt",
     params:
-        marker=''
+        marker = '' if isinstance(conpair_marker_defalut, bool) and conpair_marker_defalut is True else '-M ' + config['singularity']['conpair'][genome_version]['marker']
     singularity: config['singularity']['conpair']['sif']
     shell:
         """
-        /Conpair-0.2/scripts/estimate_tumor_normal_contamination.py -T {input.Tum_pileup} -N {input.NC_pileup} --outfile {output.txt}
+        /Conpair-0.2/scripts/estimate_tumor_normal_contamination.py -T {input.Tum_pileup} -N {input.NC_pileup} --outfile {output.txt} {params.marker}
         """
 
 rule conpair:

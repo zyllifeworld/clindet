@@ -12,6 +12,7 @@ rule vardict_paired_mode:
         allele_frequency_threshold="0.01",  # Optional, default is 0.01
         post_scripts="testsomatic.R | var2vcf_paired.pl -N "
     threads: 10
+    conda: config['conda']['clindet_main']
     shell:
         """
         vardict-java -G {input.reference} \
@@ -31,6 +32,7 @@ rule vardict_filter_somatic:
     threads: 1
     params:
         caller='vardict'
+    conda: config['conda']['clindet_main']
     shell:
         """
         bcftools view -i '(INFO/STATUS~"StrongSomatic" || INFO/STATUS~"LikelySomatic") && FILTER="PASS" && INFO/SSF <= 0.05' {input.vcf} > {output.vcf} 
@@ -44,6 +46,7 @@ rule vardict_filter_germline:
     threads: 1
     params:
         caller='vardict'
+    conda: config['conda']['clindet_main']
     shell:
         """
         bcftools view -i 'INFO/STATUS~"Germline" && FILTER="PASS"' {input.vcf} > {output.vcf} 

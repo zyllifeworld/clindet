@@ -25,6 +25,7 @@ rule lofreq_norm_filter:
         indel="{project}/{genome_version}/results/vcf/paired/{sample}/lofreq/out_somatic_final.indels.vcf.gz"
     output:
         vcf="{project}/{genome_version}/results/vcf/paired/{sample}/lofreq.vcf"
+    conda: config['conda']['clindet_main']
     shell:
         """
         bcftools concat -a {input.snp} {input.indel} | bcftools filter -e 'QUAL<20 | INFO/DP[0] < 10' -o {output.vcf}

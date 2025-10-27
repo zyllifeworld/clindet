@@ -76,6 +76,7 @@ rule sage_filter_pass:
     params:
         ref=config['resources'][genome_version]['REFFA']
     threads: 1
+    conda: config['conda']['clindet_main']
     shell:
         """
         bcftools filter -i 'FILTER="PASS"'  {input.vcf} > {output.vcf} 

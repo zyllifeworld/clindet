@@ -38,5 +38,6 @@ rule sequenza_call:
         segment="{project}/{genome_version}/results/cnv/paired/sequenza/{sample}/{sample}_segments.txt",
     params:
         wd="{project}/{genome_version}/results/cnv/paired/sequenza/{sample}",
+    conda: config['conda']['clindet_main']
     script:
         "../../../../scripts/sequenza.R"

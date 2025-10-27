@@ -16,6 +16,7 @@ rule freec_config:
         sambamba=config['singularity']['freec'][genome_version]['sambamba'],
         ref=config['resources'][genome_version]['REFFA'],
     threads: 10
+    conda: config['conda']['clindet_main']
     script:
         "../../../../scripts/freec/config_freec.py"
 

@@ -1,3 +1,4 @@
+# I will keep SM_chek,CNA_ABSOLUTE_GISTIC,CNA_Battenberg rule for future development
 rule SM_check:
     input:
         Tum="{project}/{genome_version}/results/recal/paired/{sample}-T.bam",
@@ -24,7 +25,7 @@ rule CNA_ABSOLUTE_GISTIC:
         ndt_maf="{project}/{genome_version}/results/clone/PhylogicNDT/{sample}/{sample}.maf",
         absolute_dir=directory("{project}/{genome_version}/results/cnv/ABSOLUTE/{sample}"),
         # absolute_pdf="{project}/{genome_version}/results/cnv/ABSOLUTE/{sample}/DoAbsolute.called.ABSOLUTE.plots.pdf"
-    # conda:'snakemake'
+    conda: config['conda']['clindet_main']
     params:
         wd="{project}/{genome_version}/results/cnv/paired/{sample}",
         # gender=,

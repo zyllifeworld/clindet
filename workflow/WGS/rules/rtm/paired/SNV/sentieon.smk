@@ -143,9 +143,10 @@ rule filter_sentieon:
         flag_vcf="{project}/{genome_version}/results/vcf/paired/{sample}/sentieon_flag.vcf",
         vcf="{project}/{genome_version}/results/vcf/paired/{sample}/sentieon.vcf"
     threads: 10
+    conda: config['conda']['clindet_main']
     shell:
         """
-        /public/astra/bin/_sentieon/bin/sentieon driver -t {threads} \
+        {config[softwares][sentieon][call]}  driver -t {threads} \
         -r  {input.ref}  \
         --algo TNfilter --tumor_sample {wildcards.sample}_T \
         --normal_sample {wildcards.sample}_NC \
@@ -154,11 +155,7 @@ rule filter_sentieon:
         {output.vcf}
         bcftools filter -i 'FILTER="PASS"'  {output.flag_vcf} > {output.vcf} 
         """
-# --vcf GERMLINE_RESOURCE \
-        # --algo ContaminationModel --tumor_sample {wildcards.sample}_T \
-        # --normal_sample {wildcards.sample}_NC \
-        # --tumor_segments {output.contam_data}.segments \
-        # {output.contam_data} 
+
 # rule M2_filter:
 #     input:
 #         Tum="{project}/{genome_version}/results/recal/paired/{sample}-T.bam",

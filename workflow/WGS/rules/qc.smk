@@ -44,7 +44,7 @@ rule fastp_tumor_sample:
 
 ### check paired Sample Swap with conpair
 ## GATK3 likely not work with genome sequence file with fasta suffix
-conpair_marker_defalut=True
+conpair_marker_defalut=config['singularity']['conpair'][genome_version]['marker']
 rule conpair_pileup:
     input:
         Tum="{project}/{genome_version}/results/recal/paired/{sample}-T.bam",
@@ -53,22 +53,24 @@ rule conpair_pileup:
         Tum_pileup="{project}/{genome_version}/results/qc/conpair/paired/{sample}/{sample}-T.pileup",
         NC_pileup="{project}/{genome_version}/results/qc/conpair/paired/{sample}/{sample}-NC.pileup",
     params:
-        ref=config['singularity']['conpair'][genome_version]['ref'],
-        marker = [] if conpair_marker_defalut else  '-M ' + config['singularity']['conpair'][genome_version]['marker']
+        ref=config['resources'][genome_version]['REFFA'],
+        marker = '' if isinstance(conpair_marker_defalut, bool) and conpair_marker_defalut is True else '-M ' + config['singularity']['conpair'][genome_version]['marker']
     singularity: config['singularity']['conpair']['sif']
     shell:
         """
-        /Conpair-0.2/scripts/run_gatk_pileup_for_sample.py -R {params.ref} -B {input.Tum} -O {output.Tum_pileup}
-        /Conpair-0.2/scripts/run_gatk_pileup_for_sample.py -R {params.ref} -B {input.NC} -O {output.NC_pileup}
+        /Conpair-0.2/scripts/run_gatk_pileup_for_sample.py -R {params.ref} -B {input.Tum} -O {output.Tum_pileup} {params.marker}
+        /Conpair-0.2/scripts/run_gatk_pileup_for_sample.py -R {params.ref} -B {input.NC} -O {output.NC_pileup} {params.marker}
         """
 
 rule conpair_concordance:
     input:
         Tum_pileup="{project}/{genome_version}/results/qc/conpair/paired/{sample}/{sample}-T.pileup",
-        NC_pileup="{project}/{genome_version}/results/qc/conpair/paired/{sample}/{sample}-NC.pileup"
+        NC_pileup="{project}/{genome_version}/results/qc/conpair/paired/{sample}/{sample}-NC.pileup",
     output:
         txt="{project}/{genome_version}/results/qc/conpair/paired/{sample}/{sample}-T_concordance.txt",
     singularity: config['singularity']['conpair']['sif']
+    params:
+        marker = '' if isinstance(conpair_marker_defalut, bool) and conpair_marker_defalut is True else '-M ' + config['singularity']['conpair'][genome_version]['marker']
     shell:
         """
         /Conpair-0.2/scripts/verify_concordance.py -T {input.Tum_pileup} -N {input.NC_pileup} --outfile {output.txt}
@@ -81,16 +83,16 @@ rule conpair_contamination:
     output:
         txt="{project}/{genome_version}/results/qc/conpair/paired/{sample}/{sample}-T_contamination.txt",
     params:
-        marker=''
+        marker = '' if isinstance(conpair_marker_defalut, bool) and conpair_marker_defalut is True else '-M ' + config['singularity']['conpair'][genome_version]['marker']
     singularity: config['singularity']['conpair']['sif']
     shell:
         """
-        /Conpair-0.2/scripts/estimate_tumor_normal_contamination.py -T {input.Tum_pileup} -N {input.NC_pileup} --outfile {output.txt}
+        /Conpair-0.2/scripts/estimate_tumor_normal_contamination.py -T {input.Tum_pileup} -N {input.NC_pileup} --outfile {output.txt} {params.marker}
         """
 
 rule conpair:
     input:
-        "{project}/{genome_version}/results/qc/conpair/paired/{sample}/{sample}-T_contamination.txt",
-        "{project}/{genome_version}/results/qc/conpair/paired/{sample}/{sample}-T_concordance.txt",
+        contam="{project}/{genome_version}/results/qc/conpair/paired/{sample}/{sample}-T_contamination.txt",
+        concord="{project}/{genome_version}/results/qc/conpair/paired/{sample}/{sample}-T_concordance.txt",
     output:
-        temp(touch('{project}/{genome_version}/logs/paired/conpair/{sample}.done'))
+        touch('{project}/{genome_version}/logs/paired/conpair/{sample}.done')

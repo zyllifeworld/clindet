@@ -10,7 +10,7 @@ rule varscan2_mpileup:
         normal=temp("{project}/{genome_version}/results/recal/paired/{sample}-NC.mp"),
         tumor=temp("{project}/{genome_version}/results/recal/paired/{sample}-T.mp")
     threads: 2
-    conda:"clindet"
+    conda: config['conda']['clindet_main']
     shell:
         """
         samtools mpileup -q 1 -Q 1 -f {input.ref} -l {input.regions} {input.normal} > {output.normal}
@@ -27,7 +27,8 @@ rule varscan2_call:
         snp="{project}/{genome_version}/results/vcf/paired/{sample}/varscan2.snp.vcf",
         indel="{project}/{genome_version}/results/vcf/paired/{sample}/varscan2.indel.vcf"
     log:
-        "{project}/{genome_version}/logs/varscan2/paired/{sample}.log",
+        "{project}/{genome_version}/logs/varscan2/paired/{sample}.log"
+    conda: config['conda']['clindet_main']
     shell:
         """
         varscan somatic {input.normal} {input.tumor} --output-snp {output.snp} --output-indel {output.indel} --output-vcf 1 --strand-filter 1
@@ -51,6 +52,7 @@ rule varscan2_processSomatic:
         indel_germ="{project}/{genome_version}/results/vcf/paired/{sample}/varscan2.indel.Germline.vcf",
         indel_germ_hc="{project}/{genome_version}/results/vcf/paired/{sample}/varscan2.indel.Germline.hc.vcf",
     threads: 1
+    conda: config['conda']['clindet_main']
     shell:
         """
         varscan processSomatic {input.snp}
@@ -63,6 +65,7 @@ rule varscan2_som_filter:
         snp_som_hc="{project}/{genome_version}/results/vcf/paired/{sample}/varscan2.snp.Somatic.hc.vcf"
     output:
         vcf="{project}/{genome_version}/results/vcf/paired/{sample}/varscan2.snp.Somatic.hc.filter.vcf"
+    conda: config['conda']['clindet_main']
     shell:
         """
         varscan somaticFilter {input.som_hc} --indel-file {input.indel} --output-file {output.vcf}
@@ -77,6 +80,7 @@ rule varscan2_merge_somatic:
     threads: 1
     params:
         caller='varscan2'
+    conda: config['conda']['clindet_main']
     shell:
         """
         bgzip {input.snp_som_hc_filter} -k -o {input.snp_som_hc_filter}.gz

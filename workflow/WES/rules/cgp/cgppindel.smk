@@ -6,7 +6,7 @@ if not pindel_normal_panel:
             ref=config['resources'][genome_version]['REFFA'],
         output:
             bam="{project}/{genome_version}/results/recal/pindel_fake.bam"
-        conda:'clindet'# use samtools from clindet env
+        conda: config['conda']['clindet_main']# use samtools from clindet env
         shell:
             """
             (samtools dict {input.ref} | cut -f 1-4 && echo -e '@RG\tID:1\tSM:FAKE') | samtools view -S -bo {output.bam} -
@@ -153,18 +153,6 @@ rule PI_ggz:
         tabix -p {input.germ_bed}.gz
         touch {output.log}
         """
-## filter an format DP and AD tag
-# rule cgppindel_filter_somatic:
-#     input:
-#         vcf='{project}/{genome_version}/results/logs/paired/cgppindel_{sample}.log'
-#     output:
-#         vcf="{project}/{genome_version}/results/vcf/paired/{sample}/cgppindel_filter.vcf"
-#     threads: 1
-#     params:
-#         caller='cgppindel',
-#         vcf='{project}/{genome_version}/results/vcf/paired/{sample}/cgppindel/{sample}_T_vs_{sample}_NC.flagged.vcf.gz'
-#     script:
-#         "../../scripts/vcf_filter_somtic.R"
 
 rule cgppindel_filter_somatic:
     input:
@@ -172,6 +160,7 @@ rule cgppindel_filter_somatic:
     output:
         vcf="{project}/{genome_version}/results/vcf/paired/{sample}/cgppindel_filter.vcf"
     threads: 1
+    conda: config['conda']['clindet_main']
     params:
         caller='cgppindel',
         vcf='{project}/{genome_version}/results/vcf/paired/{sample}/cgppindel/{sample}_T_vs_{sample}_NC.flagged.vcf.gz'

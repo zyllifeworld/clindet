@@ -61,13 +61,10 @@ rule merge_paired_maf:
     input:
        # vcf1=expand("{project}/{genome_version}/results/vcf/paired/{{sample}}/{caller}.vcf",caller = caller_list,project = project,genome_version = genome_version),
         maf1=expand("{project}/{genome_version}/results/maf/paired/{{sample}}/{caller}.vcf.maf",caller = caller_list,project = project,genome_version = genome_version),
-        #vcf5="{project}/{genome_version}/results/maf/{sample}/strelkasomatic.vcf.maf",
-        #vcf6="{project}/{genome_version}/results/maf/{sample}/strelka.vcf.maf",
-        #vcf7="{project}/{genome_version}/results/maf/{sample}/freebayes.vcf.maf",
         ref=config['resources'][genome_version]['REFFA']
     output:
         maf="{project}/{genome_version}/results/maf/paired/{sample}/merge/{sample}.maf"
-        # filter_maf="{project}/{genome_version}/results/maf/paired/{sample}/merge/{sample}_filter.maf"
+    conda: config['conda']['clindet_main']
     params:
         dir="{project}/{genome_version}/results/maf/paired/{sample}"
     script:
@@ -91,13 +88,11 @@ rule merge_unpaired_maf:
     input:
         vcf1=expand("{project}/{genome_version}/results/vcf/unpaired/{{sample}}/{caller}.vcf",caller = tumor_only_caller,project = project,genome_version = genome_version),
         maf1=expand("{project}/{genome_version}/results/maf/unpaired/{{sample}}/{caller}.vcf.maf",caller = tumor_only_caller,project = project,genome_version = genome_version),
-        #vcf5="{project}/{genome_version}/results/maf/{sample}/strelkasomatic.vcf.maf",
-        #vcf6="{project}/{genome_version}/results/maf/{sample}/strelka.vcf.maf",
-        #vcf7="{project}/{genome_version}/results/maf/{sample}/freebayes.vcf.maf",
         ref=config['resources'][genome_version]['REFFA']
     output:
         maf="{project}/{genome_version}/results/maf/unpaired/{sample}/merge/{sample}.maf",
         # filter_maf="{project}/{genome_version}/results/maf/unpaired/{sample}/merge/{sample}_filter.maf"
+    conda: config['conda']['clindet_main']
     params:
         dir="{project}/{genome_version}/results/maf/unpaired/{sample}"
     script:

@@ -241,7 +241,7 @@ singularity:
       cb: "/AbsoPath/of/clindet/folder/resources/ref_genome/b37/Sanger/CNV_SV_ref/brass/cytoband.txt"
       ct: "/AbsoPath/of/clindet/folder/resources/ref_genome/b37/Sanger/CNV_SV_ref/brass/CentTelo.tsv"
       vi: "/AbsoPath/of/clindet/folder/resources/ref_genome/b37/Sanger/CNV_SV_ref/brass/viral.genomic.fa.2bit"
-      mi: "/AbsoPath/of/clindet/folder/resources/ref_genome/b37/CNV_SV_ref/brass/all_ncbi_bacteria"
+      mi: "/AbsoPath/of/clindet/folder/resources/ref_genome/b37/Sanger/CNV_SV_ref/brass/all_ncbi_bacteria"
 
   freec:
     sif: "/AbsoPath/of/clindet/folder/resources/containers/control-freec-11.6.sif"
@@ -420,6 +420,9 @@ singularity:
     b37:
       ref: "/AbsoPath/of/clindet/folder/resources/ref_genome/b37/Homo_sapiens.GRCh37.GATK.illumina.fasta"
       marker: True
+
+conda:
+  clindet_main: 'clindet'
 
 params:
   java:
