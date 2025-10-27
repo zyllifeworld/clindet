@@ -56,6 +56,9 @@ To facilitate user adoption, ClinDet includes a variety of use cases. These exam
 2. **Use case III**: Whole genome sequencing of COLO829 cell line
 3. **Use case IV**: Quantifying​​ the contributions of DNA repair defective gene mutations to mutational signatures（***C. elegans***） 
 
+## ClinDet Development Visualized​
+<iframe src="//player.bilibili.com/player.html?bvid=BV1eTsUzuEFo&page=1" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true"> </iframe>
+
 ## Credits
 The `ClinDet` pipeline was written and is maintained by Yuliang Zhang ([@Yuliang Zhang](https://github.com/zyllifeworld)) , Junyi Zhang and Jianfeng Li from
 the [National Research Center for Translational Medicine at Shanghai](https://github.com/clindet).
