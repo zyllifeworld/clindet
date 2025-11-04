@@ -11,6 +11,8 @@ rule varscan2_mpileup:
         tumor=temp("{project}/{genome_version}/results/recal/paired/{sample}-T.mp")
     threads: 2
     conda: config['conda']['clindet_main']
+    benchmark:
+        "{project}/{genome_version}/results/benchmarks/mut/{sample}.varscan_mpileup.benchmark.txt"
     shell:
         """
         samtools mpileup -q 1 -Q 1 -f {input.ref} -l {input.regions} {input.normal} > {output.normal}
@@ -29,6 +31,8 @@ rule varscan2_call:
     log:
         "{project}/{genome_version}/logs/varscan2/paired/{sample}.log"
     conda: config['conda']['clindet_main']
+    benchmark:
+        "{project}/{genome_version}/results/benchmarks/mut/{sample}.varscan_somatic.benchmark.txt"
     shell:
         """
         varscan somatic {input.normal} {input.tumor} --output-snp {output.snp} --output-indel {output.indel} --output-vcf 1 --strand-filter 1

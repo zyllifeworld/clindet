@@ -54,6 +54,8 @@ rule conpair_pileup:
         ref=config['resources'][genome_version]['REFFA'],
         marker = '' if isinstance(conpair_marker_defalut, bool) and conpair_marker_defalut is True else '-M ' + config['singularity']['conpair'][genome_version]['marker']
     singularity: config['singularity']['conpair']['sif']
+    benchmark:
+        "{project}/{genome_version}/results/benchmarks/conpair/{sample}.pileup.benchmark.txt"
     shell:
         """
         /Conpair-0.2/scripts/run_gatk_pileup_for_sample.py -R {params.ref} -B {input.Tum} -O {output.Tum_pileup} {params.marker}
@@ -67,11 +69,13 @@ rule conpair_concordance:
     output:
         txt="{project}/{genome_version}/results/qc/conpair/paired/{sample}/{sample}-T_concordance.txt",
     singularity: config['singularity']['conpair']['sif']
+    benchmark:
+        "{project}/{genome_version}/results/benchmarks/conpair/{sample}.concordance.benchmark.txt"
     params:
-        marker = '' if isinstance(conpair_marker_defalut, bool) and conpair_marker_defalut is True else '-M ' + config['singularity']['conpair'][genome_version]['marker']
+        marker = '' if isinstance(conpair_marker_defalut, bool) and conpair_marker_defalut is True else '-M ' + config['singularity']['conpair'][genome_version]['marker'].replace(".bed", ".txt")
     shell:
         """
-        /Conpair-0.2/scripts/verify_concordance.py -T {input.Tum_pileup} -N {input.NC_pileup} --outfile {output.txt}
+        /Conpair-0.2/scripts/verify_concordance.py -T {input.Tum_pileup} -N {input.NC_pileup} --outfile {output.txt} {params.marker}
         """
 
 rule conpair_contamination:
@@ -81,8 +85,10 @@ rule conpair_contamination:
     output:
         txt="{project}/{genome_version}/results/qc/conpair/paired/{sample}/{sample}-T_contamination.txt",
     params:
-        marker = '' if isinstance(conpair_marker_defalut, bool) and conpair_marker_defalut is True else '-M ' + config['singularity']['conpair'][genome_version]['marker']
+        marker = '' if isinstance(conpair_marker_defalut, bool) and conpair_marker_defalut is True else '-M ' + config['singularity']['conpair'][genome_version]['marker'].replace(".bed", ".txt")
     singularity: config['singularity']['conpair']['sif']
+    benchmark:
+        "{project}/{genome_version}/results/benchmarks/conpair/{sample}.contamination.benchmark.txt"
     shell:
         """
         /Conpair-0.2/scripts/estimate_tumor_normal_contamination.py -T {input.Tum_pileup} -N {input.NC_pileup} --outfile {output.txt} {params.marker}

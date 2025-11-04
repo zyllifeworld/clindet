@@ -13,6 +13,8 @@ rule lofreq_somatic:
         dbsnp="",
     threads: 10
     singularity: config['singularity']['lofreq']['sif']
+    benchmark:
+        "{project}/{genome_version}/results/benchmarks/mut/{sample}.lofreq.benchmark.txt"
     shell:
         """
         lofreq somatic -n {input.NC} -t {input.Tum} -f {params.ref} -l {input.regions} --threads {threads} -o {params.out_prefix}

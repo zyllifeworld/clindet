@@ -28,9 +28,12 @@ if genome_version in ['hg19','b37','hg38','hg38_EBV']:
         params:
             ref=config['resources'][genome_version]['REFFA'],
             igbed=config['singularity']['caveman'][genome_version]['ignorebed'],
-            out_dir='{project}/{genome_version}/results/vcf/paired/{sample}/caveman'
+            out_dir='{project}/{genome_version}/results/vcf/paired/{sample}/caveman',
+            s=config['singularity']['caveman'][genome_version]['flag']['s']
         singularity:
             config['singularity']['cgpwgs']['sif']
+        benchmark:
+            "{project}/{genome_version}/results/benchmarks/snv/{sample}.cgppindel.benchmark.txt"
         shell:
             """
             caveman.pl \
@@ -39,7 +42,7 @@ if genome_version in ['hg19','b37','hg38','hg38_EBV']:
             -tc {input.Tcnv} -nc {input.NCcnv} \
             -tumour-bam {input.Tum} -normal-bam {input.NC} \
             -ignore-file {params.igbed} \
-            -s HUMAN -sa GRCh37 -seqType WGS -t {threads} -no-flagging
+            -s {params.s} -sa {wildcards.genome_version} -seqType WGS -t {threads} -no-flagging
             touch {output.log}
             """
 else:

@@ -18,6 +18,8 @@ rule paired_amber:
         normalize=False,  # optional flag to use bcftools norm to normalize indels (Valid params are -a, -f, -m, -D or -d)
     threads: 10
     conda:config['singularity']['hmftools']['conda']
+    benchmark:
+        "{project}/{genome_version}/results/benchmarks/cnv/{sample}.amber.benchmark.txt"
     shell:
         """
         amber  -tumor {wildcards.sample} -tumor_bam {input.Tum} \
@@ -46,6 +48,8 @@ rule paired_cobalt:
         mem_mb=lambda wildcards, input: max(0.4 * input.size_files_mb[0], 1000) 
     # singularity:config['singularity']['hmftools']['sif']
     conda:config['singularity']['hmftools']['conda']
+    benchmark:
+        "{project}/{genome_version}/results/benchmarks/cnv/{sample}.cobalt.benchmark.txt"
     shell:
         """
         cobalt -Xms{resources.mem_mb}m -Xmx{resources.mem_mb}m \
@@ -93,6 +97,8 @@ rule paired_purple:
     threads: 10
     # singularity:config['singularity']['hmftools']['sif']
     conda:config['singularity']['hmftools']['conda']
+    benchmark:
+        "{project}/{genome_version}/results/benchmarks/cnv/{sample}.purple.benchmark.txt"
     resources:
         mem_mb=lambda wildcards, input: max(0.45 * input.size_files_mb[0], 1000) 
     shell:

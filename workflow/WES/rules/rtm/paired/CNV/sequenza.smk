@@ -9,6 +9,8 @@ rule sequenza_bam2seqz:
     threads: 8
     conda:
         config['softwares']['sequenza']['conda']
+    benchmark:
+        "{project}/{genome_version}/results/benchmarks/cnv/{sample}.sequenza_bam2seqz.benchmark.txt"
     shell:
         """
         sequenza-utils bam2seqz \
@@ -25,6 +27,8 @@ rule sequenza_seqz_binning:
         bin_seqz="{project}/{genome_version}/results/cnv/paired/sequenza/{sample}/{sample}_bin50.seqz.gz",
     conda:
         config['softwares']['sequenza']['conda']
+    benchmark:
+        "{project}/{genome_version}/results/benchmarks/cnv/{sample}.sequenza_seqz_binning.benchmark.txt"
     shell:
         """
         sequenza-utils seqz_binning -w 50 --seqz {input.seqz} -o {output.bin_seqz}
@@ -39,5 +43,7 @@ rule sequenza_call:
     params:
         wd="{project}/{genome_version}/results/cnv/paired/sequenza/{sample}",
     conda: config['conda']['clindet_main']
+    benchmark:
+        "{project}/{genome_version}/results/benchmarks/cnv/{sample}.sequenza_call.benchmark.txt"
     script:
         "../../../../scripts/sequenza.R"

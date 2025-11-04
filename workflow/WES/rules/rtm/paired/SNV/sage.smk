@@ -16,6 +16,8 @@ rule paired_sage:
         xmx=2000
     threads: 30
     conda:config['singularity']['hmftools']['conda']
+    benchmark:
+        "{project}/{genome_version}/results/benchmarks/mut/{sample}.sage.benchmark.txt"
     shell:
         """
         sage \
@@ -52,6 +54,8 @@ rule pave_anno_sage:
         panel_bed=config['singularity']['hmftools'][genome_version]['sage']['panel_bed'],
         ref_genome_version=config['singularity']['hmftools'][genome_version]['sage']['ref_genome_version'],
     threads: 8
+    benchmark:
+        "{project}/{genome_version}/results/benchmarks/mut/{sample}.pave.benchmark.txt"
     resources:
         mem_mb=lambda wildcards, input: max(100 * input.size_files_mb[0], 1000) # 100 times vcf file size
     shell:

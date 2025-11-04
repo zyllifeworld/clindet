@@ -1,49 +1,100 @@
-### caveman_normal_pane
-rule CM_cnv:
-    input:
-        rdata="{project}/{genome_version}/results/cnv/paired/ascat/{sample}/{sample}_ASCAT.rdata"
-    output:
-        Tcnv="{project}/{genome_version}/results/cnv/paired/ascat/{sample}/{sample}_Tcnv.bed",
-        NCcnv="{project}/{genome_version}/results/cnv/paired/ascat/{sample}/{sample}_NCcnv.bed"
-    params:
-        wd="{project}/{genome_version}/results/cnv/paired/{sample}",
-        # gender=,
-        sample_index=lambda wildcards: wildcards.sample,
-        genome_version=lambda wildcards: wildcards.genome_version
-    conda: config['conda']['clindet_main']
-    threads: 1
-    script:
-        "../../scripts/caveman/cnv_bed.R"
+### caveman_normal_panel
+### if human sample, you can use ascat results for caveman call
+if genome_version in ['hg19','b37','hg38','hg38_EBV']:
+    rule CM_cnv:
+        input:
+            rdata="{project}/{genome_version}/results/cnv/paired/ascat/{sample}/{sample}_ASCAT.rdata"
+        output:
+            Tcnv="{project}/{genome_version}/results/cnv/paired/ascat/{sample}/{sample}_Tcnv.bed",
+            NCcnv="{project}/{genome_version}/results/cnv/paired/ascat/{sample}/{sample}_NCcnv.bed"
+        params:
+            wd="{project}/{genome_version}/results/cnv/paired/{sample}",
+            # gender=,
+            sample_index=lambda wildcards: wildcards.sample,
+            genome_version=lambda wildcards: wildcards.genome_version
+        conda: config['conda']['clindet_main']
+        threads: 1
+        script:
+            "../../scripts/caveman/cnv_bed.R"
 
-### caveman_normal_pane
-rule CM_call: 
-    input:
-        Tum="{project}/{genome_version}/results/recal/paired/{sample}-T.bam",
-        NC="{project}/{genome_version}/results/recal/paired/{sample}-NC.bam",
-        Tcnv="{project}/{genome_version}/results/cnv/paired/ascat/{sample}/{sample}_Tcnv.bed",
-        NCcnv="{project}/{genome_version}/results/cnv/paired/ascat/{sample}/{sample}_NCcnv.bed"
-    output:
-        # out_dir=directory('results/vcf/paired/{sample}/caveman'),
-        log='{project}/{genome_version}/logs/paired/caveman_{sample}.log'
-    threads: 20
-    params:
-        ref=config['resources'][genome_version]['REFFA'],
-        igbed=config['singularity']['caveman'][genome_version]['ignorebed'],
-        out_dir='{project}/{genome_version}/results/vcf/paired/{sample}/caveman',
-        s=config['singularity']['caveman'][genome_version]['flag']['s']
-    singularity:
-        config['singularity']['caveman']['sif']
-    shell:
-        """
-        caveman.pl \
-        -outdir {params.out_dir} \
-        -reference {params.ref}.fai \
-        -tc {input.Tcnv} -nc {input.NCcnv} \
-        -tumour-bam {input.Tum} -normal-bam {input.NC} \
-        -ignore-file {params.igbed} \
-        -s {params.s} -sa {wildcards.genome_version} -seqType WXS -t {threads} -no-flagging
-        touch {output.log}
-        """
+    ### caveman_normal_pane
+    rule CM_call: 
+        input:
+            Tum="{project}/{genome_version}/results/recal/paired/{sample}-T.bam",
+            NC="{project}/{genome_version}/results/recal/paired/{sample}-NC.bam",
+            Tcnv="{project}/{genome_version}/results/cnv/paired/ascat/{sample}/{sample}_Tcnv.bed",
+            NCcnv="{project}/{genome_version}/results/cnv/paired/ascat/{sample}/{sample}_NCcnv.bed"
+        output:
+            # out_dir=directory('results/vcf/paired/{sample}/caveman'),
+            log='{project}/{genome_version}/logs/paired/caveman_{sample}.log'
+        threads: 20
+        params:
+            ref=config['resources'][genome_version]['REFFA'],
+            igbed=config['singularity']['caveman'][genome_version]['ignorebed'],
+            out_dir='{project}/{genome_version}/results/vcf/paired/{sample}/caveman',
+            s=config['singularity']['caveman'][genome_version]['flag']['s']
+        singularity:
+            config['singularity']['caveman']['sif']
+        benchmark:
+            "{project}/{genome_version}/results/benchmarks/snv/{sample}.caveman.benchmark.txt"
+        shell:
+            """
+            caveman.pl \
+            -outdir {params.out_dir} \
+            -reference {params.ref}.fai \
+            -tc {input.Tcnv} -nc {input.NCcnv} \
+            -tumour-bam {input.Tum} -normal-bam {input.NC} \
+            -ignore-file {params.igbed} \
+            -s {params.s} -sa {wildcards.genome_version} -seqType WXS -t {threads} -no-flagging
+            touch {output.log}
+            """
+else:
+    # give to empty copy number file and with -nd,-td for blanket copynumber
+    rule CM_cnv:
+        input:
+            Tum="{project}/{genome_version}/results/recal/paired/{sample}-T.bam",
+            NC="{project}/{genome_version}/results/recal/paired/{sample}-NC.bam",
+        output:
+            Tcnv="{project}/{genome_version}/results/cnv/paired/{sample}/{sample}_Tcnv.bed",
+            NCcnv="{project}/{genome_version}/results/cnv/paired/{sample}/{sample}_NCcnv.bed"
+        params:
+            wd="{project}/{genome_version}/results/cnv/paired/{sample}",
+            # gender=,
+            sample_index= lambda wildcards: wildcards.sample
+        threads: 1
+        shell:
+            """
+            touch {output.Tcnv}
+            touch {output.NCcnv}
+            """
+    rule CM_call: 
+        input:
+            Tum="{project}/{genome_version}/results/recal/paired/{sample}-T.bam",
+            NC="{project}/{genome_version}/results/recal/paired/{sample}-NC.bam",
+            Tcnv="{project}/{genome_version}/results/cnv/paired/{sample}/{sample}_Tcnv.bed",
+            NCcnv="{project}/{genome_version}/results/cnv/paired/{sample}/{sample}_NCcnv.bed"
+        output:
+            # out_dir=directory('{project}/{genome_version}/results/vcf/paired/{sample}/caveman'),
+            log='{project}/{genome_version}/logs/paired/caveman_{sample}.log'
+        threads: 20
+        params:
+            ref=config['resources'][genome_version]['REFFA'],
+            igbed=config['singularity']['caveman'][genome_version]['ignorebed'],
+            out_dir='{project}/{genome_version}/results/vcf/paired/{sample}/caveman',
+        singularity:
+            config['singularity']['cgpwgs']['sif']
+        shell:
+            """
+            caveman.pl \
+            -outdir {params.out_dir} \
+            -reference {params.ref}.fai \
+            -tc {input.Tcnv} -nc {input.NCcnv} \
+            -td 2 -nd 2 \
+            -tumour-bam {input.Tum} -normal-bam {input.NC} \
+            -ignore-file {params.igbed} \
+            -s {wildcards.genome_version} -sa {wildcards.genome_version} -seqType WGS -t {threads} -no-flagging
+            touch {output.log}
+            """
 
 
 rule CM_flag: 
@@ -66,6 +117,8 @@ rule CM_flag:
         vcf="{project}/{genome_version}/results/vcf/paired/{sample}/caveman/{sample}_T_vs_{sample}_NC.muts.ids.vcf.gz",
     singularity:
         config['singularity']['caveman']['sif']
+    benchmark:
+        "{project}/{genome_version}/results/benchmarks/snv/{sample}.cavemanflag.benchmark.txt"
     shell:
         """
         cgpFlagCaVEMan.pl \

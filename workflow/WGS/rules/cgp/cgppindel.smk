@@ -13,7 +13,8 @@ rule PI_NP:
         genes=config['singularity']['cgppindel'][genome_version]['genes']
     singularity:
         config['singularity']['cgppindel']['sif']
-        # '/public/ClinicalExam/lj_sih/softwares/pindel.sif'
+    benchmark:
+        "{project}/{genome_version}/results/benchmarks/snv/{sample}.cgppindel.benchmark.txt"
     shell:
         """
         pindel.pl -noflag \

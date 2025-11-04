@@ -79,7 +79,8 @@ if not pindel_normal_panel:
             species=config['singularity']['cgppindel'][genome_version]['species']
         singularity:
             config['singularity']['cgppindel']['sif']
-            # '/public/ClinicalExam/lj_sih/softwares/pindel.sif'
+        benchmark:
+            "{project}/{genome_version}/results/benchmarks/snv/{sample}.cgppindel.benchmark.txt"
         shell:
             """
             pindel.pl \
@@ -119,6 +120,8 @@ else:
             species=config['singularity']['cgppindel'][genome_version]['species']
         singularity:
             config['singularity']['cgppindel']['sif']
+        benchmark:
+            "{project}/{genome_version}/results/benchmarks/snv/{sample}.cgppindel.benchmark.txt"
         shell:
             """
             pindel.pl \

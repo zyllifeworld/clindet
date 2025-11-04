@@ -10,6 +10,8 @@ rule call_variants_HaplotypeCaller:
         gatk4=config['softwares']['gatk4']['call'],
         temp_directory=config['params']['java']['temp_directory'],
     threads:10
+    benchmark:
+        "{project}/{genome_version}/results/benchmarks/mut/{sample}.HaplotypeCaller.benchmark.txt"
     shell:
         """
         export _JAVA_OPTIONS=-Djava.io.tmpdir={params.temp_directory} && {params.gatk4} \

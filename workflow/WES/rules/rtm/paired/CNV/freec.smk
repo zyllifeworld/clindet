@@ -29,6 +29,8 @@ rule freec_call_paired:
         cnv="{project}/{genome_version}/results/cnv/paired/freec/{sample}/{sample}-T.bam_CNVs",
     params:
     threads: 30
+    benchmark:
+        "{project}/{genome_version}/results/benchmarks/cnv/{sample}.freec.benchmark.txt"
     singularity:config['singularity']['freec']['sif']
     shell:
         """

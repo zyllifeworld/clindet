@@ -11,6 +11,8 @@ rule muse_call:
         out_prefix="{project}/{genome_version}/results/vcf/paired/{sample}/{sample}",
     threads: 10
     singularity: config['singularity']['muse']['sif']
+    benchmark:
+        "{project}/{genome_version}/results/benchmarks/mut/{sample}.muse_call.benchmark.txt"
     shell:
         """
         /MuSE/bin/MuSE call -f {params.ref} -O {params.out_prefix} -n {threads} {input.Tum} {input.NC}
@@ -25,6 +27,8 @@ rule muse_sump:
         dbsnp=config['resources'][genome_version]['DBSNP_GZ'] # Muse need gzip vcf
     threads: 10
     singularity: config['singularity']['muse']['sif']
+    benchmark:
+        "{project}/{genome_version}/results/benchmarks/mut/{sample}.muse_sump.benchmark.txt"
     shell:
         """
         /MuSE/bin/MuSE sump -I {input.txt} -O {output.vcf} -E -n {threads} -D {params.dbsnp}

@@ -162,3 +162,4 @@ workflow/WES/rules/report/cancer_report.R
 build_hg38.sh
 workflow/WES/scripts/DeepSNV.R
 workflow/WES/rules/rtm/paired/SNV/DeepSNV.smk
+build_mouse_GRCm38.sh

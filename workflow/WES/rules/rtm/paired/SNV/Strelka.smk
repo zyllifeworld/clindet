@@ -9,6 +9,8 @@ rule call_config_strelka:
         tamp="{project}/{genome_version}/results/logs/strelka/paired/{sample}/{sample}-Manta.log",
         indelcd="{project}/{genome_version}/results/vcf/paired/{sample}/Manta/results/variants/candidateSmallIndels.vcf.gz"
     params:
+    benchmark:
+        "{project}/{genome_version}/results/benchmarks/mut/{sample}.Manta.benchmark.txt"
     conda:
         "strelka"
     shell:
@@ -41,6 +43,8 @@ rule call_strelka_manta:
     threads:8
     conda:
         "strelka"
+    benchmark:
+        "{project}/{genome_version}/results/benchmarks/mut/{sample}.StrelkaGermline.benchmark.txt"
     shell:
         """
         [ ! -f {input.bed}.gz ] && bgzip -k {input.bed} -o {input.bed}.gz
@@ -69,6 +73,8 @@ rule call_strelka_somatic_manta:
         tamp="{project}/{genome_version}/results/logs/strelka/paired/{sample}/{sample}-StrelkaSomaticeManta.log"
     params:
     threads:8
+    benchmark:
+        "{project}/{genome_version}/results/benchmarks/mut/{sample}.StrelkaSomatic.benchmark.txt"
     conda:
         "strelka"
     shell:

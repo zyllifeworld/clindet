@@ -13,6 +13,8 @@ rule vardict_paired_mode:
         post_scripts="testsomatic.R | var2vcf_paired.pl -N "
     threads: 10
     conda: config['conda']['clindet_main']
+    benchmark:
+        "{project}/{genome_version}/results/benchmarks/mut/{sample}.vardict.benchmark.txt"
     shell:
         """
         vardict-java -G {input.reference} \

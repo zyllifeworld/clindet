@@ -6,6 +6,8 @@ rule loop_vcf2maf_paired:
         maf="{project}/{genome_version}/results/maf/paired/{sample}/{caller}.vcf.maf"
     conda:
         config['softwares']['vcf2maf']['conda']
+    benchmark:
+        "{project}/{genome_version}/results/benchmarks/mut/{sample}.{caller}_vcf2maf.benchmark.txt"
     params:
         name=get_vcf_name,
         # vep_path=config['softwares']['vcf2maf']['vep'][genome_version]['vep_path'],

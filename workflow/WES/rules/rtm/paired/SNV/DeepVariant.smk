@@ -9,6 +9,8 @@ rule deepvariant_somatic_call:
         out_prefix="{project}/{genome_version}/results/vcf/paired/{sample}/deepvariant_somatic",
     threads: 10
     singularity: config['singularity']['deepvariant_somatic']['sif']
+    benchmark:
+        "{project}/{genome_version}/results/benchmarks/mut/{sample}.deepvariant_somatic_call.benchmark.txt"
     shell:
         """
         /opt/deepvariant/bin/deepsomatic/run_deepsomatic \

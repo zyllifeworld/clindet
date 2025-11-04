@@ -10,6 +10,8 @@ rule map_reads:
     threads: 30 
     conda:
         config['softwares']['samtools']['conda']
+    benchmark:
+        "{project}/{genome_version}/results/benchmarks/mapping/{sample}.mapping.benchmark.txt"
     shell:
         """ {config[softwares][bwa][mem][call]} -t 30 -MR '{params.rg}' \
         {params.ref} \
@@ -18,6 +20,7 @@ rule map_reads:
         """
 
 ### for faster run, may consider not run applyBQSR
+## Aslo this step will not significantly import downstream analysis see: https://www.biostars.org/p/9605712/ and anywhere else.
 
 if recal:
     ## if reacal, let dedup bam as temp file to save space
@@ -30,6 +33,8 @@ if recal:
             metrics="{project}/{genome_version}/results/qc/dedup/{sample_type}/{sample}-{group}.metrics.txt"
         params:
             temp_directory=config['params']['java']['temp_directory']
+        benchmark:
+            "{project}/{genome_version}/results/benchmarks/mapping/{sample}.markdup.benchmark.txt"
         shell:
             """
             {config[softwares][gatk4][MarkDuplicates][call]} --CREATE_INDEX true --VALIDATION_STRINGENCY SILENT \
@@ -49,6 +54,8 @@ if recal:
             recal_table="{project}/{genome_version}/results/recal/{sample_type}/{sample}-{group}.grp",
         params:
             temp_directory=config['params']['java']['temp_directory']
+        benchmark:
+            "{project}/{genome_version}/results/benchmarks/mapping/{sample}.recal.benchmark.txt"
         shell:
             """  export _JAVA_OPTIONS=-Djava.io.tmpdir={params.temp_directory} && \
                 {config[softwares][gatk4][BaseRecalibrator][call]} --use-original-qualities -R {input.ref} \
@@ -69,6 +76,8 @@ if recal:
             bam="{project}/{genome_version}/results/recal/{sample_type}/{sample}-{group}.bam",
         conda:
             config['softwares']['samtools']['conda']
+        benchmark:
+            "{project}/{genome_version}/results/benchmarks/mapping/{sample}.applybqsr.benchmark.txt"
         params:
             temp_directory=config['params']['java']['temp_directory']
         shell:
@@ -90,6 +99,8 @@ else:
             metrics="{project}/{genome_version}/results/qc/dedup/{sample_type}/{sample}-{group}.metrics.txt"
         params:
             temp_directory=config['params']['java']['temp_directory']
+        benchmark:
+            "{project}/{genome_version}/results/benchmarks/mapping/{sample}.markdup.benchmark.txt"
         shell:
             """
             {config[softwares][gatk4][MarkDuplicates][call]} --CREATE_INDEX true --VALIDATION_STRINGENCY SILENT \
@@ -112,26 +123,7 @@ else:
             ln -s $(realpath {input.bam}) {output.bam}
             ln -s $(realpath {input.bai}) {output.bai}
             """
-
-# rule rename_chr_bam:
-#     input:
-#         bam="{project}/{genome_version}/results/recal/{sample_type}/{sample}-{group}.bam",
-#         ref=config['resources'][genome_version]['REFFA'],
-#     output:
-#         bam="{project}/{genome_version}/results/recal_rename/{sample_type}/{sample}-{group}.bam"
-#     conda:
-#         config['softwares']['samtools']['conda']
-#     params:
-#         name_map=config['softwares']['jvarkit']['bamrenamechr']['hg19_remove_chr']
-#     shell:
-#         """ {config[softwares][jvarkit][bamrenamechr][call]} \
-#             --bamcompression 9 -i \
-#             --samoutputformat BAM \
-#             -R {input.ref} -f {params.name_map} \
-#             -o {output.bam}  {input.bam}
-#             samtools index {output.bam}
-#         """
-
+# not work very well for noveseq, departed
 rule telomerecat:
     input:
         bam="{project}/{genome_version}/results/recal/{sample_type}/{sample}-{group}.bam",
@@ -189,23 +181,3 @@ rule picard_flength_wgs:
         -I {input.bam} --TMP_DIR {params.temp_directory} \
         -O {output.txt} -R {input.ref} -H {output.pdf} -M 0.5
         """
-
-# rule picard_collect_wgs_align:
-#     input:
-#         bam="{project}/{genome_version}/results/recal/{sample_type}/{sample}-{group}.bam",
-#         ref=config['resources'][genome_version]['REFFA']
-#     output:
-#         # "{project}/{genome_version}/results/stats/{sample_type}/wgs_metrics/{sample}-{group}.txt"
-#         report("{project}/{genome_version}/results/stats/{sample_type}/wgs_metrics/{sample}-{group}.txt", category="Mapping", caption="../../report/mapping.rst")
-#     resources:
-#         mem_mb=1024
-#     params:
-#         gatk4=config['softwares']['gatk4']['call'],
-#         temp_directory=config['params']['java']['temp_directory']
-#     shell:
-#         """
-#         export _JAVA_OPTIONS=-Djava.io.tmpdir={params.temp_directory} && \
-#         java -jar {config[softwares][PICARD]} CollectWgsMetrics \
-#         -I {input.bam} \
-#         -O {output} -R {input.ref}
-#         """

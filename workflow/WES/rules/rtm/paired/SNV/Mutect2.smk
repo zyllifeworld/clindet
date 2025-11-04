@@ -11,6 +11,8 @@ rule M2_ST:
         temp_directory=config['params']['java']['temp_directory'],
         bed=get_sample_bed
     threads: 10
+    benchmark:
+        "{project}/{genome_version}/results/benchmarks/mut/{sample}.M2_ST.benchmark.txt"
     shell:
         """
         export _JAVA_OPTIONS=-Djava.io.tmpdir={params.temp_directory} && {params.gatk4} \
@@ -33,6 +35,8 @@ rule M2_SNC:
         vcf=config['resources'][genome_version]['MUTECT2_VCF'],
         bed=get_sample_bed
     threads: 10
+    benchmark:
+        "{project}/{genome_version}/results/benchmarks/mut/{sample}.M2_SNC.benchmark.txt"
     shell:
         """
         export _JAVA_OPTIONS=-Djava.io.tmpdir={params.temp_directory} && {params.gatk4} \
@@ -57,6 +61,8 @@ rule M2_contam:
         temp_directory=config['params']['java']['temp_directory'],
         bed=get_sample_bed
     threads: 10
+    benchmark:
+        "{project}/{genome_version}/results/benchmarks/mut/{sample}.M2_contam.benchmark.txt"
     shell:
         """
         export _JAVA_OPTIONS=-Djava.io.tmpdir={params.temp_directory} && {params.gatk4} \
@@ -82,6 +88,8 @@ rule mutect2:
         pon=config['resources'][genome_version]['WES_PON'],
         ref=config['resources'][genome_version]['REFFA'],
     threads: 10
+    benchmark:
+        "{project}/{genome_version}/results/benchmarks/mut/{sample}.mutect2.benchmark.txt"
     shell:
         """
         export _JAVA_OPTIONS=-Djava.io.tmpdir={params.temp_directory} && {params.gatk4} \
@@ -112,6 +120,8 @@ rule M2_filter:
         gatk4=config['softwares']['gatk4']['call'],
         temp_directory=config['params']['java']['temp_directory'],
     threads: 10
+    benchmark:
+        "{project}/{genome_version}/results/benchmarks/mut/{sample}.M2_filter.benchmark.txt"
     shell:
         """
         export _JAVA_OPTIONS=-Djava.io.tmpdir={params.temp_directory} && {params.gatk4} \
