@@ -1,4 +1,5 @@
 import os
+groups = ['NC','T']
 def get_tumor_fastq(wildcards):
     fq_files = list(samples_info.loc[wildcards.sample,['Tumor_R1_file_path','Tumor_R2_file_path']])
     return {
@@ -52,11 +53,7 @@ include: "rules/mapping.smk"
 include: "rules/calling_unpaired.smk"
 
 ## cgp pipeline caller
-if recall_pon_pindel:
-    include: "rules/cgp/cgppindel.smk"
-else:
-    include: "rules/cgp/cgppindel_nobuild_NP.smk"
-
+include: "rules/cgp/cgppindel.smk"
 include: "rules/cgp/cgpCaVEMan.smk"
 include: "rules/rtm/paired/SNV.smk"
 # ## rtm

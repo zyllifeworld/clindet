@@ -42,7 +42,7 @@ rule CNA_snp_pileup_tum:
         pileup="{project}/{genome_version}/results/cnv/db/paired_facetsCH/{sample}/{sample}_pileup.tsv.gz",
     params:
         wd="{project}/{genome_version}/results/cnv/paired/{sample}",
-        dbsnp=config['resources']['hg19']['DBSNP'],
+        dbsnp=config['resources'][genome_version]['DBSNP'],
         # gender=,
         sample_index= lambda wildcards: wildcards.sample
     threads: 2

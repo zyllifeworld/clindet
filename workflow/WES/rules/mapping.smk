@@ -11,12 +11,12 @@ rule map_reads:
     conda:
         config['softwares']['samtools']['conda']
     benchmark:
-        "{project}/{genome_version}/results/benchmarks/mapping/{sample}.mapping.benchmark.txt"
+        "{project}/{genome_version}/results/benchmarks/mapping/{sample_type}/{sample}-{group}.mapping.benchmark.txt"
     shell:
-        """ {config[softwares][bwa][mem][call]} -t 30 -MR '{params.rg}' \
+        """ {config[softwares][bwa][mem][call]} -t {threads} -MR '{params.rg}' \
         {params.ref} \
         {input.R1} {input.R2} | samtools fixmate -O bam - - | \
-        samtools sort -@ 30 -O bam -o {output}
+        samtools sort -@ {threads} -O bam -o {output}
         """
 
 rule mark_duplicates:
@@ -28,7 +28,7 @@ rule mark_duplicates:
     params:
         temp_directory=config['params']['java']['temp_directory']
     benchmark:
-        "{project}/{genome_version}/results/benchmarks/mapping/{sample}.markdup.benchmark.txt"
+        "{project}/{genome_version}/results/benchmarks/mapping/{sample_type}/{sample}-{group}.markdup.benchmark.txt"
     shell:
         """
         {config[softwares][gatk4][MarkDuplicates][call]} --CREATE_INDEX true --VALIDATION_STRINGENCY SILENT \
@@ -41,7 +41,11 @@ recal = True
 ### for faster run, may consider not run applyBQSR, but i will keep this step in WES, you can customize as you own.
 ## For Noveseq data, don't do this step, meaningless!
 ## Aslo this step will not significantly import downstream analysis see: https://www.biostars.org/p/9605712/ and anywhere else.
-
+recal_config = config['resources']['varanno'].get(genome_version, False)
+if recal_config:
+    recal = False
+else:
+    recal = recal
 if recal:
     ## if reacal, let dedup bam as temp file to save space
     rule recalibrate_base_qualities:

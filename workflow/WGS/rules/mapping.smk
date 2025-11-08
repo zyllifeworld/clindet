@@ -11,17 +11,21 @@ rule map_reads:
     conda:
         config['softwares']['samtools']['conda']
     benchmark:
-        "{project}/{genome_version}/results/benchmarks/mapping/{sample}.mapping.benchmark.txt"
+        "{project}/{genome_version}/results/benchmarks/mapping/{sample_type}/{sample}-{group}.mapping.benchmark.txt"
     shell:
-        """ {config[softwares][bwa][mem][call]} -t 30 -MR '{params.rg}' \
+        """ {config[softwares][bwa][mem][call]} -t {threads} -MR '{params.rg}' \
         {params.ref} \
         {input.R1} {input.R2} | samtools fixmate -O bam - - | \
         samtools sort -@ 30 -O bam -o {output}
         """
 
 ### for faster run, may consider not run applyBQSR
-## Aslo this step will not significantly import downstream analysis see: https://www.biostars.org/p/9605712/ and anywhere else.
-
+## Aslo this step will not significantly improve downstream analysis see: https://www.biostars.org/p/9605712/ and anywhere else.
+recal_config = config['resources']['varanno'].get(genome_version, False)
+if recal_config:
+    recal = False
+else:
+    recal = recal
 if recal:
     ## if reacal, let dedup bam as temp file to save space
     rule mark_duplicates:
@@ -34,7 +38,7 @@ if recal:
         params:
             temp_directory=config['params']['java']['temp_directory']
         benchmark:
-            "{project}/{genome_version}/results/benchmarks/mapping/{sample}.markdup.benchmark.txt"
+            "{project}/{genome_version}/results/benchmarks/{sample_type}/{sample}-{group}.markdup.benchmark.txt"
         shell:
             """
             {config[softwares][gatk4][MarkDuplicates][call]} --CREATE_INDEX true --VALIDATION_STRINGENCY SILENT \
@@ -100,7 +104,7 @@ else:
         params:
             temp_directory=config['params']['java']['temp_directory']
         benchmark:
-            "{project}/{genome_version}/results/benchmarks/mapping/{sample}.markdup.benchmark.txt"
+            "{project}/{genome_version}/results/benchmarks/mapping/{sample_type}/{sample}-{group}.markdup.benchmark.txt"
         shell:
             """
             {config[softwares][gatk4][MarkDuplicates][call]} --CREATE_INDEX true --VALIDATION_STRINGENCY SILENT \

@@ -1,7 +1,7 @@
 rule loop_vcf2maf_germ_paired:
     input:
         vcf='{project}/{genome_version}/results/vcf_germline/paired/{sample}/{caller}.vcf',
-        ref=config['resources']['hg19']['REFFA']
+        ref=config['resources'][genome_version]['REFFA']
     output:
         maf="{project}/{genome_version}/results/maf_germline/paired/{sample}/{caller}.vcf.maf"
     conda:
@@ -29,7 +29,7 @@ rule loop_vcf2maf_germ_paired:
 rule loop_vcf2maf_germ_unpaired:
     input:
         vcf='{project}/{genome_version}/results/vcf_germline/unpaired/{sample}/{caller}.vcf',
-        ref=config['resources']['hg19']['REFFA']
+        ref=config['resources'][genome_version]['REFFA']
     output:
         maf="{project}/{genome_version}/results/maf_germline/unpaired/{sample}/{caller}.vcf.maf"
     conda:

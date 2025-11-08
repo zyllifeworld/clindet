@@ -7,7 +7,7 @@ rule M2_ST:
         gatk4=config['softwares']['gatk4']['call'],
         ref=config['resources'][genome_version]['REFFA'],
         temp_directory=config['params']['java']['temp_directory'],
-        af_vcf=config['resources'][genome_version]['MUTECT2_germline_vcf']
+        af_vcf=config['resources'][genome_version]['MUTECT2_VCF']
     threads: 10
     shell:
         """
@@ -27,7 +27,7 @@ rule M2_SNC:
         gatk4=config['softwares']['gatk4']['call'],
         ref=config['resources'][genome_version]['REFFA'],
         temp_directory=config['params']['java']['temp_directory'],
-        af_vcf=config['resources'][genome_version]['MUTECT2_germline_vcf']
+        af_vcf=config['resources'][genome_version]['MUTECT2_VCF']
     threads: 10
     shell:
         """
@@ -72,7 +72,7 @@ rule mutect2:
     params:
         gatk4=config['softwares']['gatk4']['call'],
         temp_directory=config['params']['java']['temp_directory'],
-        germ_vcf=config['resources'][genome_version]['MUTECT2_germline_vcf'],
+        germ_vcf=config['resources'][genome_version]['MUTECT2_VCF'],
     threads: 10
     shell:
         """

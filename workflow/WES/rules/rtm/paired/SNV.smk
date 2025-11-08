@@ -11,6 +11,7 @@ else:
 include: "SNV/Strelka.smk"
 include: "SNV/varscan2.smk"
 include: "SNV/Muse.smk"
-include: "SNV/sage.smk"
+if genome_version in ['b37','hg38']:
+    include: "SNV/sage.smk"
 include: "SNV/Lofreq.smk"
 include: "SNV/DeepVariant.smk"

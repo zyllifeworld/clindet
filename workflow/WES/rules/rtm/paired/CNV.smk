@@ -59,9 +59,20 @@ rule CNA_Battenberg:
         -o {params.wd}
         """
 
-include:'CNV/ASCAT.smk'
+ascat_config = config['softwares']['ascat_wgs'].get(genome_version, False)
+if ascat_config:
+    include:"CNV/ASCAT.smk"
+### PoN of factesCH
+include:"CNV/facets.smk"
+### purple only work for b37 and hg38
+if genome_version in ['b37','hg38']:
+    include:"CNV/purple.smk"
+
+##### freec section
 include:'CNV/freec.smk'
+##### exomedepth section
 include:'CNV/exomedepth.smk'
+##### cnv_facets section
 include:'CNV/cnv_facets.smk'
+##### sequenza section
 include:'CNV/sequenza.smk'
-include:'CNV/purple.smk'

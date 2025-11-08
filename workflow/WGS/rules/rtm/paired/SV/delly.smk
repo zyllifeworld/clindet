@@ -49,19 +49,21 @@ rule delly_pre_merge:
         bcftools annotate -x INFO/END,INFO/SVMETHOD,INFO/CONSENSUS -i 'SVTYPE="BND"'  {input.vcf} > {output.vcf}
         """
 
-rule SV_sansa_annodelly:
-    input:
-        vcf="{project}/{genome_version}/results/sv/paired/DELLY/{sample}/SV_delly_{sample}_filter.vcf"
-    output:
-        anno="{project}/{genome_version}/results/sv/paired/DELLY/{sample}/SV_anno_{sample}.bcf",
-        query="{project}/{genome_version}/results/sv/paired/DELLY/{sample}/query_{sample}.tsv.gz"
-    params:
-        ref=config['resources'][genome_version]['REFFA'],
-        db=config['softwares']['sansa'][genome_version]['db'],
-        g=config['softwares']['sansa'][genome_version]['g'],
-        t=10000
-    shell:
-        """
-        {config[softwares][sansa][call]} annotate -i Name  -g {params.g} -t {params.t} \
-        -a {output.anno} -o {output.query} {input.vcf} 
-        """
+sansa_config = config['softwares'].get('sansa',{}).get(genome_version, False)
+if sansa_config:
+    rule SV_sansa_annodelly:
+        input:
+            vcf="{project}/{genome_version}/results/sv/paired/DELLY/{sample}/SV_delly_{sample}_filter.vcf"
+        output:
+            anno="{project}/{genome_version}/results/sv/paired/DELLY/{sample}/SV_anno_{sample}.bcf",
+            query="{project}/{genome_version}/results/sv/paired/DELLY/{sample}/query_{sample}.tsv.gz"
+        params:
+            ref=config['resources'][genome_version]['REFFA'],
+            db=config['softwares']['sansa'][genome_version]['db'],
+            g=config['softwares']['sansa'][genome_version]['g'],
+            t=10000
+        shell:
+            """
+            {config[softwares][sansa][call]} annotate -i Name  -g {params.g} -t {params.t} \
+            -a {output.anno} -o {output.query} {input.vcf} 
+            """

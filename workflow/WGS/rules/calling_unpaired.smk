@@ -25,7 +25,7 @@ rule unpaired_coverageBed_2:
 rule unpaired_call_variants_mutect2:
     input:
         Tum="results/recal/unpaired/{sample}-T.bam",
-        ref=config['resources']['hg19']['REFFA'],
+        ref=config['resources'][genome_version]['REFFA'],
         bed=get_sample_bed
     output:
         vcf="results/vcf/unpaired/{sample}/Mutect2.vcf",
@@ -45,7 +45,7 @@ rule unpaired_call_variants_mutect2:
 rule unpaired_call_variants_HaplotypeCaller:
     input:
         Tum="results/recal/unpaired/{sample}-T.bam",
-        ref=config['resources']['hg19']['REFFA'],
+        ref=config['resources'][genome_version]['REFFA'],
         bed=get_sample_bed
     output:
         vcf="results/vcf/unpaired/{sample}/HaplotypeCaller.vcf",
@@ -62,28 +62,10 @@ rule unpaired_call_variants_HaplotypeCaller:
         -A PossibleDeNovo -A Coverage -A DepthPerAlleleBySample -A DepthPerSampleHC -A StrandBiasBySample -A StrandOddsRatio &
         """
 
-rule unpaired_call_variants_UnifiedGenoTyper:
-    input:
-        Tum="results/recal/unpaired/{sample}-T.bam",
-        ref=config['resources']['hg19']['REFFA'],
-        bed=get_sample_bed
-    output:
-        vcf="results/vcf/unpaired/{sample}/UnifiedGenoTyper.vcf",
-    params:
-        gatk3=config['softwares']['gatk3']['call']
-    shell:
-        """
-        {params.gatk3} \
-        --unsafe -T UnifiedGenotyper -R {input.ref} \
-        -I {input.Tum} \
-        -o {output.vcf} \
-        --intervals {input.bed}  -nt 24 -dcov 5000 --unsafe -glm BOTH
-        """
-
 rule unpaired_call_config_strelka:
     input:
         Tum="results/recal/unpaired/{sample}-T.bam",
-        ref=config['resources']['hg19']['REFFA'],
+        ref=config['resources'][genome_version]['REFFA'],
         bed=get_sample_bed
     output:
         dir=directory("results/vcf/unpaired/{sample}/Manta"),
@@ -106,7 +88,7 @@ rule unpaired_call_config_strelka:
 rule unpaired_call_strelka:
     input:
         Tum="results/recal/unpaired/{sample}-T.bam",
-        ref=config['resources']['hg19']['REFFA'],
+        ref=config['resources'][genome_version]['REFFA'],
         bed=get_sample_bed
     output:
         dir=directory("results/vcf/unpaired/{sample}/Strelka"),
@@ -129,7 +111,7 @@ rule unpaired_call_strelka:
 rule unpaired_call_strelka_somatic:
     input:
         Tum="results/recal/unpaired/{sample}-T.bam",
-        ref=config['resources']['hg19']['REFFA'],
+        ref=config['resources'][genome_version]['REFFA'],
         bed=get_sample_bed
     output:
         dir=directory("results/vcf/unpaired/{sample}/StrelkaSomatic"),
@@ -185,7 +167,7 @@ rule unpaired_merge_strelka_somatic:
 
 rule unpaired_vardict_single_mode:
     input:
-        reference=config['resources']['hg19']['REFFA'],
+        reference=config['resources'][genome_version]['REFFA'],
         regions=get_sample_bed,
         bam="results/recal/unpaired/{sample}-T.bam",
     output:
@@ -202,7 +184,7 @@ rule unpaired_vardict_single_mode:
 
 rule unpaired_freebayes:
     input:
-        ref=config['resources']['hg19']['REFFA'],
+        ref=config['resources'][genome_version]['REFFA'],
         samples="results/recal/unpaired/{sample}-T.bam",
         indexes="results/recal/unpaired/{sample}-T.bam.bai",
         regions=get_sample_bed

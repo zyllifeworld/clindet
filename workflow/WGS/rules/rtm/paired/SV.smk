@@ -1,8 +1,9 @@
 #### delly workflow
 include: "SV/delly.smk"
 #### BRASS work flow
-
-include: "SV/BRASS.smk"
+ascat_config = config['softwares']['ascat_wgs'].get(genome_version, False)
+if ascat_config and genome_version in ['b37','hg38']:
+    include: "SV/BRASS.smk"
 
 rule manta_pre_merge:
     input:
@@ -30,9 +31,7 @@ rule svanno_manta:
         vcf="{project}/{genome_version}/results/sv/paired/manta/{sample}/{sample}_SVAnnotate.vcf"
     params:
         ref=config['resources'][genome_version]['REFFA'],
-        db=config['softwares']['sansa'][genome_version]['db'],
-        # gtf=config['resources'][genome_version]['GTF'],
-        gtf='/public/ClinicalExam/lj_sih/projects/project_clindet/reference/b37/gencode.v19.annotation.gtf'
+        gtf=config['resources'][genome_version]['GTF'],
     shell:
         """
         {config[softwares][gatk4][call]} SVAnnotate \
@@ -49,9 +48,7 @@ rule svanno_delly:
         vcf="{project}/{genome_version}/results/sv/paired/DELLY/{sample}/{sample}_SVAnnotate.vcf"
     params:
         ref=config['resources'][genome_version]['REFFA'],
-        db=config['softwares']['sansa'][genome_version]['db'],
-        # gtf=config['resources'][genome_version]['GTF'],
-        gtf='/public/ClinicalExam/lj_sih/projects/project_clindet/reference/b37/gencode.v19.annotation.gtf'
+        gtf=config['resources'][genome_version]['GTF'],
     shell:
         """
         {config[softwares][gatk4][call]} SVAnnotate \
@@ -60,7 +57,9 @@ rule svanno_delly:
         -O {output.vcf}
         """
 #### igcaller workflow igcaller for B-cell
-include:"SV/igcaller.smk"
+igcaller_config = config['singularity'].get('igcaller',{}).get('sif', False)
+if igcaller_config:
+    include:"SV/igcaller.smk"
 ### jasmine merge
 rule jasmine_merge:
     input:
@@ -129,21 +128,3 @@ rule jasmine_merge:
 #        {config[softwares][delly][call]} call -g {params.ref} {input.Tum} {input.NC} > {output}
 #        """
 
-
-
-rule SV_sansa_merge:
-    input:
-        vcf="{project}/{genome_version}/results/sv/paired/merge/{sample}/{sample}_merge.vcf"
-    output:
-        anno="{project}/{genome_version}/results/sv/paired/merge/{sample}/SV_anno_{sample}.bcf",
-        query="{project}/{genome_version}/results/sv/paired/merge/{sample}/query_{sample}.tsv.gz"
-    params:
-        ref=config['resources'][genome_version]['REFFA'],
-        db=config['softwares']['sansa'][genome_version]['db'],
-        g=config['softwares']['sansa'][genome_version]['g'],
-        t=1000000
-    shell:
-        """
-        {config[softwares][sansa][call]} annotate -i Name  -g {params.g} -t {params.t} \
-        -a {output.anno} -o {output.query} {input.vcf} 
-        """
