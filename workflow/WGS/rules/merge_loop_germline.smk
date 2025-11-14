@@ -18,6 +18,7 @@ rule loop_vcf2maf_germ_paired:
        vcf2maf.pl --input-vcf {input.vcf} \
        --output-maf {output.maf} --ref-fasta {input.ref} \
        {params.name} \
+       --vep-path $(realpath $(dirname $(which vep))) \
        --vep-data {params.vep_data} \
        --vep-fork 40 \
        --vep-overwrite \
@@ -46,6 +47,7 @@ rule loop_vcf2maf_germ_unpaired:
        {config[softwares][vcf2maf][call]} --input-vcf {input.vcf} \
        --output-maf {output.maf} --ref-fasta {input.ref} \
        {params.name} \
+       --vep-path $(realpath $(dirname $(which vep))) \
        --vep-data {params.vep_data} \
        --vep-fork 40 \
        --vep-overwrite \

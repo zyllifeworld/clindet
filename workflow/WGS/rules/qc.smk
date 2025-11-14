@@ -10,6 +10,8 @@ rule fastp_normal_sample:
         adapters="--adapter_sequence ACGGCTAGCTA --adapter_sequence_r2 AGATCGGAAGAGCACACGTCTGAACTCCAGTCAC",
         extra="--merge"
     threads: 10
+    benchmark:
+        "{project}/{genome_version}/results/benchmarks/mapping/{sample}_NC.fastp.benchmark.txt"
     conda:
         config['softwares']['fastp']['conda']
     shell:
@@ -31,7 +33,9 @@ rule fastp_tumor_sample:
     params:
         adapters="--adapter_sequence ACGGCTAGCTA --adapter_sequence_r2 AGATCGGAAGAGCACACGTCTGAACTCCAGTCAC",
         extra="--merge"
-    threads: 2
+    threads: 10
+    benchmark:
+        "{project}/{genome_version}/results/benchmarks/mapping/{sample}_T.fastp.benchmark.txt"
     conda:
         config['softwares']['fastp']['conda']
     shell:

@@ -1,14 +1,16 @@
 #### gridss workflow
 # param check section
 def get_gridss_blacklist(wildcards):
-    if config['singularity']['gridss'][genome_version]['blacklist'] == "":
+    blacklist = config.get('singularity', {}).get('gridss', {}).get(genome_version, {}).get('blacklist', '')
+    if not blacklist:
         r_b = ""
     else:
         r_b = " -b " + config['singularity']['gridss'][genome_version]['blacklist']
     return r_b
 
 def get_gridss_pondir(wildcards):
-    if config['singularity']['gridss'][genome_version]['pondir'] == "":
+    pondir = config.get('singularity', {}).get('gridss', {}).get(genome_version, {}).get('pondir', '')
+    if not pondir:
         r_pon = ""
     else:
         r_pon = " --pondir " + config['singularity']['gridss'][genome_version]['pondir']
@@ -51,6 +53,7 @@ rule SV_gridss_filter:
         ref=config['resources'][genome_version]['REFFA'],
         wd="{project}/{genome_version}/results/sv/paired/gridss/{sample}",
         pondir=get_gridss_pondir,
+        script=Path(str(workflow.current_basedir) + '/../../../../scripts/gridss/scripts'),
         # gridss will auto bgzip file,so will add bgz suffix,use params
         hvcf="{project}/{genome_version}/results/sv/paired/gridss/{sample}/high_confidence_somatic.vcf",
         fullvcf="{project}/{genome_version}/results/sv/paired/gridss/{sample}/high_and_low_confidence_somatic.vcf"
@@ -62,8 +65,8 @@ rule SV_gridss_filter:
         --input {input.vcf} \
         --output {params.hvcf} \
         --fulloutput {params.fullvcf} \
-        -s /public/ClinicalExam/lj_sih/softwares/gridss/scripts/ \
-        -c /public/ClinicalExam/lj_sih/softwares/gridss/scripts/ \
+        -s {params.script} \
+        -c {params.script} \
         -n 1 \
         -t 2
         """

@@ -10,11 +10,36 @@ rule varscan2_mpileup:
         tumor=temp("{project}/{genome_version}/results/recal/paired/{sample}-T.mp")
     threads: 2
     conda: config['conda']['clindet_main']
+    benchmark:
+        "{project}/{genome_version}/results/benchmarks/mut/{sample}.varscan.mpileup.txt"
     shell:
         """
         samtools mpileup -q 1 -Q 1 -f {input.ref} {input.normal} > {output.normal}
         samtools mpileup -q 1 -Q 1 -f {input.ref} {input.tumor} > {output.tumor}
         """
+### consider parallel this step for fast computation at next version
+###
+# rule varscan2_mpileup_parallel:
+#     input:
+#         ref=config['resources'][genome_version]['REFFA'],
+#         normal="{project}/{genome_version}/results/recal/paired/{sample}-NC.bam",
+#         tumor="{project}/{genome_version}/results/recal/paired/{sample}-T.bam",
+#     output:
+#         normal=temp("{project}/{genome_version}/results/recal/paired/{sample}-NC.mp"),
+#         tumor=temp("{project}/{genome_version}/results/recal/paired/{sample}-T.mp")
+#     threads: 2
+#     conda: config['conda']['clindet_main']
+#     benchmark:
+#         "{project}/{genome_version}/results/benchmarks/mut/{sample}.varscan.mpileup.txt"
+#     shell:
+#         """
+#         samtools view -H {input.tumor} | grep "^@SQ" | cut -f 2 | cut -d: -f2 | \
+#         parallel -j {threads} "samtools mpileup -q 1 -Q 1 -f {input.ref} -r {} {input.tumor} > {patams.prefix}_{}.mp"
+#         cat {patams.prefix}_*.mp > {output.tumor}
+#         rm {patams.prefix}_*.mp
+#         samtools mpileup -q 1 -Q 1 -f {input.ref} {input.normal} > {output.normal}
+#         samtools mpileup -q 1 -Q 1 -f {input.ref} {input.tumor} > {output.tumor}
+#         """
 
 rule varscan2_call:
     input:
@@ -27,6 +52,8 @@ rule varscan2_call:
     log:
         "{project}/{genome_version}/logs/varscan2/paired/{sample}.log"
     conda: config['conda']['clindet_main']
+    benchmark:
+        "{project}/{genome_version}/results/benchmarks/mut/{sample}.varscan.call.txt"
     shell:
         """
         varscan somatic {input.normal} {input.tumor} --output-snp {output.snp} --output-indel {output.indel} --output-vcf 1 --strand-filter 1
@@ -66,7 +93,7 @@ rule varscan2_som_filter:
     conda: config['conda']['clindet_main']
     shell:
         """
-        varscan somaticFilter {input.som_hc} --indel-file {input.indel} --output-file {output.vcf}
+        varscan somaticFilter {input.snp_som_hc} --indel-file {input.indel} --output-file {output.vcf}
         """
 
 rule varscan2_merge_somatic:

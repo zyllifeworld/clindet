@@ -10,7 +10,6 @@ rule loop_vcf2maf_paired:
         name=get_vcf_name,
         ncbi_build=config['softwares']['vcf2maf']['build_version'][genome_version],
         vep_data=config['softwares']['vcf2maf']['vep'][genome_version]['vep_data'],
-        vep_path=config['softwares']['vcf2maf']['vep'][genome_version]['vep_path'],
         species=config['softwares']['vcf2maf']['vep'][genome_version]['species'],
         cache_version=config['softwares']['vcf2maf']['vep'][genome_version]['cache_version']
     shell:
@@ -19,7 +18,7 @@ rule loop_vcf2maf_paired:
         --output-maf {output.maf} --ref-fasta {input.ref} \
         {params.name} \
         --vep-data {params.vep_data} \
-        --vep-path {params.vep_path} \
+        --vep-path $(realpath $(dirname $(which vep))) \
         --vep-fork 40 \
         --vep-overwrite \
         --species {params.species} \

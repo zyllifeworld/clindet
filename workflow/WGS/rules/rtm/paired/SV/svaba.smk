@@ -18,6 +18,7 @@ rule SV_svaba:
         svaba run -t {input.Tum} -n {input.NC} -p {threads} \
         -D {input.dbsnp_indel} -a {params.wd}/{wildcards.sample} -G {params.ref}
         """
+
 sansa_config = config['softwares'].get('sansa',{}).get(genome_version, False)
 if sansa_config:
     rule anno_svaba:

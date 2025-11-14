@@ -73,6 +73,6 @@ include:'CNV/freec.smk'
 ##### exomedepth section
 include:'CNV/exomedepth.smk'
 ##### cnv_facets section
-include:'CNV/cnv_facets.smk'
+include:'CNV/facets_suite.smk'
 ##### sequenza section
 include:'CNV/sequenza.smk'

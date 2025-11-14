@@ -69,3 +69,6 @@ include: "rules/rtm/unpaired/CNV.smk"
 include: "rules/merge_loop.smk"
 include: "rules/merge_loop_germline.smk"
 include: "rules/report/multiqc.smk"
+
+# case report
+include:'rules/report/case_report.smk'

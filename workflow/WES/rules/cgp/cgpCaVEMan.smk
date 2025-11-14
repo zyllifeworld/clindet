@@ -82,7 +82,7 @@ else:
             igbed=config['singularity']['caveman'][genome_version]['ignorebed'],
             out_dir='{project}/{genome_version}/results/vcf/paired/{sample}/caveman',
         singularity:
-            config['singularity']['cgpwgs']['sif']
+            config['singularity']['caveman']['sif']
         shell:
             """
             caveman.pl \

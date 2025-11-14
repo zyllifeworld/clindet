@@ -1,4 +1,5 @@
 include: "SNV/vardict.smk"
+include: "SNV/varscan2.smk"
 include: "SNV/HaplotypeCaller.smk"
 if recall_pon or not pre_pon_db:
     include: "SNV/Mutect2_pon.smk"
