@@ -1,13 +1,16 @@
 ### if human sample, you can use ascat results for caveman call
-if genome_version in ['hg19','b37','hg38','hg38_EBV']:
+ascat_config = config['softwares']['ascat_wgs'].get(genome_version, False)
+if genome_version in ['hg19','b37','hg38','hg38_EBV'] and ascat_config:
     rule CM_cnv:
         input:
-            rdata="{project}/{genome_version}/results/cnv/paired/{sample}/{sample}_ASCAT.rdata"
+            rdata="{project}/{genome_version}/results/cnv/paired/ascat/{sample}/{sample}_ASCAT.rdata",
+            ref_genome=config['resources'][genome_version]['REFFA']
         output:
             Tcnv="{project}/{genome_version}/results/cnv/paired/{sample}/{sample}_Tcnv.bed",
             NCcnv="{project}/{genome_version}/results/cnv/paired/{sample}/{sample}_NCcnv.bed"
         params:
             wd="{project}/{genome_version}/results/cnv/paired/{sample}",
+            fasta_fai=lambda w, input: f"{input.ref_genome}" + ".fai",
             # gender=,
             sample_index= lambda wildcards: wildcards.sample
         threads: 1
@@ -33,7 +36,7 @@ if genome_version in ['hg19','b37','hg38','hg38_EBV']:
         singularity:
             config['singularity']['cgpwgs']['sif']
         benchmark:
-            "{project}/{genome_version}/results/benchmarks/snv/{sample}.cgppindel.benchmark.txt"
+            "{project}/{genome_version}/results/benchmarks/snv/{sample}.caveman.benchmark.txt"
         shell:
             """
             caveman.pl \
@@ -80,6 +83,8 @@ else:
             out_dir='{project}/{genome_version}/results/vcf/paired/{sample}/caveman',
         singularity:
             config['singularity']['cgpwgs']['sif']
+        benchmark:
+            "{project}/{genome_version}/results/benchmarks/snv/{sample}.caveman.benchmark.txt"
         shell:
             """
             caveman.pl \

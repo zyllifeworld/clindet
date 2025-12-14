@@ -58,11 +58,14 @@ rule paired_cobalt:
         output_dir="{project}/{genome_version}/results/cnv/paired/purple/{sample}/cobalt",
         gc_profile=config['singularity']['hmftools'][genome_version]['cobalt']['gc_profile'],
     threads: 10
+    resources:
+        mem_mb=lambda wildcards, input: max(0.4 * input.size_files_mb[0], 1000) 
     # singularity:config['singularity']['hmftools']['sif']
     conda:config['singularity']['hmftools']['conda']
     shell:
         """
-        cobalt -tumor {wildcards.sample} -tumor_bam {input.Tum} \
+        cobalt -Xms{resources.mem_mb}m -Xmx{resources.mem_mb}m \
+        -tumor {wildcards.sample} -tumor_bam {input.Tum} \
         -reference {wildcards.sample}_NC -reference_bam {input.NC} \
         -output_dir {params.output_dir} \
         -threads {threads} \
@@ -97,11 +100,13 @@ if purple_run_with_sv:
             ref_genome_version=config['singularity']['hmftools'][genome_version]['purple']['ref_genome_version'],
             sv_vcf=get_purple_sv_vcf
         threads: 10
+        resources:
+            mem_mb=lambda wildcards, input: max(0.45 * input.size_files_mb[0], 1000) 
         # singularity:config['singularity']['hmftools']['sif']
         conda:config['singularity']['hmftools']['conda']
         shell:
             """
-            purple \
+            purple -Xms{resources.mem_mb}m -Xmx{resources.mem_mb}m \
             -reference {wildcards.sample}_NC \
             -tumor {wildcards.sample} \
             -amber {input.amber} \
@@ -146,9 +151,11 @@ else:
         threads: 10
         # singularity:config['singularity']['hmftools']['sif']
         conda:config['singularity']['hmftools']['conda']
+        resources:
+            mem_mb=lambda wildcards, input: max(0.45 * input.size_files_mb[0], 1000) 
         shell:
             """
-            purple \
+            purple -Xms{resources.mem_mb}m -Xmx{resources.mem_mb}m \
             -reference {wildcards.sample}_NC \
             -tumor {wildcards.sample} \
             -amber {input.amber} \
@@ -162,7 +169,7 @@ else:
             -threads {threads} \
             -somatic_hotspots {params.somatic_hotspots} \
             -driver_gene_panel {params.driver_gene_panel} \
-            -circos /opt/circos-0.69-2/bin/circos \
+            -circos $(readlink -f $(which circos)) \
             -output_dir {output.output_dir}
             """
 

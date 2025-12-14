@@ -23,8 +23,9 @@ rule mark_duplicates:
     input:
         "{project}/{genome_version}/results/mapped/{sample_type}/{sample}-{group}.sorted.bam",
     output:
-        bam=temp("{project}/{genome_version}/results/dedup/{sample_type}/{sample}-{group}.sorted.bam"),
-        metrics="{project}/{genome_version}/results/qc/dedup/{sample_type}/{sample}-{group}.metrics.txt"
+        bam="{project}/{genome_version}/results/dedup/{sample_type}/{sample}-{group}.sorted.bam",
+        metrics="{project}/{genome_version}/results/qc/dedup/{sample_type}/{sample}-{group}.metrics.txt",
+        bai="{project}/{genome_version}/results/dedup/{sample_type}/{sample}-{group}.sorted.bai"
     params:
         temp_directory=config['params']['java']['temp_directory']
     benchmark:
@@ -46,6 +47,7 @@ if recal_config:
     recal = False
 else:
     recal = recal
+
 if recal:
     ## if reacal, let dedup bam as temp file to save space
     rule recalibrate_base_qualities:
@@ -91,21 +93,21 @@ if recal:
                 -O {output.bam}  
                 samtools index {output.bam}
             """
-    else:
-        rule recal_link:
-            input:
-                bam="{project}/{genome_version}/results/dedup/{sample_type}/{sample}-{group}.sorted.bam",
-                bai="{project}/{genome_version}/results/dedup/{sample_type}/{sample}-{group}.sorted.bai"
-            output:
-                bam="{project}/{genome_version}/results/recal/{sample_type}/{sample}-{group}.bam",
-                bai="{project}/{genome_version}/results/recal/{sample_type}/{sample}-{group}.bam.bai"
-            params:
-                temp_directory=config['params']['java']['temp_directory']
-            shell:
-                """
-                ln -s $(realpath {input.bam}) {output.bam}
-                ln -s $(realpath {input.bai}) {output.bai}
-                """
+else:
+    rule recal_link:
+        input:
+            bam="{project}/{genome_version}/results/dedup/{sample_type}/{sample}-{group}.sorted.bam",
+            bai="{project}/{genome_version}/results/dedup/{sample_type}/{sample}-{group}.sorted.bai"
+        output:
+            bam="{project}/{genome_version}/results/recal/{sample_type}/{sample}-{group}.bam",
+            bai="{project}/{genome_version}/results/recal/{sample_type}/{sample}-{group}.bam.bai"
+        params:
+            temp_directory=config['params']['java']['temp_directory']
+        shell:
+            """
+            ln -s $(realpath {input.bam}) {output.bam}
+            ln -s $(realpath {input.bai}) {output.bai}
+            """
 
 
 rule bed_to_interval_list:

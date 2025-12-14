@@ -445,6 +445,11 @@ if [ ! -f "build_log/mass_config.log" ]; then
     bgzip -k -o resources/ref_genome/b37/Homo_sapiens_assembly19.dbsnp138.vcf.gz resources/ref_genome/b37/Homo_sapiens_assembly19.dbsnp138.vcf
     tabix resources/ref_genome/b37/Homo_sapiens_assembly19.dbsnp138.vcf.gz
     echo -e "OK!!!"
+    ### dbsnp indel filter
+    echo -e "${GREEN_B} filter dbsnp vcf with INDELs which is needed by svaba ${NC}"
+    bcftools view -v indels --write-index -Oz -o resources/ref_genome/b37/Homo_sapiens_assembly19.dbsnp138.indel.vcf.gz resources/ref_genome/b37/Homo_sapiens_assembly19.dbsnp138.vcf.gz
+    tabix resources/ref_genome/b37/Homo_sapiens_assembly19.dbsnp138.indel.vcf.gz
+    echo -e "OK!!!"
     ### gatk CreateSequenceDictionary
     echo -e "${GREEN_B} create sequence dict for fasta ${NC}"
     resources/softwares/gatk/gatk CreateSequenceDictionary -R resources/ref_genome/b37/Homo_sapiens.GRCh37.GATK.illumina.fasta

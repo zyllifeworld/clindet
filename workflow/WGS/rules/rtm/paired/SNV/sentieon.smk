@@ -120,6 +120,8 @@ rule call_variants_sentieon:
         af_vcf=config['resources'][genome_version]['MUTECT2_VCF'],
         temp_vcf="{project}/{genome_version}/results/vcf/paired/{sample}/sent_temp.vcf",
     threads: 10
+    benchmark:
+        "{project}/{genome_version}/results/benchmarks/mut/{sample}.sentieon.benchmark.txt"
     shell:
         """
         {config[softwares][sentieon][call]}  driver -t {threads} -r {input.ref} \
@@ -155,31 +157,3 @@ rule filter_sentieon:
         {output.vcf}
         bcftools filter -i 'FILTER="PASS"'  {output.flag_vcf} > {output.vcf} 
         """
-
-# rule M2_filter:
-#     input:
-#         Tum="{project}/{genome_version}/results/recal/paired/{sample}-T.bam",
-#         NC="{project}/{genome_version}/results/recal/paired/{sample}-NC.bam",
-#         ref=config['resources'][genome_version]['REFFA'],
-#         vcf="{project}/{genome_version}/results/vcf/paired/{sample}/Mutect2.vcf",
-#         table="{project}/{genome_version}/results/recal/{sample}/{sample}-T_pileupsummaries.table",
-#         seg="{project}/{genome_version}/results/recal/{sample}/{sample}_segments.table",
-#         ctam="{project}/{genome_version}/results/recal/{sample}/{sample}_calculatecontamination.table"
-#     output:
-#         vcf="{project}/{genome_version}/results/vcf/paired/{sample}/Mutect2_filter.vcf"
-#     params:
-#         gatk4=config['softwares']['gatk4']['call'],
-#         temp_directory=config['params']['java']['temp_directory'],
-#         af_vcf=config['resources'][genome_version]['MUTECT2_VCF']
-#     threads: 10
-#     shell:
-#         """
-#         export _JAVA_OPTIONS=-Djava.io.tmpdir={params.temp_directory} && {params.gatk4} \
-#         FilterMutectCalls \
-#         -R {input.ref} \
-#         -V {input.vcf} \
-#         --contamination-table {input.ctam} \
-#         --stats {input.vcf}.stats \
-#         --tumor-segmentation {input.seg} \
-#         -O {output.vcf}
-#         """

@@ -1,6 +1,6 @@
 import pandas as pd
 
-samples_info = pd.read_csv('/public/ClinicalExam/lj_sih/projects/project_clindet/resources/test_pipeline/test_fq/wes_test.csv',index_col='Sample_name')
+samples_info = pd.read_csv('/AbsoPath/of/clindet/folder/your/wes_data.csv',index_col='Sample_name')
 
 unpaired_samples = samples_info.loc[pd.isna(samples_info['Normal_R1_file_path'])].index.tolist()
 paired_samples = samples_info.loc[~pd.isna(samples_info['Normal_R1_file_path'])].index.tolist()
@@ -20,9 +20,7 @@ germ_caller_list = ['strelkamanta','caveman']
 caller_list = ['HaplotypeCaller','strelkasomaticmanta','cgppindel_filter','caveman','muse','sage','Mutect2_filter','lofreq','vardict','verscan2','deepvariant']
 
 ## somatic CNV calling softwares
-somatic_cnv_list = ['purple','ASCAT','facets','sequenza','freec','exomedepth']
-# somatic SV calling softwares
-# somatic_sv_list = ['BRASS','delly','gridss','svaba','Manta']
+somatic_cnv_list = ['purple','ASCAT','sequenza','freec','exomedepth']
 
 
 # tumor only mode
@@ -47,7 +45,8 @@ paired_res_list = [
     # rules.CNA_ASCAT.output.rdata   if 'ASCAT'  in somatic_cnv_list else None, # ASCAT call
     "{project}/{genome_version}/results/cnv/paired/ascat/{sample}/{sample}_ASCAT.rdata"   if 'ASCAT'  in somatic_cnv_list else None, # ASCAT call
     # rules.facets.output.qc         if 'facets' in somatic_cnv_list else None, # facets call
-    # rules.facets.output.qc         if 'freec' in somatic_cnv_list else None, # freec call
+    "{project}/{genome_version}/results/cnv/paired/facets/{sample}/{sample}_purity.cnv.png"  if 'facets' in somatic_cnv_list else None, # facet call
+    # rules.freec.output.qc         if 'freec' in somatic_cnv_list else None
     "{project}/{genome_version}/results/cnv/paired/freec/{sample}/{sample}_config_freec.ini" if 'freec' in somatic_cnv_list else None, # Control-FREEC call
     # rules.CNA_exomedepth.output.tsv       if 'exomedepth' in somatic_cnv_list else None, # sequenza call
     "{project}/{genome_version}/results/cnv/paired/exomedepth/{sample}/{sample}_exomedepth.tsv"  if 'exomedepth' in somatic_cnv_list else None, # sequenza call
@@ -114,6 +113,6 @@ rule all:
         f'{project}/{genome_version}/results/multiqc_report.html' if 'report' in stages else [],
 
 
-include: '/public/ClinicalExam/lj_sih/projects/project_clindet/workflow/WES/Snakefile'
+include: '/AbsoPath/of/clindet/folder/workflow/WES/Snakefile'
 
 

@@ -57,8 +57,8 @@ rule loop_vcf2maf_unpaired:
 
 rule merge_paired_maf:
     input:
-        vcf1=expand("{project}/{genome_version}/results/vcf/paired/{{sample}}/{caller}.vcf",project = project,genome_version = genome_version,caller = caller_list),
-        maf1=expand("{project}/{genome_version}/results/maf/paired/{{sample}}/{caller}.vcf.maf",project = project,genome_version = genome_version,caller = caller_list),
+        vcf1=expand("{project}/{genome_version}/results/vcf/paired/{{sample}}/{caller}.vcf",project = project,genome_version = genome_version,caller = somatic_caller_list),
+        maf1=expand("{project}/{genome_version}/results/maf/paired/{{sample}}/{caller}.vcf.maf",project = project,genome_version = genome_version,caller = somatic_caller_list),
         ref=config['resources'][genome_version]['REFFA']
     output:
         maf="{project}/{genome_version}/results/maf/paired/{sample}/merge/{sample}.maf"
@@ -72,8 +72,8 @@ rule merge_paired_maf:
 
 rule merge_unpaired_maf:
     input:
-        vcf1=expand("{project}/{genome_version}/results/vcf/unpaired/{{sample}}/{caller}.vcf",project = project,genome_version = genome_version,caller = caller_list),
-        maf1=expand("{project}/{genome_version}/results/maf/unpaired/{{sample}}/{caller}.vcf.maf",project = project,genome_version = genome_version,caller = caller_list),
+        vcf1=expand("{project}/{genome_version}/results/vcf/unpaired/{{sample}}/{caller}.vcf",project = project,genome_version = genome_version,caller = somatic_caller_list),
+        maf1=expand("{project}/{genome_version}/results/maf/unpaired/{{sample}}/{caller}.vcf.maf",project = project,genome_version = genome_version,caller = somatic_caller_list),
         ref=config['resources'][genome_version]['REFFA']
     output:
         maf="{project}/{genome_version}/results/maf/unpaired/{sample}/merge/{sample}.maf"

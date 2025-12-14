@@ -13,6 +13,8 @@ rule SV_svaba:
         wd="{project}/{genome_version}/results/sv/paired/svaba/{sample}"
     threads:20
     singularity: config['singularity']['svaba']['sif']
+    benchmark:
+        "{project}/{genome_version}/results/benchmarks/sv/{sample}.svaba.benchmark.txt"
     shell:
         """
         svaba run -t {input.Tum} -n {input.NC} -p {threads} \

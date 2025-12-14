@@ -1,9 +1,9 @@
 import pandas as pd
-samples_info = pd.read_csv('./pipe_RNA.csv',index_col='Sample_name')
+samples_info = pd.read_csv('/AbsoPath/of/clindet/folder/your/RNA_data.csv',index_col='Sample_name')
 SE_samples = samples_info.loc[pd.isna(samples_info['R2_file_path'])].index.tolist()
 PE_samples = samples_info.loc[~pd.isna(samples_info['R1_file_path'])].index.tolist()
 
-configfile: "/public/ClinicalExam/lj_sih/projects/project_clindet/build_log/config.yaml"
+configfile: "/AbsoPath/of/clindet/folder/config/config.yaml"
 
 rna_stages = ['salmon','kallisto','RSEM','arriba','TRUST4']
 rna_caller_list = ['sentieon','Mutect2_filter','vardict','varscan2','lofreq','freebayes']
@@ -38,4 +38,4 @@ rule all:
         )
         
 ##### Modules #####
-include: "/public/ClinicalExam/lj_sih/projects/project_clindet/workflow/RNA/Snakefile"
+include: "/AbsoPath/of/clindet/folder/workflow/RNA/Snakefile"

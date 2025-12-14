@@ -30,6 +30,8 @@ rule SV_gridss:
         # if else like  (exprs ? c1 : c2) in C++/javascript is OK too,eg on next line
         # blacklist=("" if config['singularity']['gridss'][genome_version]['blacklist'] == "" else " -b " + config['singularity']['gridss'][genome_version]['blacklist'])
     singularity: config['singularity']['gridss']['sif']
+    benchmark:
+        "{project}/{genome_version}/results/benchmarks/sv/{sample}.gridss.benchmark.txt"
     shell:
         """
         gridss \

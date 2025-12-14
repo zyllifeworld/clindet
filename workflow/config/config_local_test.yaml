@@ -8,7 +8,7 @@ resources:
     WGS_PON: "/AbsoPath/of/clindet/folder/resources/ref_genome/b37/Mutect2-WGS-panel-b37.vcf"
     DBSNP: "/AbsoPath/of/clindet/folder/resources/ref_genome/b37/Homo_sapiens_assembly19.dbsnp138.vcf"
     DBSNP_GZ: "/AbsoPath/of/clindet/folder/resources/ref_genome/b37/Homo_sapiens_assembly19.dbsnp138.vcf.gz"
-    DBSNP_INDEL: "/AbsoPath/of/clindet/folder/resources/ref_genome/b37/dbsnp_138_indel.b37.vcf.gz"
+    DBSNP_INDEL: "/AbsoPath/of/clindet/folder/resources/ref_genome/b37/Homo_sapiens_assembly19.dbsnp138.indel.vcf.gz"
     MUTECT2_VCF: "/AbsoPath/of/clindet/folder/resources/ref_genome/b37/af-only-gnomad.raw.sites.vcf"
     REFFA_DICT: "/AbsoPath/of/clindet/folder/resources/ref_genome/b37/Homo_sapiens.GRCh37.GATK.illumina.fasta"
     MUTECT2_germline_vcf: "/AbsoPath/of/clindet/folder/resources/ref_genome/b37/af-only-gnomad.raw.sites.vcf"

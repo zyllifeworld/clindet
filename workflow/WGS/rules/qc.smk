@@ -109,3 +109,19 @@ if conpair_config:
             concord="{project}/{genome_version}/results/qc/conpair/paired/{sample}/{sample}-T_concordance.txt",
         output:
             touch('{project}/{genome_version}/logs/paired/conpair/{sample}.done')
+
+# samtools flagstat
+rule bam_flagstat:
+    input:
+        bam="{project}/{genome_version}/results/recal/{sample_type}/{sample}-{group}.bam",
+    output:
+        stat="{project}/{genome_version}/results/stats/{sample_type}/wgs_metrics/{sample}-{group}.bam.flagstat",
+    conda:
+        config['softwares']['samtools']['conda']
+    threads:10
+    benchmark:
+        "{project}/{genome_version}/results/benchmarks/mapping/{sample_type}/{sample}-{group}.flagstat.benchmark.txt"
+    shell:
+        """
+        samtools flagstat -@ {threads} {input.bam} > {output.stat}
+        """

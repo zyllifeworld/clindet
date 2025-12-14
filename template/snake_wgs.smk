@@ -1,6 +1,6 @@
 import pandas as pd
 
-samples_info = pd.read_csv('/public/ClinicalExam/lj_sih/projects/project_clindet/resources/test_pipeline/test_fq/wes_test.csv',index_col='Sample_name')
+samples_info = pd.read_csv('/AbsoPath/of/clindet/folder/your/wgs_data.csv',index_col='Sample_name')
 
 unpaired_samples = samples_info.loc[pd.isna(samples_info['Normal_R1_file_path'])].index.tolist()
 paired_samples = samples_info.loc[~pd.isna(samples_info['Normal_R1_file_path'])].index.tolist()
@@ -20,7 +20,7 @@ germ_caller_list = ['strelkamanta','caveman']
 caller_list = ['HaplotypeCaller','strelkasomaticmanta','cgppindel_filter','caveman','muse','sage','Mutect2_filter','lofreq','vardict','verscan2','deepvariant']
 
 ## somatic CNV calling softwares
-somatic_cnv_list = ['purple','ASCAT','facets','sequenza','freec','exomedepth']
+somatic_cnv_list = ['purple','ASCAT','sequenza','freec']
 # somatic SV calling softwares
 # somatic_sv_list = ['BRASS','delly','gridss','svaba','Manta']
 
@@ -57,19 +57,19 @@ paired_res_list = [
     ##### for SV result #####
     # somatic_sv_list = ['BRASS','delly','gridss','igcaller','linx','svaba','Manta']
     # BRASS call
-    "{project}/{genome_version}/results/sv/paired/BRASS/{sample}/{sample}_brass.log"  if 'BRASS' in somatic_sv_list else None, # purple call
+    "{project}/{genome_version}/results/sv/paired/BRASS/{sample}/{sample}_brass.log"  if 'BRASS' in somatic_sv_list else None, # BRASS call
     # DELLY call
-    "{project}/{genome_version}/results/sv/paired/DELLY/{sample}/SV_delly_{sample}.vcf"   if 'delly'  in somatic_sv_list else None, # ASCAT call
+    "{project}/{genome_version}/results/sv/paired/DELLY/{sample}/SV_delly_{sample}.vcf"   if 'delly'  in somatic_sv_list else None, # DELLY call
     # gridss call
-    "{project}/{genome_version}/results/sv/paired/gridss/{sample}/high_confidence_somatic.vcf.bgz" if 'gridss' in somatic_sv_list else None, # Control-FREEC call
+    "{project}/{genome_version}/results/sv/paired/gridss/{sample}/high_confidence_somatic.vcf.bgz" if 'gridss' in somatic_sv_list else None, # gridss call
     # linx call
-    "{project}/{genome_version}/results/sv/paired/linx/{sample}/{sample}.linx.svs.tsv"  if 'linx' in somatic_sv_list else None, # sequenza call
+    "{project}/{genome_version}/results/sv/paired/linx/{sample}/{sample}.linx.svs.tsv"  if 'linx' in somatic_sv_list else None, # linx call
     # svaba call
-    "{project}/{genome_version}/results/sv/paired/svaba/{sample}/{sample}.svaba.somatic.sv.vcf"  if 'svaba' in somatic_sv_list else None, # sequenza call
+    "{project}/{genome_version}/results/sv/paired/svaba/{sample}/{sample}.svaba.somatic.sv.vcf"  if 'svaba' in somatic_sv_list else None, # svaba call
     # igcaller call
-    "{project}/{genome_version}/results/sv/paired/igcaller/{sample}/{sample}-T_IgCaller/{sample}-T_output_filtered.tsv"  if 'igcaller' in somatic_sv_list else None, # sequenza call
+    "{project}/{genome_version}/results/sv/paired/igcaller/{sample}/{sample}-T_IgCaller/{sample}-T_output_filtered.tsv"  if 'igcaller' in somatic_sv_list else None, # igcaller call
     # Manta call
-    "{project}/{genome_version}/results/vcf/paired/{sample}/Manta/results/variants/somaticSV.vcf.gz"  if 'Manta' in somatic_sv_list else None, # sequenza call
+    "{project}/{genome_version}/results/vcf/paired/{sample}/Manta/results/variants/somaticSV.vcf.gz"  if 'Manta' in somatic_sv_list else None, # manta call
 
     #### Case report #####
     '{project}/{genome_version}/results/report/{sample}/{sample}_cancer_report.html' if 'case_report' in stages else None,
@@ -114,6 +114,6 @@ rule all:
         f'{project}/{genome_version}/results/multiqc_report.html' if 'report' in stages else [],
 
 
-include: '/public/ClinicalExam/lj_sih/projects/project_clindet/workflow/WES/Snakefile'
+include: '/AbsoPath/of/clindet/folder/workflow/WGS/Snakefile'
 
 

@@ -7,6 +7,8 @@ rule SV_delly:
         sv="{project}/{genome_version}/results/sv/paired/DELLY/{sample}/SV_delly_{sample}.vcf",
     params:
         ref=config['resources'][genome_version]['REFFA'],
+    benchmark:
+        "{project}/{genome_version}/results/benchmarks/sv/{sample}.delly.benchmark.txt"
     shell:
         """
         {config[softwares][delly][call]} call -g {params.ref}  {input.Tum} {input.NC} > {output}
@@ -20,6 +22,8 @@ rule SV_delly_germ:
         sv="{project}/{genome_version}/results/sv/paired/DELLY/{sample}/SV_delly_{sample}_germ.vcf",
     params:
         ref=config['resources'][genome_version]['REFFA'],
+    benchmark:
+        "{project}/{genome_version}/results/benchmarks/sv/{sample}.dellygerm.benchmark.txt"
     shell:
         """
         {config[softwares][delly][call]} call -g {params.ref} {input.NC} -q 10 -s 15 -n > {output}

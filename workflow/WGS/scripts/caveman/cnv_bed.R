@@ -3,12 +3,16 @@ library(tidyverse)
 cnv_rdata <- snakemake@input[['rdata']]
 tcnv_bed <- snakemake@output[['Tcnv']]
 nccnv_bed <- snakemake@output[['NCcnv']]
-
-hg19_contigs <- read_delim('/public/ClinicalExam/lj_sih/projects/project_pipeline/WES/scripts/caveman/hg19.bed')
+fai_file <- snakemake@params[['fasta_fai']]
 
 load(cnv_rdata)
+fai_contigs <- read_tsv(fai_file,col_names = c('chr','endpos','d1','d2','d3'))
+chr_index <- c(1:22,'X','Y')
+fai_contigs <- fai_contigs %>% 
+    mutate(startpos = 1) %>% 
+    select(chr,startpos,endpos)
 if (is.null(ascat.output$segments)){
-    tumor_seg <- hg19_contigs
+    tumor_seg <- fai_contigs
     tumor_seg$cn <- 2
     tumor_seg <- tumor_seg %>% dplyr::select(chr,startpos,endpos,cn)
     write_tsv(tumor_seg,tcnv_bed,col_names = F)
