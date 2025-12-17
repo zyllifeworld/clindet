@@ -257,6 +257,17 @@ singularity:
   svaba:
     sif: "/AbsoPath/of/clindet/folder/resources/containers/svaba.sif"
 
+  facets:
+    sif: "/AbsoPath/of/clindet/folder/resources/containers/facets-suite-dev.img"
+    b37:
+      genome: "hg19"
+
+  delly:
+    sif: "/AbsoPath/of/clindet/folder/resources/containers/delly_v1.7.2.sif"
+
+  jasmine:
+    sif: "/AbsoPath/of/clindet/folder/resources/containers/jasminesv.sif"
+
   cgpbattenberg:
     sif: "/AbsoPath/of/clindet/folder/resources/containers/cgpbattenberg371.sif"
     gc: "/AbsoPath/of/clindet/folder/resources/ref_genome/b37/battenberg_wgs_gc_correction_1000g_v3/"

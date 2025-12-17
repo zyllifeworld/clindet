@@ -22,7 +22,7 @@ caller_list = ['HaplotypeCaller','strelkasomaticmanta','cgppindel_filter','cavem
 ## somatic CNV calling softwares
 somatic_cnv_list = ['purple','ASCAT','sequenza','freec']
 # somatic SV calling softwares
-# somatic_sv_list = ['BRASS','delly','gridss','svaba','Manta']
+somatic_sv_list = ['brass','delly','gridss','svaba','Manta']
 
 
 # tumor only mode
@@ -57,7 +57,7 @@ paired_res_list = [
     ##### for SV result #####
     # somatic_sv_list = ['BRASS','delly','gridss','igcaller','linx','svaba','Manta']
     # BRASS call
-    "{project}/{genome_version}/results/sv/paired/BRASS/{sample}/{sample}_brass.log"  if 'BRASS' in somatic_sv_list else None, # BRASS call
+    "{project}/{genome_version}/results/sv/paired/BRASS/{sample}/{sample}_brass.log"  if 'brass' in somatic_sv_list else None, # BRASS call
     # DELLY call
     "{project}/{genome_version}/results/sv/paired/DELLY/{sample}/SV_delly_{sample}.vcf"   if 'delly'  in somatic_sv_list else None, # DELLY call
     # gridss call

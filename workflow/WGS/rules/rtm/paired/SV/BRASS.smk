@@ -63,16 +63,3 @@ rule SV_brass:
         -n {input.NC} -ss {input.ascat}
         touch {output.log}
         """
-
-rule brass_pre_merge:
-    input:
-        log="{project}/{genome_version}/results/sv/paired/DELLY/{sample}/{sample}_brass.log"
-    output:
-        vcf="{project}/{genome_version}/results/sv/paired/merge/{sample}/{sample}_brass.vcf"
-    params:
-        ref=config['resources'][genome_version]['REFFA'],
-        vcf="{project}/{genome_version}/results/sv/paired/BRASS/{sample}/{sample}_T_vs_{sample}_NC.annot.vcf.gz"
-    shell:
-        """
-        zcat {params.vcf} | bcftools annotate  -i 'SVTYPE="BND"' > {output.vcf}
-        """

@@ -9,9 +9,10 @@ rule SV_delly:
         ref=config['resources'][genome_version]['REFFA'],
     benchmark:
         "{project}/{genome_version}/results/benchmarks/sv/{sample}.delly.benchmark.txt"
+    singularity: config['singularity']['delly']['sif']
     shell:
         """
-        {config[softwares][delly][call]} call -g {params.ref}  {input.Tum} {input.NC} > {output}
+        delly call -g {params.ref}  {input.Tum} {input.NC} > {output}
         """
 
 rule SV_delly_germ:
@@ -21,9 +22,10 @@ rule SV_delly_germ:
     output:
         sv="{project}/{genome_version}/results/sv/paired/DELLY/{sample}/SV_delly_{sample}_germ.vcf",
     params:
-        ref=config['resources'][genome_version]['REFFA'],
+        ref=config['resources'][genome_version]['REFFA']
     benchmark:
         "{project}/{genome_version}/results/benchmarks/sv/{sample}.dellygerm.benchmark.txt"
+    singularity: config['singularity']['delly']['sif']
     shell:
         """
         {config[softwares][delly][call]} call -g {params.ref} {input.NC} -q 10 -s 15 -n > {output}
@@ -35,23 +37,13 @@ rule delly_filter:
     output:
         vcf="{project}/{genome_version}/results/sv/paired/DELLY/{sample}/SV_delly_{sample}_filter.vcf"
     params:
-        ref=config['resources'][genome_version]['REFFA'],
+        ref=config['resources'][genome_version]['REFFA']
+    conda: config['conda']['clindet_main']
     shell:
         """
         bcftools filter -i 'FILTER="PASS"'  {input.vcf} > {output.vcf}
         """
 
-rule delly_pre_merge:
-    input:
-        vcf="{project}/{genome_version}/results/sv/paired/DELLY/{sample}/SV_delly_{sample}_filter.vcf"
-    output:
-        vcf="{project}/{genome_version}/results/sv/paired/merge/{sample}/{sample}_delly.vcf"
-    params:
-        ref=config['resources'][genome_version]['REFFA'],
-    shell:
-        """
-        bcftools annotate -x INFO/END,INFO/SVMETHOD,INFO/CONSENSUS -i 'SVTYPE="BND"'  {input.vcf} > {output.vcf}
-        """
 
 sansa_config = config['softwares'].get('sansa',{}).get(genome_version, False)
 if sansa_config:

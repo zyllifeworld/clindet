@@ -168,7 +168,7 @@ if [ ! -f "build_log/cancer_report_install_r.log" ]; then
     touch build_log/cancer_report_install_r.log
     echo -e "${GREEN_B} Install custome R packages of env cancer_report finished, continue ....${NC}"
 else
-    echo -e "${GREEN_B} pull zenodo singularity, continue ${NC}"
+    echo -e "${GREEN_B} Install custome R packages of env cancer_report finished, continue ....${NC}"
 fi
 
 # pull image from zenodo/or build by singularity
@@ -182,10 +182,16 @@ if [ ! -f "build_log/pull_zenodo.log" ]; then
     wget -P resources/containers -c https://zenodo.org/records/15787887/files/conpair_latest.sif
     wget -P resources/containers -c https://zenodo.org/records/15787887/files/svaba.sif
     wget -P resources/containers -c https://zenodo.org/records/16892396/files/deepsomatic_160.sif
+    ## add facets,delly,jasmine image
+    wget -P resources/containers -c https://zenodo.org/records/17963718/files/delly_v1.7.2.sif
+    wget -P resources/containers -c https://zenodo.org/records/17963718/files/facets-suite-dev.img
+    wget -P resources/containers -c https://zenodo.org/records/17963718/files/jasminesv.sif
 
     touch build_log/pull_zenodo.log
+
+    echo -e "${GREEN_B} Singularity image pull from Zenodo: Done ${NC}"
 else
-    echo -e "${GREEN_B} pull zenodo singularity, continue ${NC}"
+    echo -e "${GREEN_B} pull Zenodo singularity, continue ${NC}"
 fi
 
 
