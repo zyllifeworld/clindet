@@ -165,8 +165,7 @@ rule cgppindel_filter_somatic:
     threads: 1
     conda: config['conda']['clindet_main']
     params:
-        caller='cgppindel',
-        vcf='{project}/{genome_version}/results/vcf/paired/{sample}/cgppindel/{sample}_T_vs_{sample}_NC.flagged.vcf.gz'
+        caller='cgppindel'
     shell:
         """
         bcftools view -e 'FILTER~"FF010"' {input.vcf} -Ov -o {output.vcf}

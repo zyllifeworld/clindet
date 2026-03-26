@@ -136,8 +136,7 @@ rule cal_exp_RSEM:
         isoforms="{project}/{genome_version}/results/summary/RSEM/{sample}/{sample}.isoforms.results",
         bam=temp("{project}/{genome_version}/results/summary/RSEM/{sample}/{sample}.STAR.genome.bam"),
         tx_bam=temp("{project}/{genome_version}/results/summary/RSEM/{sample}/{sample}.transcript.bam"),
-        tx_sort_bam="{project}/{genome_version}/results/summary/RSEM/{sample}/{sample}.transcript.sorted.bam"
-        # bam_sort=temp("{project}/{genome_version}/results/summary/RSEM/{sample}/{sample}.STAR.genome.sorted.bam"),
+        tx_sort_bam="{project}/{genome_version}/results/summary/RSEM/{sample}/{sample}.transcript.sorted.bam",
     shell:
         """
             rsem-calculate-expression  --paired-end \
@@ -157,8 +156,8 @@ rule RSEM_sort_genome:
         bam_sort=temp("{project}/{genome_version}/results/summary/RSEM/{sample}/{sample}.STAR.genome.sorted.bam"),
     shell:
         """
-        samtools sort -@ {threads} -m 1G -o {output.bam} {input.bam}
-        samtools index {output.bam}
+        samtools sort -@ {threads} -m 1G -o {output.bam_sort} {input.bam}
+        samtools index {output.bam_sort}
         """
 
 # rule RSEM_bam2bigwig:

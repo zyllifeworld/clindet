@@ -80,7 +80,7 @@ rule sentieon_anno_rna_edit:
         bed=config['resources'][genome_version]['WES_BED'],
         rna_vcf=config['resources'][genome_version]['RNA_EDIT_VCF'],
     threads:10
-    conda:'clindet'
+    conda: config['conda']['clindet_main']
     shell:
         """ 
         bgzip -k {input.vcf}

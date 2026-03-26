@@ -16,6 +16,18 @@ rule CNA_ASCAT:
     script:
         "../../../../scripts/ASCAT.R"
 
+rule ASCAT_EXTRACT_PURITYPLOIDY:
+    input:
+        rdata="{project}/{genome_version}/results/cnv/paired/ascat/{sample}/{sample}_ASCAT.rdata",
+    output:
+        tsv="{project}/{genome_version}/results/cnv/paired/ascat/{sample}/{sample}_purity.ploidy.tsv",
+    params:
+        # sample_index= lambda wildcards: wildcards.sample
+    conda: config['conda']['clindet_main']
+    script:
+        "../../../../scripts/ascat_pp.R"
+
+
 rule ASCAT_GISTIC:
     input:
         cnv_rdata="{project}/{genome_version}/results/cnv/paired/ascat/{sample}/{sample}_ASCAT.rdata"

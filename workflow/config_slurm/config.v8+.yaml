@@ -2,7 +2,7 @@ executor: cluster-generic
 cluster-generic-submit-cmd:
   mkdir -p logs/{wildcards.project}/slurm &&
   sbatch
-    --partition=SVC
+    --partition=CPU
     --cpus-per-task={threads}
     --job-name={rule}
     --output=logs/{wildcards.project}/slurm/{wildcards.sample}_{rule}.%N.%j.out

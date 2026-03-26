@@ -9,15 +9,15 @@ paired_samples = samples_info.loc[~pd.isna(samples_info['Normal_R1_file_path'])]
 configfile: "/AbsoPath/of/clindet/folder/config/config.yaml"
 project = samples_info["Project"].unique().tolist()[0]
 genome_version = 'b37'
-
+groups = ['NC','T']
 # stages you want run. conpair check  sample swap, case_report generate HTML case report, multiqc for QC report 
-stages = ['conpair','case_report','multiqc']
+stages = []#'conpair','case_report','multiqc']
 #
 
 ## germline mutation calling softwares
 germ_caller_list = ['strelkamanta','caveman']
 ## somatic mutation calling softwares
-caller_list = ['HaplotypeCaller','strelkasomaticmanta','cgppindel_filter','caveman','muse','sage','Mutect2_filter','lofreq','vardict','verscan2','deepvariant']
+somatic_caller_list = ['HaplotypeCaller','strelkasomaticmanta','cgppindel_filter','caveman','muse','sage','Mutect2_filter','lofreq','vardict','verscan2','deepvariant']
 
 ## somatic CNV calling softwares
 somatic_cnv_list = ['purple','ASCAT','sequenza','freec']
@@ -102,13 +102,13 @@ rule all:
         project = project,
         genome_version = genome_version,
         group = groups,
-        caller = caller_list),
+        caller = somatic_caller_list),
         #### unpaired sample
         expand(unpaired_res_list,
         project = project,
         genome_version = genome_version,
         sample = unpaired_samples,
-        caller = caller_list),
+        caller = tumor_only_caller),
         ##### multiqc report ########
         f'{project}/{genome_version}/results/multiqc/filelist.txt' if 'report' in stages else [],
         f'{project}/{genome_version}/results/multiqc_report.html' if 'report' in stages else [],

@@ -1,0 +1,40 @@
+project:
+  output_dir:
+  genome_version: 'hg38'
+  sample_sheet: '/public/ClinicalExam/lj_sih/projects/project_clindet/resources/test_pipeline/test_fq/wes_test.csv'
+
+run_params:
+  somatic_caller_list:
+    - HaplotypeCaller
+    - strelkasomaticmanta
+    - cgppindel_filter
+    - caveman
+    - muse
+    - deepvariant
+    - Mutect2_filter
+  stages:
+    - conpair
+    - report
+  germ_caller_list:
+    - strelkamanta
+    - caveman
+  somatic_cnv_list:
+    - purple
+    - ASCAT
+    - facets
+    - sequenza
+    - freec
+    - dryclean
+  somatic_sv_list:
+    - BRASS
+    - delly
+    - gridss
+    - igcaller
+    - linx
+    - svaba
+    - Manta
+  tumor_only_caller:
+    - sage
+  tumor_only_cnv_caller:
+    - freec
+  purple_sv: "gridss"

@@ -163,13 +163,13 @@ softwares:
   TRUST4: "run-trust4"
   trust4:
     call: "run-trust4 "
-    conda: "clindet"
+    conda: "clindet_rsem"
     b37:
-      ref: "/AbsoPath/of/clindet/folder/resources/TRUST4/IMGT+C.fa"
-      f: "/AbsoPath/of/clindet/folder/resources/TRUST4/hg19_bcrtcr.fa"
+      ref: "/AbsoPath/of/clindet/folder/resources/softwares/TRUST4/human_IMGT+C.fa"
+      f: "/AbsoPath/of/clindet/folder/resources/softwares/TRUST4/hg19_bcrtcr.fa"
     hg38:
-      ref: "/AbsoPath/of/clindet/folder/resources/TRUST4/IMGT+C.fa"
-      f: "/AbsoPath/of/clindet/folder/resources/TRUST4/hg38_bcrtcr.fa"
+      ref: "/AbsoPath/of/clindet/folder/resources/softwares/TRUST4/human_IMGT+C.fa"
+      f: "/AbsoPath/of/clindet/folder/resources/softwares/TRUST4/hg38_bcrtcr.fa"
 
   SEQUENZA:
   sequenza:

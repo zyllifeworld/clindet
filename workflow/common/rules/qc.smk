@@ -9,14 +9,16 @@ rule fastp_normal_sample:
     params:
         adapters="--adapter_sequence ACGGCTAGCTA --adapter_sequence_r2 AGATCGGAAGAGCACACGTCTGAACTCCAGTCAC",
         extra="--merge"
-    threads: 2
+    threads: 10
+    benchmark:
+        "{project}/{genome_version}/results/benchmarks/mapping/{sample}_NC.fastp.benchmark.txt"
     conda:
         config['softwares']['fastp']['conda']
     shell:
-        """ fastp --thread {threads} \
+        """fastp --thread {threads} \
             -i {input.R1} -I {input.R2} \
             -w 8 -Q -c -L \
-            -h {output.html} -j {output.json}\
+            -h {output.html} -j {output.json} \
             -o {output.R1} -O {output.R2}
         """
 
@@ -31,7 +33,9 @@ rule fastp_tumor_sample:
     params:
         adapters="--adapter_sequence ACGGCTAGCTA --adapter_sequence_r2 AGATCGGAAGAGCACACGTCTGAACTCCAGTCAC",
         extra="--merge"
-    threads: 2
+    threads: 10
+    benchmark:
+        "{project}/{genome_version}/results/benchmarks/mapping/{sample}_T.fastp.benchmark.txt"
     conda:
         config['softwares']['fastp']['conda']
     shell:
@@ -43,6 +47,7 @@ rule fastp_tumor_sample:
         """
 
 ### check paired Sample Swap with conpair
+## GATK3 likely not work with genome sequence file with fasta suffix
 ## unable while not human data
 conpair_config = config['singularity']['conpair'].get(genome_version, False)
 if conpair_config:
@@ -57,7 +62,7 @@ if conpair_config:
         params:
             ref=config['resources'][genome_version]['REFFA'],
             marker = '' if isinstance(conpair_marker_defalut, bool) and conpair_marker_defalut is True else '-M ' + config['singularity']['conpair'][genome_version]['marker']
-        container: config['singularity']['conpair']['sif']
+        singularity: config['singularity']['conpair']['sif']
         benchmark:
             "{project}/{genome_version}/results/benchmarks/conpair/{sample}.pileup.benchmark.txt"
         shell:
@@ -72,14 +77,14 @@ if conpair_config:
             NC_pileup="{project}/{genome_version}/results/qc/conpair/paired/{sample}/{sample}-NC.pileup",
         output:
             txt="{project}/{genome_version}/results/qc/conpair/paired/{sample}/{sample}-T_concordance.txt",
-        container: config['singularity']['conpair']['sif']
+        singularity: config['singularity']['conpair']['sif']
+        params:
+            marker = '' if isinstance(conpair_marker_defalut, bool) and conpair_marker_defalut is True else '-M ' + config['singularity']['conpair'][genome_version]['marker']
         benchmark:
             "{project}/{genome_version}/results/benchmarks/conpair/{sample}.concordance.benchmark.txt"
-        params:
-            marker = '' if isinstance(conpair_marker_defalut, bool) and conpair_marker_defalut is True else '-M ' + config['singularity']['conpair'][genome_version]['marker'].replace(".bed", ".txt")
         shell:
             """
-            /Conpair-0.2/scripts/verify_concordance.py -T {input.Tum_pileup} -N {input.NC_pileup} --outfile {output.txt} {params.marker}
+            /Conpair-0.2/scripts/verify_concordance.py -T {input.Tum_pileup} -N {input.NC_pileup} --outfile {output.txt}
             """
 
     rule conpair_contamination:
@@ -89,8 +94,8 @@ if conpair_config:
         output:
             txt="{project}/{genome_version}/results/qc/conpair/paired/{sample}/{sample}-T_contamination.txt",
         params:
-            marker = '' if isinstance(conpair_marker_defalut, bool) and conpair_marker_defalut is True else '-M ' + config['singularity']['conpair'][genome_version]['marker'].replace(".bed", ".txt")
-        container: config['singularity']['conpair']['sif']
+            marker = '' if isinstance(conpair_marker_defalut, bool) and conpair_marker_defalut is True else '-M ' + config['singularity']['conpair'][genome_version]['marker']
+        singularity: config['singularity']['conpair']['sif']
         benchmark:
             "{project}/{genome_version}/results/benchmarks/conpair/{sample}.contamination.benchmark.txt"
         shell:
@@ -104,3 +109,19 @@ if conpair_config:
             concord="{project}/{genome_version}/results/qc/conpair/paired/{sample}/{sample}-T_concordance.txt",
         output:
             touch('{project}/{genome_version}/logs/paired/conpair/{sample}.done')
+
+# samtools flagstat
+rule bam_flagstat:
+    input:
+        bam="{project}/{genome_version}/results/recal/{sample_type}/{sample}-{group}.bam",
+    output:
+        stat="{project}/{genome_version}/results/stats/{sample_type}/wgs_metrics/{sample}-{group}.bam.flagstat",
+    conda:
+        config['softwares']['samtools']['conda']
+    threads:10
+    benchmark:
+        "{project}/{genome_version}/results/benchmarks/mapping/{sample_type}/{sample}-{group}.flagstat.benchmark.txt"
+    shell:
+        """
+        samtools flagstat -@ {threads} {input.bam} > {output.stat}
+        """
