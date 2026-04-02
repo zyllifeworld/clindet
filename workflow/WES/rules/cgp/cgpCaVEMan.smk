@@ -26,7 +26,7 @@ if genome_version in ['hg19','b37','hg38','hg38_EBV']:
             NCcnv="{project}/{genome_version}/results/cnv/paired/ascat/{sample}/{sample}_NCcnv.bed"
         output:
             # out_dir=directory('results/vcf/paired/{sample}/caveman'),
-            log='{project}/{genome_version}/logs/paired/caveman_{sample}.log'
+            log='{project}/{genome_version}/logs/paired/caveman/caveman_{sample}.log'
         threads: 20
         params:
             ref=config['resources'][genome_version]['REFFA'],
@@ -75,11 +75,15 @@ else:
             NCcnv="{project}/{genome_version}/results/cnv/paired/{sample}/{sample}_NCcnv.bed"
         output:
             # out_dir=directory('{project}/{genome_version}/results/vcf/paired/{sample}/caveman'),
-            log='{project}/{genome_version}/logs/paired/caveman_{sample}.log'
+            log='{project}/{genome_version}/logs/paired/caveman/caveman_{sample}.log'
         threads: 20
         params:
             ref=config['resources'][genome_version]['REFFA'],
-            igbed=config['singularity']['caveman'][genome_version]['ignorebed'],
+            igbed=lambda wildcards: get_config_value(
+                    config,
+                    ['singularity', 'caveman', wildcards.genome_version, 'ignorebed'],
+                    default=""
+                ),
             out_dir='{project}/{genome_version}/results/vcf/paired/{sample}/caveman',
         singularity:
             config['singularity']['caveman']['sif']
@@ -107,13 +111,41 @@ rule CM_flag:
     threads: 20
     params:
         ref=config['resources'][genome_version]['REFFA'],
-        c=config['singularity']['caveman'][genome_version]['flag']['c'],
-        v=config['singularity']['caveman'][genome_version]['flag']['v'],
-        u=config['singularity']['caveman'][genome_version]['flag']['u'],
-        b=config['singularity']['caveman'][genome_version]['flag']['b'],
-        ab=config['singularity']['caveman'][genome_version]['flag']['ab'],
-        g=config['singularity']['caveman'][genome_version]['flag']['g'],
-        s=config['singularity']['caveman'][genome_version]['flag']['s'],
+        c=lambda wildcards: get_config_value(
+                config,
+                ['singularity', 'caveman', wildcards.genome_version, 'flag','c'],
+                default=""
+            ),
+        v=lambda wildcards: get_config_value(
+                config,
+                ['singularity', 'caveman', wildcards.genome_version, 'flag','v'],
+                default=""
+            ),
+        u=lambda wildcards: get_config_value(
+                config,
+                ['singularity', 'caveman', wildcards.genome_version, 'flag','u'],
+                default=""
+            ),
+        b=lambda wildcards: get_config_value(
+                config,
+                ['singularity', 'caveman', wildcards.genome_version, 'flag','b'],
+                default=""
+            ),
+        ab=lambda wildcards: get_config_value(
+                config,
+                ['singularity', 'caveman', wildcards.genome_version, 'flag','ab'],
+                default=""
+            ),
+        g=lambda wildcards: get_config_value(
+                config,
+                ['singularity', 'caveman', wildcards.genome_version, 'flag','g'],
+                default=""
+            ),
+        s=lambda wildcards: get_config_value(
+                config,
+                ['singularity', 'caveman', wildcards.genome_version, 'flag','s'],
+                default=""
+            ),
         vcf="{project}/{genome_version}/results/vcf/paired/{sample}/caveman/{sample}_T_vs_{sample}_NC.muts.ids.vcf.gz",
     singularity:
         config['singularity']['caveman']['sif']
@@ -148,13 +180,41 @@ rule CM_germ_flag:
     threads: 20
     params:
         ref=config['resources'][genome_version]['REFFA'],
-        c=config['singularity']['caveman'][genome_version]['flag']['c'],
-        v=config['singularity']['caveman'][genome_version]['flag']['v'],
-        u=config['singularity']['caveman'][genome_version]['flag']['u'],
-        b=config['singularity']['caveman'][genome_version]['flag']['b'],
-        ab=config['singularity']['caveman'][genome_version]['flag']['ab'],
-        g=config['singularity']['caveman'][genome_version]['flag']['g'],
-        s=config['singularity']['caveman'][genome_version]['flag']['s'],
+        c=lambda wildcards: get_config_value(
+                config,
+                ['singularity', 'caveman', wildcards.genome_version, 'flag','c'],
+                default=""
+            ),
+        v=lambda wildcards: get_config_value(
+                config,
+                ['singularity', 'caveman', wildcards.genome_version, 'flag','v'],
+                default=""
+            ),
+        u=lambda wildcards: get_config_value(
+                config,
+                ['singularity', 'caveman', wildcards.genome_version, 'flag','u'],
+                default=""
+            ),
+        b=lambda wildcards: get_config_value(
+                config,
+                ['singularity', 'caveman', wildcards.genome_version, 'flag','b'],
+                default=""
+            ),
+        ab=lambda wildcards: get_config_value(
+                config,
+                ['singularity', 'caveman', wildcards.genome_version, 'flag','ab'],
+                default=""
+            ),
+        g=lambda wildcards: get_config_value(
+                config,
+                ['singularity', 'caveman', wildcards.genome_version, 'flag','g'],
+                default=""
+            ),
+        s=lambda wildcards: get_config_value(
+                config,
+                ['singularity', 'caveman', wildcards.genome_version, 'flag','s'],
+                default=""
+            ),
         vcf="{project}/{genome_version}/results/vcf/paired/{sample}/caveman/{sample}_T_vs_{sample}_NC.snps.ids.vcf.gz",
     singularity:
         config['singularity']['caveman']['sif']

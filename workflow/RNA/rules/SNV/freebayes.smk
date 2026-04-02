@@ -2,7 +2,7 @@ rule unpaired_freebayes:
     input:
         ref=config['resources'][genome_version]['REFFA'],
         bam="{project}/{genome_version}/results/mut/dedup/{sample}.split.bam",
-        bam_bai="{project}/{genome_version}/results/mut/dedup/{sample}.split.bam.bai",
+        # bam_bai="{project}/{genome_version}/results/mut/dedup/{sample}.split.bam.bai",
         regions=config['resources'][genome_version]['WES_BED'],
     output:
         vcf="{project}/{genome_version}/results/mut/vcf/{sample}/freebayes.vcf",

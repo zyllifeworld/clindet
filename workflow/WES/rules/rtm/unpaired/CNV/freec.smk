@@ -6,13 +6,13 @@ rule unpair_freec_config:
         config="{project}/{genome_version}/results/cnv/unpaired/freec/{sample}/{sample}_config_freec.ini",
     params:
         bed=get_sample_bed,
-        chrFiles=config['singularity']['freec'][genome_version]['chrFiles'],
-        chrLenFile=config['singularity']['freec'][genome_version]['chrLenFile'],
-        snp_file=config['singularity']['freec'][genome_version]['snp_file'],
+        chrFiles=lambda wildcards: get_config_value(config,['singularity', 'freec', wildcards.genome_version, 'chrFiles'],default=""),
+        chrLenFile=lambda wildcards: get_config_value(config,['singularity', 'freec', wildcards.genome_version, 'chrLenFile'],default=""),
+        snp_file=lambda wildcards: get_config_value(config,['singularity', 'freec', wildcards.genome_version, 'snp_file'],default=""),
         forceGCcontentNormalization=1,#for WES
         maxThreads='30',
         outputDir="{project}/{genome_version}/results/cnv/unpaired/freec/{sample}",
-        sambamba=config['singularity']['freec'][genome_version]['sambamba'],
+        sambamba=lambda wildcards: get_config_value(config,['singularity', 'freec', wildcards.genome_version, 'sambamba'],default=""),
         ref=config['resources'][genome_version]['REFFA'],
     threads: 10
     script:

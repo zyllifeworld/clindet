@@ -72,7 +72,7 @@ rule varscan2_som_filter:
     conda: config['conda']['clindet_main']
     shell:
         """
-        varscan somaticFilter {input.som_hc} --indel-file {input.indel} --output-file {output.vcf}
+        varscan somaticFilter {input.snp_som_hc} --indel-file {input.indel} --output-file {output.vcf}
         """
 
 rule varscan2_merge_somatic:

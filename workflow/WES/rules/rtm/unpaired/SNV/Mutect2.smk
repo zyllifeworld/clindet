@@ -1,10 +1,9 @@
-
 rule unpaired_mutect2_call:
     input:
         Tum="{project}/{genome_version}/results/recal/unpaired/{sample}-T.bam",
         ref=config['resources'][genome_version]['REFFA'],
         bed=get_sample_bed,
-        pon=config['resources'][genome_version]['WES_PON'],
+        pon=lambda wildcards: get_config_value(config,['resources', wildcards.genome_version, 'WES_PON'], params='-pon', default=""),
         germ_vcf=config['resources'][genome_version]['MUTECT2_germline_vcf'],
     output:
         vcf="{project}/{genome_version}/results/vcf/unpaired/{sample}/Mutect2.vcf"

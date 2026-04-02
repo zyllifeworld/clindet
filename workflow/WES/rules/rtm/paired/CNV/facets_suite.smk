@@ -28,7 +28,7 @@ rule facets_calling:
         png="{project}/{genome_version}/results/cnv/paired/facets/{sample}/{sample}_purity.cnv.png"
     params:
         wd="{project}/{genome_version}/results/cnv/paired/facets/{sample}/{sample}",
-        genome=config['singularity']['facets'][genome_version].get('genome','hg19')
+        genome=lambda wildcards: get_config_value(config,['singularity', 'facets', wildcards.genome_version, 'genome'],default="hg19"),
     threads: 8
     singularity:config['singularity']['facets']['sif']
     benchmark:

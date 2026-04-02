@@ -21,32 +21,41 @@ rule map_reads:
 
 ### for faster run, may consider not run applyBQSR
 ## Aslo this step will not significantly improve downstream analysis see: https://www.biostars.org/p/9605712/ and anywhere else.
+def has_varanno(genome_version):
+    return bool(config.get("resources", {}).get("varanno", {}).get(genome_version, False))
+
+def use_bqsr(wc):
+    return DEFAULT_RECAL and has_varanno(wc.genome_version)
+
+def maybe_temp(path):
+    return temp(path) if DEFAULT_RECAL else path
+
 recal_config = config['resources']['varanno'].get(genome_version, False)
 if recal_config:
     recal = False
 else:
     recal = recal
-if recal:
-    ## if reacal, let dedup bam as temp file to save space
-    rule mark_duplicates:
-        input:
-            "{project}/{genome_version}/results/mapped/{sample_type}/{sample}-{group}.sorted.bam",
-        output:
-            bam=temp("{project}/{genome_version}/results/dedup/{sample_type}/{sample}-{group}.sorted.bam"),
-            bai="{project}/{genome_version}/results/dedup/{sample_type}/{sample}-{group}.sorted.bai",
-            metrics="{project}/{genome_version}/results/qc/dedup/{sample_type}/{sample}-{group}.metrics.txt"
-        params:
-            temp_directory=config['params']['java']['temp_directory']
-        benchmark:
-            "{project}/{genome_version}/results/benchmarks/{sample_type}/{sample}-{group}.markdup.benchmark.txt"
-        shell:
-            """
-            {config[softwares][gatk4][MarkDuplicates][call]} --CREATE_INDEX true --VALIDATION_STRINGENCY SILENT \
-            -I {input} \
-            -O {output.bam} \
-            -M {output.metrics} --TMP_DIR {params.temp_directory}
-            """
 
+rule mark_duplicates:
+    input:
+        "{project}/{genome_version}/results/mapped/{sample_type}/{sample}-{group}.sorted.bam",
+    output:
+        bam=maybe_temp("{project}/{genome_version}/results/dedup/{sample_type}/{sample}-{group}.sorted.bam"),
+        bai=maybe_temp("{project}/{genome_version}/results/dedup/{sample_type}/{sample}-{group}.sorted.bam.bai"),
+        metrics="{project}/{genome_version}/results/qc/dedup/{sample_type}/{sample}-{group}.metrics.txt"
+    params:
+        temp_directory=config['params']['java']['temp_directory']
+    benchmark:
+        "{project}/{genome_version}/results/benchmarks/mapping/{sample_type}/{sample}-{group}.markdup.benchmark.txt"
+    shell:
+        """
+        {config[softwares][gatk4][MarkDuplicates][call]} --CREATE_INDEX true --VALIDATION_STRINGENCY SILENT \
+        -I {input} \
+        -O {output.bam} \
+        -M {output.metrics} --TMP_DIR {params.temp_directory}
+        """
+
+if recal:
     rule recalibrate_base_qualities:
         input:
             bam="{project}/{genome_version}/results/dedup/{sample_type}/{sample}-{group}.sorted.bam",
@@ -68,8 +77,7 @@ if recal:
                 --known-sites {input.known_1} \
                 --known-sites {input.known_2}
             """
-
-
+            
     rule apply_base_quality_recalibration:
         input:
             bam="{project}/{genome_version}/results/dedup/{sample_type}/{sample}-{group}.sorted.bam",
@@ -94,25 +102,6 @@ if recal:
                 samtools index {output.bam} 
             """
 else:
-    rule mark_duplicates:
-        input:
-            "{project}/{genome_version}/results/mapped/{sample_type}/{sample}-{group}.sorted.bam",
-        output:
-            bam="{project}/{genome_version}/results/dedup/{sample_type}/{sample}-{group}.sorted.bam",
-            bai="{project}/{genome_version}/results/dedup/{sample_type}/{sample}-{group}.sorted.bai",
-            metrics="{project}/{genome_version}/results/qc/dedup/{sample_type}/{sample}-{group}.metrics.txt"
-        params:
-            temp_directory=config['params']['java']['temp_directory']
-        benchmark:
-            "{project}/{genome_version}/results/benchmarks/mapping/{sample_type}/{sample}-{group}.markdup.benchmark.txt"
-        shell:
-            """
-            {config[softwares][gatk4][MarkDuplicates][call]} --CREATE_INDEX true --VALIDATION_STRINGENCY SILENT \
-            -I {input} \
-            -O {output.bam} \
-            -M {output.metrics} --TMP_DIR {params.temp_directory}
-            """
-
     rule recal_link:
         input:
             bam="{project}/{genome_version}/results/dedup/{sample_type}/{sample}-{group}.sorted.bam",

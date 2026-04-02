@@ -1,17 +1,17 @@
 project:
   output_dir: 'test'
-  genome_version: 'hg38'
-  sample_sheet: '/public/ClinicalExam/lj_sih/projects/project_clindet/resources/test_pipeline/test_fq/wes_test.csv'
-
+  genome_version: 'b37'
+  # sample_sheet: '/public/ClinicalExam/lj_sih/projects/project_clindet/resources/test_pipeline/test_fq/wes_test.csv'
+  sample_sheet: '/public/ClinicalExam/lj_sih/projects/project_clindet/test/cgga_sample_sheet.csv'
 run_params:
   somatic_caller_list:
     - HaplotypeCaller
     - strelkasomaticmanta
-    - cgppindel_filter
+    - cgppindel
     - caveman
     - muse
-    - deepvariant
-    - Mutect2_filter
+    # - deepvariant
+    - Mutect2
   stages:
     - conpair
     - report
@@ -38,16 +38,3 @@ run_params:
   tumor_only_cnv_caller:
     - freec
   purple_sv: "gridss"
-  rna_stages:
-    - salmon
-    - isofox
-    - RSEM
-    - arriba
-    - TRUST4
-    - kallisto
-  rna_mutation_caller:
-    - sentieon
-    - Mutect2_filter
-    - vardict
-    - varscan2
-    - lofreq

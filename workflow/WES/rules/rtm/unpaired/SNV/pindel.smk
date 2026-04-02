@@ -15,7 +15,7 @@ rule unpaired_PI_call:
     input:
         Tum="{project}/{genome_version}/results/recal/unpaired/{sample}-T.bam",
         NC="{project}/{genome_version}/results/vcf/unpaired/{sample}/pindel/{sample}-fake-NC.bam",
-        NP_gff3=config['singularity']['cgppindel'][genome_version]['WES']['normal_panel']
+        NP_gff3=lambda wildcards: get_config_value(config, ['singularity', 'cgppindel', wildcards.genome_version, 'WES', 'normal_panel'], default="")
     output:
         out_dir=directory('{project}/{genome_version}/results/vcf/unpaired/{sample}/cgppindel'),
         log='{project}/{genome_version}/results/vcf/unpaired/{sample}/cgppindel_{sample}.log',
@@ -23,11 +23,31 @@ rule unpaired_PI_call:
     threads: 20
     params:
         ref=config['resources'][genome_version]['REFFA'],
-        simrep=config['singularity']['cgppindel'][genome_version]['simrep'],
-        genes=config['singularity']['cgppindel'][genome_version]['genes'],
-        filter=config['singularity']['cgppindel'][genome_version]['WES']['filter'],
-        softfil=config['singularity']['cgppindel'][genome_version]['softfil'],
-        species=config['singularity']['cgppindel'][genome_version]['species']
+        simrep=lambda wildcards: get_config_value(
+                    config,
+                    ['singularity', 'cgppindel', wildcards.genome_version, 'simrep'],
+                    default=""
+                ),
+        genes=lambda wildcards: get_config_value(
+                    config,
+                    ['singularity', 'cgppindel', wildcards.genome_version, 'genes'],
+                    default=""
+                ),
+        filter=lambda wildcards: get_config_value(
+                    config,
+                    ['singularity', 'cgppindel', wildcards.genome_version, 'WES', 'filter'],
+                    default=""
+                ),
+        softfil=lambda wildcards: get_config_value(
+                    config,
+                    ['singularity', 'cgppindel', wildcards.genome_version, 'softfil'],
+                    default=""
+                ),
+        species=lambda wildcards: get_config_value(
+                    config,
+                    ['singularity', 'cgppindel', wildcards.genome_version, 'species'],
+                    default=""
+                ),
     singularity:
         config['singularity']['cgppindel']['sif']
     shell:

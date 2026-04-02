@@ -1,56 +1,5 @@
-def get_tumor_fastq(wildcards):
-    fq_files = list(samples_info.loc[wildcards.sample,['Tumor_R1_file_path','Tumor_R2_file_path']])
-    return {
-        "R1":fq_files[0],
-        "R2":fq_files[1],
-    }
-
-def get_normal_fastq(wildcards):
-    fq_files = list(samples_info.loc[wildcards.sample,['Normal_R1_file_path','Normal_R2_file_path']])
-    return {
-        "R1":fq_files[0],
-        "R2":fq_files[1],
-    }
-
-def get_sample_bed(wildcards):
-    bed_file = samples_info.loc[wildcards.sample,'Target_file_bed']
-    return(bed_file)
-
-def get_gender(wildcards):
-    gender = samples_info.loc[wildcards.sample,'gender']
-    return(gender)
-
-
-def get_vcf_name(wildcards):
-    if wildcards.sample in paired_samples:
-        if wildcards.caller == 'vardict' or wildcards.caller == 'vardict_filter' or wildcards.caller == 'vardict_germline':          
-            name =  "--tumor-id " + wildcards.sample + '_T' + " --normal-id " + wildcards.sample + '_NC'
-        elif wildcards.caller == 'sage' or wildcards.caller == 'pave':
-            name =  "--tumor-id " + wildcards.sample + " --normal-id " + wildcards.sample + '_NC'
-        elif wildcards.caller == 'cgppindel_filter':
-            name = "--tumor-id TUMOUR --normal-id NORMAL"
-        elif wildcards.caller == 'caveman':
-            name = "--tumor-id TUMOUR --normal-id NORMAL"
-        elif wildcards.caller == 'muse':
-            name = "--tumor-id TUMOR --normal-id NORMAL"
-        elif wildcards.caller == 'varsca2':
-            name = "--tumor-id TUMOR --normal-id NORMAL"
-        else: 
-            name =  "--tumor-id " + wildcards.sample + '_T' + " --normal-id " + wildcards.sample + '_NC'
-    else:
-        name =  "--tumor-id " + wildcards.sample + '_T' + " --normal-id " + wildcards.sample + '_NORMAL'
-    return(name)
-
-
-def get_vcf_file(wildcards):
-    if wildcards.sample in paired_samples:
-        file_name =  f"{project}/{genome_version}/results/vcf/" + 'paired' + "/{sample}/{caller}.vcf"
-    else:
-        file_name =  f"{project}/{genome_version}/results/vcf/" + 'unpaired' + "/{sample}/{caller}.vcf"
-    return(file_name)
-
 include: "rules/qc.smk"
-include: "rules/mapping.smk"
+include: "../common/rules/mapping.smk"
 
 ## cgp pipeline caller
 include: "rules/cgp/cgppindel.smk"
@@ -66,8 +15,8 @@ include: "rules/rtm/unpaired/SNV.smk"
 include: "rules/rtm/unpaired/CNV.smk"
 
 # post process steps
-include: "rules/merge_loop.smk"
-include: "rules/merge_loop_germline.smk"
+include: "../common/rules/merge_loop.smk"
+include: "../common/rules/merge_loop_germline.smk"
 include: "rules/report/multiqc.smk"
 
 # case report

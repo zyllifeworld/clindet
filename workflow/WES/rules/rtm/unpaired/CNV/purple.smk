@@ -11,7 +11,7 @@ rule unpaired_amber:
         output_dir=directory("{project}/{genome_version}/results/cnv/unpaired/purple/{sample}/amber")
     params:
         output_dir="{project}/{genome_version}/results/cnv/unpaired/purple/{sample}/amber",
-        loci=config['singularity']['hmftools'][genome_version]['amber']['loci'],
+        loci=lambda wildcards: get_config_value(config,['singularity', 'hmftools', wildcards.genome_version, 'amber','loci'],default=""),
         extra="",  # optional parameters
         chunksize=100000,  # reference genome chunk size for parallelization (default: 100000)
         normalize=False,  # optional flag to use bcftools norm to normalize indels (Valid params are -a, -f, -m, -D or -d)

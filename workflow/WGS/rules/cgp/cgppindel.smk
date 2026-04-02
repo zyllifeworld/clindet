@@ -161,7 +161,7 @@ rule cgppindel_filter_somatic:
     input:
         vcf='{project}/{genome_version}/results/vcf/paired/{sample}/cgppindel/{sample}_T_vs_{sample}_NC.flagged.vcf.gz'
     output:
-        vcf="{project}/{genome_version}/results/vcf/paired/{sample}/cgppindel_filter.vcf"
+        vcf="{project}/{genome_version}/results/vcf/paired/{sample}/cgppindel.vcf"
     threads: 1
     conda: config['conda']['clindet_main']
     params:

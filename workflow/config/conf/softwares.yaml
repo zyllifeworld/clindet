@@ -1,0 +1,229 @@
+softwares:
+  BWA: "bwa"
+  bwa:
+    conda: "clindet"
+    mem:
+      call: "bwa mem "
+      params: "-M "
+      scratch: '2000'
+      memory: '2000'
+      time: '235'
+      threads: 24
+    aln:
+      call: "bwa aln "
+      params: "-q 5 "
+      scratch: '1000'
+      memory: '1000'
+      time: '235'
+      threads: 24
+    sampe:
+      call: "bwa sampe "
+      params: ''
+      scratch: '1000'
+      mem: '1000'
+      time: '235'
+      threads: 24
+
+  facets:
+    conda: 'facets'
+
+
+  SAMTOOLS: "samtools"
+  samtools:
+    call: "samtools "
+    conda: "clindet"
+    flagstat:
+      scratch: '2000'
+      mem: '4000'
+      time: '20'
+      threads: 1
+      params: ''
+    index:
+      scratch: '2000'
+      mem: '2000'
+      time: '100'
+      threads: 1
+    mpileup:
+      params: "-B -q 25 -Q 20 -d 100000"
+      scratch: '8000'
+      mem: '8000'
+      time: '1400'
+      threads: 1
+    rmSecondary:
+      scratch: '4000'
+      mem: '4000'
+      time: '235'
+      threads: 1
+    rmDuplicates:
+      threads: 2
+      scratch: '2000'
+      mem: '2000'
+      time: '235'
+  
+  GATK4: "/public/ClinicalExam/lj_sih/projects/project_clindet/resources/softwares/gatk/gatk "
+  gatk4:
+    call: "/public/ClinicalExam/lj_sih/projects/project_clindet/resources/softwares/gatk/gatk "
+    MarkDuplicates:
+      call: "/public/ClinicalExam/lj_sih/projects/project_clindet/resources/softwares/gatk/gatk MarkDuplicates "
+    BaseRecalibrator:
+      call: "/public/ClinicalExam/lj_sih/projects/project_clindet/resources/softwares/gatk/gatk BaseRecalibrator "
+    ApplyBQSR:
+      call: "/public/ClinicalExam/lj_sih/projects/project_clindet/resources/softwares/gatk/gatk ApplyBQSR "
+
+  strelka:
+    conda: "strelka"
+    somatic:
+      call:
+
+  SENTIEON: "/public/astra/bin/_sentieon/bin/sentieon"
+  sentieon:
+    call: "/public/astra/bin/_sentieon/bin/sentieon "
+
+  fastp:
+    # conda: "fastp"
+    conda: "srakit"
+
+  vcf2maf:
+    conda: "clindet_vep"
+    build_version:
+      hg19: "GRCh37"
+      b37: "GRCh37"
+      hg38: "GRCh38"
+      WBcel235: "WBcel235"
+    vep:
+      b37:
+        vep_data: "/public/ClinicalExam/lj_sih/projects/project_clindet/resources/ref_genome/b37/vep"
+        vep_path: "/public/home/lijf/env/miniconda3/envs/vep105/bin"
+        cache_version: "110"
+        species: "homo_sapiens"
+      hg19:
+        vep_data: "/public/ClinicalExam/lj_sih/projects/project_clindet/resources/ref_genome/b37/vep"
+        vep_path: "/public/home/lijf/env/miniconda3/envs/vep105/bin"
+        cache_version: "110"
+        species: "homo_sapiens"
+      hg38:
+        vep_data: "/public/ClinicalExam/lj_sih/projects/project_clindet/resources/ref_genome/hg38/vep"
+        vep_path: "/public/home/lijf/env/miniconda3/envs/vep105/bin"
+        cache_version: "110"
+        species: "homo_sapiens"
+      WBcel235:
+        vep_data: "/public/ClinicalExam/lj_sih/projects/project_clindet/resources/ref_genome/WBcel235/vep"
+        vep_path: "/public/home/lijf/env/miniconda3/envs/vep105/bin"
+        cache_version: "113"
+        species: "caenorhabditis_elegans"
+  maf2vcf:
+    conda: "clindet_vep"
+    build_version:
+      b37: "GRCh37"
+      hg19: "GRCh37"
+      hg38: "GRCh38"
+
+
+  star:
+    conda: "clindet_rsem"
+    index:
+      b37: "/public/ClinicalExam/lj_sih/projects/project_clindet/resources/ref_genome/b37/STAR/b37"
+      hg38: "/public/home/lijf/env/genome/gencode/hg38/v38/star_index/2.7.9a"
+
+  SALMON: ''
+  salmon:
+    conda: 'clindet_rsem'
+    index:
+      b37: "/public/ClinicalExam/lj_sih/projects/project_clindet/resources/ref_genome/b37/salmon/b37"
+      hg38: "/public/ClinicalExam/lj_sih/projects/project_clindet/resources/ref_genome/hg38/salmon/hg38"
+
+  KALLISTO: ''
+  kallisto:
+    conda: 'clindet_rsem'
+    index:
+      b37: "/public/ClinicalExam/lj_sih/projects/project_clindet/resources/ref_genome/b37/kallisto/b37"
+      hg38: "/public/ClinicalExam/lj_sih/projects/project_clindet/resources/ref_genome/hg38/kallisto/hg38"
+
+    
+  VARSCAN2: "/public/ClinicalExam/lj_sih/projects/project_clindet/resources/softwares/VarScan.v2.4.4.jar"
+  varscan2:
+    conda: "clindet"
+    call: "java -jar /public/ClinicalExam/lj_sih/projects/project_clindet/resources/softwares/VarScan.v2.4.2.jar "
+
+
+  DELLY: "/public/ClinicalExam/lj_sih/projects/project_clindet/resources/softwares/delly116"
+  delly: 
+    call: "/public/ClinicalExam/lj_sih/projects/project_clindet/resources/softwares/delly116 "
+  
+  rsem:
+    conda: 'clindet_rsem'
+    pre_ref_index: "rsem-prepare-reference "
+    cal_exp: "rsem-calculate-expression "
+    bam2wig: "rsem-bam2wig "
+    index:
+      b37: "/public/ClinicalExam/lj_sih/projects/project_clindet/resources/ref_genome/b37/RSEM/b37"
+      hg38: "/public/ClinicalExam/lj_sih/resource/genome/human/hg38/rsem_ref/hg38"
+
+  TRUST4: "run-trust4"
+  trust4:
+    call: "run-trust4 "
+    conda: "clindet_rsem"
+    b37:
+      ref: "/public/ClinicalExam/lj_sih/projects/project_clindet/resources/softwares/TRUST4/human_IMGT+C.fa"
+      f: "/public/ClinicalExam/lj_sih/projects/project_clindet/resources/softwares/TRUST4/hg19_bcrtcr.fa"
+    hg19:
+      ref: "/public/ClinicalExam/lj_sih/projects/project_clindet/resources/softwares/TRUST4/human_IMGT+C.fa"
+      f: "/public/ClinicalExam/lj_sih/projects/project_clindet/resources/softwares/TRUST4/hg19_bcrtcr.fa"
+    hg38:
+      ref: "/public/ClinicalExam/lj_sih/projects/project_clindet/resources/softwares/TRUST4/human_IMGT+C.fa"
+      f: "/public/ClinicalExam/lj_sih/projects/project_clindet/resources/softwares/TRUST4/hg38_bcrtcr.fa"
+
+  SEQUENZA:
+  sequenza:
+    conda: "sequenza"
+    hg19:
+      gc: /public/ClinicalExam/lj_sih/projects/project_clindet/project_pipeline/WGS/MMWGSPE300_RJ/hg19/genome/hg19_gc50.wig.gz 
+    b37:
+      gc: /public/ClinicalExam/lj_sih/projects/project_clindet/project_pipeline/WGS/MMWGSPE300_RJ/hg19/genome/hg19_gc50.wig.gz 
+    hg38:
+      gc: /public/ClinicalExam/lj_sih/projects/project_clindet/project_pipeline/WGS/MMWGSPE300_RJ/hg19/genome/hg19_gc50.wig.gz 
+
+  PICARD: "picard"
+  conda: "clindet"
+  picard:
+    call: "picard "
+  
+  ascat:
+    hg19:
+      loci_1000: "/public/ClinicalExam/lj_sih/projects/project_clindet/resources/ref_genome/b37/ASCAT/WES/G1000_lociAll_hg19/G1000_loci_hg19_chr"
+      alleles_1000: "/public/ClinicalExam/lj_sih/projects/project_clindet/resources/ref_genome/b37/ASCAT/WES/G1000_allelesAll_hg19/G1000_alleles_hg19_chr"
+      replictimingfile: "/public/ClinicalExam/lj_sih/projects/project_clindet/resources/ref_genome/b37/ASCAT/WES/RT_G1000_hg19.txt"
+      GCcontentfile: "/public/ClinicalExam/lj_sih/projects/project_clindet/resources/ref_genome/b37/ASCAT/WES/GC_G1000_hg19.txt"
+    b37:
+      loci_1000: "/public/ClinicalExam/lj_sih/projects/project_clindet/resources/ref_genome/b37/ASCAT/WES/G1000_lociAll_hg19/G1000_loci_hg19_chr"
+      alleles_1000: "/public/ClinicalExam/lj_sih/projects/project_clindet/resources/ref_genome/b37/ASCAT/WES/G1000_allelesAll_hg19/G1000_alleles_hg19_chr"
+      replictimingfile: "/public/ClinicalExam/lj_sih/projects/project_clindet/resources/ref_genome/b37/ASCAT/WES/RT_G1000_hg19.txt"
+      GCcontentfile: "/public/ClinicalExam/lj_sih/projects/project_clindet/resources/ref_genome/b37/ASCAT/WES/GC_G1000_hg19.txt"
+    hg38:
+      loci_1000: "/public/ClinicalExam/lj_sih/projects/project_clindet/resources/ref_genome/hg38/ASCAT/WES/G1000_lociAll_hg38/G1000_loci_hg38_chr"
+      alleles_1000: "/public/ClinicalExam/lj_sih/projects/project_clindet/resources/ref_genome/hg38/ASCAT/WES/G1000_allelesAll_hg38/G1000_alleles_hg38_chr"
+      replictimingfile: "/public/ClinicalExam/lj_sih/projects/project_clindet/resources/ref_genome/hg38/ASCAT/WES/RT_G1000_hg38.txt"
+      GCcontentfile: "/public/ClinicalExam/lj_sih/projects/project_clindet/resources/ref_genome/hg38/ASCAT/WES/GC_G1000_hg38.txt"
+  ascat_wgs:
+    b37:
+      loci_1000: "/public/ClinicalExam/lj_sih/projects/project_clindet/resources/ref_genome/b37/ASCAT/WGS/G1000_loci_hg19_chr"
+      alleles_1000: "/public/ClinicalExam/lj_sih/projects/project_clindet/resources/ref_genome/b37/ASCAT/WGS/G1000_alleles_hg19_chr"
+      replictimingfile: "/public/ClinicalExam/lj_sih/projects/project_clindet/resources/ref_genome/b37/ASCAT/WGS/RT_G1000_hg19.txt"
+      GCcontentfile: "/public/ClinicalExam/lj_sih/projects/project_clindet/resources/ref_genome/b37/ASCAT/WGS/GC_G1000_hg19.txt"
+    hg19:
+      loci_1000: "/public/ClinicalExam/lj_sih/projects/project_clindet/resources/ref_genome/b37/ASCAT/WGS/G1000_loci_hg19_chr"
+      alleles_1000: "/public/ClinicalExam/lj_sih/projects/project_clindet/resources/ref_genome/b37/ASCAT/WGS/G1000_alleles_hg19_chr"
+      replictimingfile: "/public/ClinicalExam/lj_sih/projects/project_clindet/resources/ref_genome/b37/ASCAT/WGS/RT_G1000_hg19.txt"
+      GCcontentfile: "/public/ClinicalExam/lj_sih/projects/project_clindet/resources/ref_genome/b37/ASCAT/WGS/GC_G1000_hg19.txt"
+    hg38:
+      loci_1000: "/public/ClinicalExam/lj_sih/projects/project_clindet/resources/ref_genome/b37/ASCAT/WGS/G1000_loci_hg38_chr"
+      alleles_1000: "/public/ClinicalExam/lj_sih/projects/project_clindet/resources/ref_genome/b37/ASCAT/WGS/G1000_alleles_hg38_chr"
+      replictimingfile: "/public/ClinicalExam/lj_sih/projects/project_clindet/resources/ref_genome/b37/ASCAT/WGS/RT_G1000_hg38.txt"
+      GCcontentfile: "/public/ClinicalExam/lj_sih/projects/project_clindet/resources/ref_genome/b37/ASCAT/WGS/GC_G1000_hg38.txt"
+
+conda:
+  clindet_main: 'snake'
+
+params:
+  java:
+    temp_directory: "/public/ClinicalExam/lj_sih/projects/project_pipeline/WES/_tmp"

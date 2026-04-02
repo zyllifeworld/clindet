@@ -1,3 +1,4 @@
+## wo will try use multi-tumor vs normal mode by pseudo-run paired tumor-normal paired
 rule map_reads:
     input:
         R1="{project}/{genome_version}/results/trimmed/{sample}-{group}_R1.fastq.gz",
@@ -38,6 +39,7 @@ rule mark_duplicates:
         -M {output.metrics}
         """
 
+recal = False 
 ### for faster run, may consider not run applyBQSR, but i will keep this step in WES, you can customize as you own.
 ## For Noveseq data, don't do this step, meaningless!
 ## Aslo this step will not significantly import downstream analysis see: https://www.biostars.org/p/9605712/ and anywhere else.
@@ -46,6 +48,7 @@ if recal_config:
     recal = False
 else:
     recal = recal
+
 if recal:
     ## if reacal, let dedup bam as temp file to save space
     rule recalibrate_base_qualities:
@@ -152,3 +155,4 @@ rule picard_collect_wes:
         --BAIT_INTERVALS {input.bait_intervals} \
         --TARGET_INTERVALS {input.target_intervals}
         """
+

@@ -9,10 +9,14 @@ rule loop_vcf2maf_germ_paired:
     params:
         name=get_vcf_name,
         # vep_path=config['softwares']['vcf2maf']['vep'][genome_version]['vep_path'],
-        vep_data=config['softwares']['vcf2maf']['vep'][genome_version]['vep_data'],
-        ncbi_build=config['softwares']['vcf2maf']['build_version'][genome_version],
-        cache_version=config['softwares']['vcf2maf']['vep'][genome_version]['cache_version'],
-        species=config['softwares']['vcf2maf']['vep'][genome_version]['species']
+        # vep_data=config['softwares']['vcf2maf']['vep'][genome_version]['vep_data'],
+        # ncbi_build=config['softwares']['vcf2maf']['build_version'][genome_version],
+        # cache_version=config['softwares']['vcf2maf']['vep'][genome_version]['cache_version'],
+        # species=config['softwares']['vcf2maf']['vep'][genome_version]['species'],
+        vep_data=config['softwares_params'][genome_version]['vcf2maf']['vep']['vep_data'],
+        ncbi_build=config['softwares_params'][genome_version]['vcf2maf']['build_version'],
+        cache_version=config['softwares_params'][genome_version]['vcf2maf']['vep']['cache_version'],
+        species=config['softwares_params'][genome_version]['vcf2maf']['vep']['species']
     shell:
         """
        vcf2maf.pl --input-vcf {input.vcf} \
@@ -38,10 +42,14 @@ rule loop_vcf2maf_germ_unpaired:
     params:
         name=get_vcf_name,
         # vep_path=config['softwares']['vcf2maf']['vep'][genome_version]['vep_path'],
-        vep_data=config['softwares']['vcf2maf']['vep'][genome_version]['vep_data'],
-        ncbi_build=config['softwares']['vcf2maf']['build_version'][genome_version],
-        cache_version=config['softwares']['vcf2maf']['vep'][genome_version]['cache_version'],
-        species=config['softwares']['vcf2maf']['vep'][genome_version]['species']
+        # vep_data=config['softwares']['vcf2maf']['vep'][genome_version]['vep_data'],
+        # ncbi_build=config['softwares']['vcf2maf']['build_version'][genome_version],
+        # cache_version=config['softwares']['vcf2maf']['vep'][genome_version]['cache_version'],
+        # species=config['softwares']['vcf2maf']['vep'][genome_version]['species']
+        vep_data=config['softwares_params'][genome_version]['vcf2maf']['vep']['vep_data'],
+        ncbi_build=config['softwares_params'][genome_version]['vcf2maf']['build_version'],
+        cache_version=config['softwares_params'][genome_version]['vcf2maf']['vep']['cache_version'],
+        species=config['softwares_params'][genome_version]['vcf2maf']['vep']['species']
     shell:
         """
        {config[softwares][vcf2maf][call]} --input-vcf {input.vcf} \

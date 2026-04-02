@@ -7,13 +7,21 @@ rule unpaired_sage:
         vcf="{project}/{genome_version}/results/vcf/unpaired/{sample}/sage/{sample}.sage.vcf.gz",
     params:
         output_dir="{project}/{genome_version}/results/cnv/unpaired/purple/{sample}/amber",
-        loci=config['singularity']['hmftools'][genome_version]['amber']['loci'],
-        high_confidence_bed=config['singularity']['hmftools'][genome_version]['sage']['high_confidence_bed'],
-        ensembl_data_dir=config['singularity']['hmftools'][genome_version]['sage']['ensembl_data_dir'],
-        coverage_bed=config['singularity']['hmftools'][genome_version]['sage']['coverage_bed'],
-        hotspots=config['singularity']['hmftools'][genome_version]['sage']['hotspots'],
-        panel_bed=config['singularity']['hmftools'][genome_version]['sage']['panel_bed'],
-        ref_genome_version=config['singularity']['hmftools'][genome_version]['sage']['ref_genome_version'],
+        loci=lambda wildcards: get_config_value(config,['singularity', 'hmftools', wildcards.genome_version, 'amber','loci'],default=""),
+        high_confidence_bed=lambda wildcards: get_config_value(config,['singularity', 'hmftools', wildcards.genome_version, 'sage','high_confidence_bed'],default=""),
+        ensembl_data_dir=lambda wildcards: get_config_value(config,['singularity', 'hmftools', wildcards.genome_version, 'sage','ensembl_data_dir'],default=""),
+        coverage_bed = lambda wildcards: get_config_value(config, ['singularity', 'hmftools', wildcards.genome_version, 'sage', 'coverage_bed'],  default=""),
+        hotspots = lambda wildcards: get_config_value(config, ['singularity', 'hmftools', wildcards.genome_version, 'sage', 'hotspots'], default=""),
+        panel_bed = lambda wildcards: get_config_value(
+            config, 
+            ['singularity', 'hmftools', wildcards.genome_version, 'sage', 'panel_bed'], 
+            default=""
+        ),
+        ref_genome_version = lambda wildcards: get_config_value(
+            config, 
+            ['singularity', 'hmftools', wildcards.genome_version, 'sage', 'ref_genome_version'], 
+            default=""
+        ),
     threads: 10
     # singularity:config['singularity']['hmftools']['sif']
     conda:config['singularity']['hmftools']['conda']
@@ -57,13 +65,21 @@ rule unpaired_pave_anno_sage:
     # singularity:"https://depot.galaxyproject.org/singularity/hmftools-pave:1.7.1--hdfd78af_0" # snakemake not work well for conda & singularity
     params:
         wd="{project}/{genome_version}/results/vcf/unpaired/{sample}/sage",
-        driver_gene_panel=config['singularity']['hmftools'][genome_version]['purple']['driver_gene_panel'],
-        high_confidence_bed=config['singularity']['hmftools'][genome_version]['sage']['high_confidence_bed'],
-        ensembl_data_dir=config['singularity']['hmftools'][genome_version]['sage']['ensembl_data_dir'],
-        coverage_bed=config['singularity']['hmftools'][genome_version]['sage']['coverage_bed'],
-        hotspots=config['singularity']['hmftools'][genome_version]['sage']['hotspots'],
-        panel_bed=config['singularity']['hmftools'][genome_version]['sage']['panel_bed'],
-        ref_genome_version=config['singularity']['hmftools'][genome_version]['sage']['ref_genome_version'],
+        driver_gene_panel=lambda wildcards: get_config_value(config,['singularity', 'hmftools', wildcards.genome_version, 'purple','driver_gene_panel'],default=""),
+        high_confidence_bed=lambda wildcards: get_config_value(config,['singularity', 'hmftools', wildcards.genome_version, 'sage','high_confidence_bed'],default=""),
+        ensembl_data_dir=lambda wildcards: get_config_value(config,['singularity', 'hmftools', wildcards.genome_version, 'sage','ensembl_data_dir'],default=""),
+        coverage_bed = lambda wildcards: get_config_value(config, ['singularity', 'hmftools', wildcards.genome_version, 'sage', 'coverage_bed'],  default=""),
+        hotspots = lambda wildcards: get_config_value(config, ['singularity', 'hmftools', wildcards.genome_version, 'sage', 'hotspots'], default=""),
+        panel_bed = lambda wildcards: get_config_value(
+            config, 
+            ['singularity', 'hmftools', wildcards.genome_version, 'sage', 'panel_bed'], 
+            default=""
+        ),
+        ref_genome_version = lambda wildcards: get_config_value(
+            config, 
+            ['singularity', 'hmftools', wildcards.genome_version, 'sage', 'ref_genome_version'], 
+            default=""
+        ),
     threads: 8
     resources:
         mem_mb=lambda wildcards, input: max(100 * input.size_files_mb[0], 1000) # 100 times vcf file size

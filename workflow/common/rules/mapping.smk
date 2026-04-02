@@ -38,15 +38,9 @@ rule mark_duplicates:
         -M {output.metrics}
         """
 
-recal = False 
 ### for faster run, may consider not run applyBQSR, but i will keep this step in WES, you can customize as you own.
 ## For Noveseq data, don't do this step, meaningless!
 ## Aslo this step will not significantly import downstream analysis see: https://www.biostars.org/p/9605712/ and anywhere else.
-recal_config = config['resources']['varanno'].get(genome_version, False)
-if recal_config:
-    recal = False
-else:
-    recal = recal
 
 if recal:
     ## if reacal, let dedup bam as temp file to save space
@@ -62,7 +56,7 @@ if recal:
         params:
             temp_directory=config['params']['java']['temp_directory']
         benchmark:
-            "{project}/{genome_version}/results/benchmarks/mapping/{sample}.recal.benchmark.txt"
+            "{project}/{genome_version}/results/benchmarks/mapping/{sample_type}/{sample}-{group}.recal.benchmark.txt"
         shell:
             """ 
                 {config[softwares][gatk4][BaseRecalibrator][call]} --use-original-qualities -R {input.ref} \
@@ -84,7 +78,7 @@ if recal:
         params:
             temp_directory=config['params']['java']['temp_directory']
         benchmark:
-            "{project}/{genome_version}/results/benchmarks/mapping/{sample}.applybqsr.benchmark.txt"
+            "{project}/{genome_version}/results/benchmarks/mapping/{sample_type}/{sample}-{group}.applybqsr.benchmark.txt"
         shell:
             """{config[softwares][gatk4][ApplyBQSR][call]} --add-output-sam-program-record -use-original-qualities \
                 --bqsr-recal-file {input.recal_table} \
@@ -123,7 +117,7 @@ rule bed_to_interval_list:
     shell:
         """
             export _JAVA_OPTIONS=-Djava.io.tmpdir={params.temp_directory} && \
-            java -jar {params.picard} BedToIntervalList --INPUT {input.bed} \
+            {config[softwares][gatk4][call]}  BedToIntervalList --INPUT {input.bed} \
             --SEQUENCE_DICTIONARY {input.dict} {params.extra} \
             --OUTPUT {output.it}
         """
@@ -147,7 +141,7 @@ rule picard_collect_wes:
     shell:
         """
         export _JAVA_OPTIONS=-Djava.io.tmpdir={params.temp_directory} && \
-        java -jar {params.picard} CollectHsMetrics \
+        {config[softwares][gatk4][call]} CollectHsMetrics \
         --INPUT {input.bam} \
         --OUTPUT {output.hs} \
         --REFERENCE_SEQUENCE {input.reference} \

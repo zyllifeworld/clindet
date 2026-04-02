@@ -6,11 +6,22 @@ unpaired_samples = samples_info.loc[pd.isna(samples_info['Normal_R1_file_path'])
 paired_samples = samples_info.loc[~pd.isna(samples_info['Normal_R1_file_path'])].index.tolist()
 
 
-configfile: "/public/ClinicalExam/lj_sih/projects/project_clindet/build_log/config.yaml"
-project = samples_info["Project"].unique().tolist()[0]
-# genome_version = 'hg38'
+# configfile: "/public/ClinicalExam/lj_sih/projects/project_clindet/build_log/config.yaml"
+## split config files 
+configfile: "workflow/config/conf/genomes.yaml"
+configfile: "workflow/config/conf/singularity.yaml"
+configfile: "workflow/config/conf/softwares.yaml"
+
+project = config['project']['output_dir']
 genome_version = config['project']['genome_version']
-recal = False
+recal = config['project']['recal_BQSR']
+recal_config = config['resources']['varanno'].get(genome_version, False)
+if recal_config:
+    recal = False
+else:
+    recal = recal
+print(recal)
+print(config['resources']['varanno'].get(genome_version, False))
 
 groups = ['NC','T']
 ## somatic mutation calling softwares
@@ -29,6 +40,7 @@ tumor_only_cnv_caller = config['run_params']['tumor_only_cnv_caller']
 
 recall_pon =  False
 custome_pon_db = True
+pre_pon_db = True
 recall_pon_pindel =  False
 purple_sv = config['run_params']['purple_sv']
 
@@ -83,7 +95,7 @@ unpaired_res_list = [
 unpaired_res_list = list(filter(None, unpaired_res_list))
 
 ##### Modules #####
-rule all:
+rule wes_pipeline:
     input:
         ## paired sample
         expand(paired_res_list,

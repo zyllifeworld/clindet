@@ -73,13 +73,14 @@ rule mutect2:
         NC="{project}/{genome_version}/results/recal/paired/{sample}-NC.bam",
         ref=config['resources'][genome_version]['REFFA'],
         bed=get_sample_bed,
-        pon=config['resources'][genome_version]['WES_PON'],
         germ_vcf=config['resources'][genome_version]['MUTECT2_germline_vcf'],
     output:
         vcf="{project}/{genome_version}/results/vcf/paired/{sample}/Mutect2.vcf"
     params:
         gatk4=config['softwares']['gatk4']['call'],
         temp_directory=config['params']['java']['temp_directory'],
+        # pon=config['resources'][genome_version]['WES_PON'],
+        pon=lambda wildcards: get_config_value(config,['resources', wildcards.genome_version, 'WES_PON'], params='-pon', default=""),
     threads: 10
     shell:
         """
@@ -90,7 +91,7 @@ rule mutect2:
         -I {input.NC} \
         -O {output.vcf} \
         -normal {wildcards.sample}_NC \
-        -pon {input.pon} \
+        {params.pon} \
         --germline-resource {input.germ_vcf} \
         --intervals {input.bed}
         """

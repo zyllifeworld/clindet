@@ -3,7 +3,7 @@ rule sequenza_bam2seqz:
         Tum="{project}/{genome_version}/results/recal/paired/{sample}-T.bam",
         NC="{project}/{genome_version}/results/recal/paired/{sample}-NC.bam",
         ref=config['resources'][genome_version]['REFFA'],
-        gc=config['softwares']['sequenza'][genome_version]['gc']
+        gc=lambda wildcards: get_config_value(config,['singularity', 'sequenza', wildcards.genome_version, 'gc'],default=""),
     output:
         seqz="{project}/{genome_version}/results/cnv/paired/sequenza/{sample}/{sample}.seqz.gz",
     threads: 8
