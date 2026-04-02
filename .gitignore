@@ -3,7 +3,7 @@
 .snakemake/
 .parallel/
 analysis/
-data/
+/data/
 eval/
 pre_bin/
 /report/
