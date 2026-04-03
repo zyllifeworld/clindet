@@ -65,6 +65,25 @@ def get_vcf_name(wildcards):
         name =  "--tumor-id " + wildcards.sample + '_T' + " --normal-id " + wildcards.sample + '_NORMAL'
     return(name)
 
+def vcf2vcf_name(wildcards):
+    if wildcards.sample in paired_samples:
+        if wildcards.caller == 'vardict' or wildcards.caller == 'vardict_filter' or wildcards.caller == 'vardict_germline':          
+            name =  "--vcf-tumor-id " + wildcards.sample + '_T' + " --vcf-normal-id " + wildcards.sample + '_NC'
+        elif wildcards.caller == 'sage' or wildcards.caller == 'pave':
+            name =  "--vcf-tumor-id " + wildcards.sample + " --vcf-normal-id " + wildcards.sample + '_NC'
+        elif wildcards.caller == 'cgppindel':
+            name = "--vcf-tumor-id TUMOUR --vcf-normal-id NORMAL"
+        elif wildcards.caller == 'caveman':
+            name = "--vcf-tumor-id TUMOUR --vcf-normal-id NORMAL"
+        elif wildcards.caller == 'muse':
+            name = "--vcf-tumor-id TUMOR --vcf-normal-id NORMAL"
+        elif wildcards.caller == 'varscan2':
+            name = "--vcf-tumor-id TUMOR --vcf-normal-id NORMAL"
+        else: 
+            name =  "--vcf-tumor-id " + wildcards.sample + '_T' + " --vcf-normal-id " + wildcards.sample + '_NC'
+    else:
+        name =  "--vcf-tumor-id " + wildcards.sample + '_T' + " --vcf-normal-id " + wildcards.sample + '_NORMAL'
+    return(name)
 
 def get_vcf_file(wildcards):
     if wildcards.sample in paired_samples:
@@ -72,3 +91,9 @@ def get_vcf_file(wildcards):
     else:
         file_name =  f"{project}/{genome_version}/results/vcf/" + 'unpaired' + "/{sample}/{caller}.vcf"
     return(file_name)
+
+def choose_vcf2maf(wildcards):
+    if vcf2maf == 'raw':
+        vcf = '{project}/{genome_version}/results/vcf/paired/{sample}/{caller}.vcf'
+    else:
+        vcf = '{project}/{genome_version}/results/vcf_norm/paired/{sample}/{caller}.vcf'

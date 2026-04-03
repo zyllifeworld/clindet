@@ -5,8 +5,6 @@ samples_info = pd.read_csv(sample_sheet_file,index_col='Sample_name')
 unpaired_samples = samples_info.loc[pd.isna(samples_info['Normal_R1_file_path'])].index.tolist()
 paired_samples = samples_info.loc[~pd.isna(samples_info['Normal_R1_file_path'])].index.tolist()
 
-
-# configfile: "/public/ClinicalExam/lj_sih/projects/project_clindet/build_log/config.yaml"
 ## split config files 
 configfile: "workflow/config/conf/genomes.yaml"
 configfile: "workflow/config/conf/singularity.yaml"
@@ -20,8 +18,6 @@ if recal_config:
     recal = False
 else:
     recal = recal
-print(recal)
-print(config['resources']['varanno'].get(genome_version, False))
 
 groups = ['NC','T']
 ## somatic mutation calling softwares

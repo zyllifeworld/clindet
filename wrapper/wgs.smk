@@ -30,7 +30,7 @@ purple_sv = 'svaba'
 recall_pon =  False
 recall_pon_pindel =  False
 recal = False
-rule all:
+rule wgs_pipeline:
     input:
         ## paired sample
         expand([

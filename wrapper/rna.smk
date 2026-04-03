@@ -52,7 +52,7 @@ rna_res_list = [
     "{project}/{genome_version}/results/mut/maf/{sample}/merge/{sample}.maf"
 ]
 rna_res_list = list(filter(None, rna_res_list))
-rule all:
+rule rna_pipeline:
     input:
         ## paired sample
         expand(rna_res_list,

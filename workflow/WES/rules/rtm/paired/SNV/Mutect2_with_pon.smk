@@ -75,7 +75,7 @@ rule mutect2:
         bed=get_sample_bed,
         germ_vcf=config['resources'][genome_version]['MUTECT2_germline_vcf'],
     output:
-        vcf="{project}/{genome_version}/results/vcf/paired/{sample}/Mutect2.vcf"
+        vcf="{project}/{genome_version}/results/vcf/paired/{sample}/Mutect2_raw.vcf"
     params:
         gatk4=config['softwares']['gatk4']['call'],
         temp_directory=config['params']['java']['temp_directory'],
@@ -102,12 +102,12 @@ rule M2_filter:
         NC="{project}/{genome_version}/results/recal/paired/{sample}-NC.bam",
         ref=config['resources'][genome_version]['REFFA'],
         bed=get_sample_bed,
-        vcf="{project}/{genome_version}/results/vcf/paired/{sample}/Mutect2.vcf",
+        vcf="{project}/{genome_version}/results/vcf/paired/{sample}/Mutect2_raw.vcf",
         table="{project}/{genome_version}/results/recal/{sample}/{sample}-T_pileupsummaries.table",
         seg="{project}/{genome_version}/results/recal/contam/{sample}/{sample}_segments.table",
         ctam="{project}/{genome_version}/results/recal/contam/{sample}/{sample}_calculatecontamination.table"
     output:
-        vcf="{project}/{genome_version}/results/vcf/paired/{sample}/Mutect2_filter.vcf"
+        vcf="{project}/{genome_version}/results/vcf/paired/{sample}/Mutect2.vcf"
     params:
         gatk4=config['softwares']['gatk4']['call'],
         temp_directory=config['params']['java']['temp_directory'],

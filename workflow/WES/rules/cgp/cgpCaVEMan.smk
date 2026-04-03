@@ -17,7 +17,7 @@ if genome_version in ['hg19','b37','hg38','hg38_EBV']:
         script:
             "../../scripts/caveman/cnv_bed.R"
 
-    ### caveman_normal_pane
+    ### caveman_normal_panel
     rule CM_call: 
         input:
             Tum="{project}/{genome_version}/results/recal/paired/{sample}-T.bam",
@@ -26,13 +26,22 @@ if genome_version in ['hg19','b37','hg38','hg38_EBV']:
             NCcnv="{project}/{genome_version}/results/cnv/paired/ascat/{sample}/{sample}_NCcnv.bed"
         output:
             # out_dir=directory('results/vcf/paired/{sample}/caveman'),
-            log='{project}/{genome_version}/logs/paired/caveman/caveman_{sample}.log'
+            log='{project}/{genome_version}/logs/paired/caveman/caveman_{sample}.log',
+            vcf="{project}/{genome_version}/results/vcf/paired/{sample}/caveman/{sample}_T_vs_{sample}_NC.muts.ids.vcf.gz"
         threads: 20
         params:
             ref=config['resources'][genome_version]['REFFA'],
-            igbed=config['singularity']['caveman'][genome_version]['ignorebed'],
+            igbed=lambda wildcards: get_config_value(
+                config,
+                ['singularity', 'caveman', wildcards.genome_version, 'ignorebed'],
+                default=""
+            ),
             out_dir='{project}/{genome_version}/results/vcf/paired/{sample}/caveman',
-            s=config['singularity']['caveman'][genome_version]['flag']['s']
+            s=lambda wildcards: get_config_value(
+                config,
+                ['singularity', 'caveman', wildcards.genome_version, 'flag','s'],
+                default=""
+            ),
         singularity:
             config['singularity']['caveman']['sif']
         benchmark:
@@ -74,8 +83,9 @@ else:
             Tcnv="{project}/{genome_version}/results/cnv/paired/{sample}/{sample}_Tcnv.bed",
             NCcnv="{project}/{genome_version}/results/cnv/paired/{sample}/{sample}_NCcnv.bed"
         output:
-            # out_dir=directory('{project}/{genome_version}/results/vcf/paired/{sample}/caveman'),
-            log='{project}/{genome_version}/logs/paired/caveman/caveman_{sample}.log'
+            out_dir=directory('{project}/{genome_version}/results/vcf/paired/{sample}/caveman'),
+            log='{project}/{genome_version}/logs/paired/caveman/caveman_{sample}.log',
+            vcf="{project}/{genome_version}/results/vcf/paired/{sample}/caveman/{sample}_T_vs_{sample}_NC.muts.ids.vcf.gz"
         threads: 20
         params:
             ref=config['resources'][genome_version]['REFFA'],
@@ -105,7 +115,8 @@ rule CM_flag:
     input:
         Tum="{project}/{genome_version}/results/recal/paired/{sample}-T.bam",
         NC="{project}/{genome_version}/results/recal/paired/{sample}-NC.bam",
-        log='{project}/{genome_version}/logs/paired/caveman_{sample}.log'
+        log='{project}/{genome_version}/logs/paired/caveman/caveman_{sample}.log',
+        vcf="{project}/{genome_version}/results/vcf/paired/{sample}/caveman/{sample}_T_vs_{sample}_NC.muts.ids.vcf.gz"
     output:
         vcf="{project}/{genome_version}/results/vcf/paired/{sample}/caveman.vcf"
     threads: 20
@@ -145,8 +156,7 @@ rule CM_flag:
                 config,
                 ['singularity', 'caveman', wildcards.genome_version, 'flag','s'],
                 default=""
-            ),
-        vcf="{project}/{genome_version}/results/vcf/paired/{sample}/caveman/{sample}_T_vs_{sample}_NC.muts.ids.vcf.gz",
+            )
     singularity:
         config['singularity']['caveman']['sif']
     benchmark:
@@ -154,7 +164,7 @@ rule CM_flag:
     shell:
         """
         cgpFlagCaVEMan.pl \
-        -i {params.vcf} \
+        -i {input.vcf} \
         -o {output} \
         -m {input.Tum} -n {input.NC} \
         -s {params.s}  -t genome \
@@ -174,7 +184,7 @@ rule CM_germ_flag:
     input:
         Tum="{project}/{genome_version}/results/recal/paired/{sample}-T.bam",
         NC="{project}/{genome_version}/results/recal/paired/{sample}-NC.bam",
-        log='{project}/{genome_version}/logs/paired/caveman_{sample}.log'
+        log='{project}/{genome_version}/logs/paired/caveman/caveman_{sample}.log'
     output:
         vcf="{project}/{genome_version}/results/vcf_germline/paired/{sample}/caveman.vcf"
     threads: 20

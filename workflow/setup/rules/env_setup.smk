@@ -1,5 +1,6 @@
 SOFT_DIR = "resources/softwares"
 CONTAINER_DIR = "resources/containers"
+build_software_log = "build_log/envs"
 
 ENV_SPECS = {
     "clindet": "envs/clindet.yaml",
@@ -14,26 +15,30 @@ ENV_SPECS = {
 
 
 def env_done(env_name):
-    return f"{BUILD_LOG}/{env_name}.env.done"
-
+    return f"{build_software_log}/{env_name}.env.done"
 
 def env_yaml(wildcards):
     return ENV_SPECS[wildcards.env_name]
+
 rule append_analysis_envs:
     input:
-        f"{BUILD_LOG}/prereqs.ok",
-        expand(f"{BUILD_LOG}/{{env_name}}.env.done", env_name=sorted(ENV_SPECS)),
-        f"{BUILD_LOG}/cancer_report_install_r.log",
-        f"{BUILD_LOG}/pull_zenodo.log"
+        f"{build_software_log}/prereqs.ok",
+        expand(f"{build_software_log}/{{env_name}}.env.done", env_name=sorted(ENV_SPECS)),
+        f"{build_software_log}/cancer_report_install_r.log",
+        f"{build_software_log}/pull_zenodo.log"
+    output:
+        f"{build_software_log}/softwares_env.ok"
+    shell:
+        "touch {output}"
 
 rule prerequisites:
     output:
-        touch(f"{BUILD_LOG}/prereqs.ok")
+        touch(f"{build_software_log}/prereqs.ok")
     log:
-        f"{BUILD_LOG}/prereqs.run.log"
+        f"{build_software_log}/prereqs.run.log"
     shell:
         r"""
-        mkdir -p {BUILD_LOG}
+        mkdir -p {build_software_log}
         for cmd in conda sdk singularity; do
             if ! command -v "$cmd" >/dev/null 2>&1; then
                 echo "ERROR: $cmd is not installed or not on PATH." >&2
@@ -47,14 +52,14 @@ rule create_conda_env:
     input:
         env_yaml
     output:
-        touch(f"{BUILD_LOG}" + "/{env_name}.env.done")
+        touch(f"{build_software_log}" + "/{env_name}.env.done")
     log:
-        f"{BUILD_LOG}" + "/{env_name}.env.install.log"
+        f"{build_software_log}" + "/{env_name}.env.install.log"
     params:
         env_name=lambda wc: wc.env_name
     shell:
         r"""
-        mkdir -p {BUILD_LOG}
+        mkdir -p {build_software_log}
         if conda env list | awk '$1 !~ /^#/ {{print $1}}' | grep -qx "{params.env_name}"; then
             echo "{params.env_name} already exists" > {log}
         else
@@ -67,12 +72,12 @@ rule install_cancer_report_r:
     input:
         env_done("cancer_report")
     output:
-        touch(f"{BUILD_LOG}/cancer_report_install_r.log")
+        touch(f"{build_software_log}/cancer_report_install_r.log")
     log:
-        f"{BUILD_LOG}/cancer_report_install_r.run.log"
+        f"{build_software_log}/cancer_report_install_r.run.log"
     shell:
         r"""
-        mkdir -p {BUILD_LOG}
+        mkdir -p {build_software_log}
         {{
             echo "Install custom R packages for cancer_report"
             conda run -n cancer_report R -q -e "install.packages(c('BiocManager'), repos = c(CRAN = 'https://cloud.r-project.org'))"
@@ -85,7 +90,7 @@ rule install_cancer_report_r:
 
 rule download_zenodo_containers:
     output:
-        touch(f"{BUILD_LOG}/pull_zenodo.log")
+        touch(f"{build_software_log}/pull_zenodo.log")
     shell:
         r"""
         mkdir -p {CONTAINER_DIR}

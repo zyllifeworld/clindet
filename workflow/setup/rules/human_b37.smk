@@ -37,18 +37,7 @@ rule build_b37_ref:
         f"{REF_B37}/Homo_sapiens_assembly19.dbsnp138.indel.vcf.gz.tbi",
         f"{REF_B37}/Homo_sapiens.GRCh37.87.gtf",
         f"{REF_B37}/Homo_sapiens.GRCh37.cdna.all.fa",
-        f"{REF_B37}/Homo_sapiens.GRCh37.cdna.all.fa.gz",
-        directory(f"{REF_B37}/STAR/b37"),
-        directory(f"{REF_B37}/RSEM/b37"),
-        directory(f"{REF_B37}/kallisto/b37"),
-        directory(f"{REF_B37}/salmon/b37"),
-        directory(f"{SOFT_DIR}/gatk"),
-        directory(f"{SOFT_DIR}/TRUST4"),
-        directory(CONTAINER_DIR),
-        directory(f"{REF_B37}/vep"),
-        directory(f"{REF_B37}/ASCAT/WES"),
-        directory(f"{REF_B37}/ASCAT/WGS"),
-        directory(f"{REF_B37}/Sanger"),
+        f"{REF_B37}/Homo_sapiens.GRCh37.cdna.all.fa.gz"
 
 
 rule download_b37_reference:
@@ -423,3 +412,11 @@ rule install_clindet_extras:
         }} &> {log}
         touch {output}
         """
+
+# rule download_pgcr_config:
+#     output: expand("resources/ref_genome/{genome_version}/pcgr_ref_data.20250314.grch37.tgz",genome_version = config['project']['genome_version'])
+#     shell:
+#         """
+#         wget -P resources/ref_genome/{config[project][genome_version]} -c https://insilico.hpc.uio.no/pcgr/pcgr_ref_data.20250314.grch37.tgz
+#         tar -xzvf {output} --strip-components 1 -C resources/ref_genome/{config[project][genome_version]}
+#         """
