@@ -97,3 +97,84 @@ def choose_vcf2maf(wildcards):
         vcf = '{project}/{genome_version}/results/vcf/paired/{sample}/{caller}.vcf'
     else:
         vcf = '{project}/{genome_version}/results/vcf_norm/paired/{sample}/{caller}.vcf'
+
+def get_bcftools_filter_rules(wildcards):
+    caller = wildcards.caller.lower()
+
+    rule_map = {
+        "mutect2": {
+            "include": 'FILTER="PASS"',
+            "exclude": ''
+        },
+        "vardict": {
+            "include": 'FILTER="PASS" && QUAL >= 30',
+            "exclude": ''
+        },
+        "strelka2": {
+            "include": 'FILTER="PASS"',
+            "exclude": ''
+        },
+        "caveman": {
+            "include": 'FILTER="PASS"',
+            "exclude": ''
+        },
+        "vardict": {
+            "include": 'FILTER="PASS"',
+            "exclude": ''
+        },
+        "haplotypecaller": {
+            "include": 'FILTER="PASS" && QUAL >= 30',
+            "exclude": 'MQ < 40'
+        },
+        "muse": {
+            "include": '',
+            "exclude": 'FILTER~"Tier5"'
+        },
+        "sage": {
+            "include": '',
+            "exclude": 'FILTER~"Tier5"'
+        },
+        "cgppindel": {
+            "include": '',
+            "exclude": 'FILTER~"FF010|FF012"'
+        }
+    }
+
+    return rule_map.get(caller, {
+        "include": 'FILTER="PASS"',
+        "exclude": ''
+    })
+
+
+def get_bcftools_include_expr(wildcards):
+    return get_bcftools_filter_rules(wildcards).get("include", "")
+
+
+def get_bcftools_exclude_expr(wildcards):
+    return get_bcftools_filter_rules(wildcards).get("exclude", "")
+
+
+def build_bcftools_filter_cmd(wildcards):
+    include_expr = get_bcftools_include_expr(wildcards)
+    exclude_expr = get_bcftools_exclude_expr(wildcards)
+
+    cmd_parts = []
+    if include_expr:
+        cmd_parts.append(f"-i '{include_expr}'")
+    if exclude_expr:
+        cmd_parts.append(f"-e '{exclude_expr}'")
+
+    return " ".join(cmd_parts)
+
+def flexible_conda_env(config_dict, keys, default=None):
+    current = config_dict
+    for key in keys:
+        if isinstance(current, dict) and key in current:
+            current = current[key]
+        else:
+            return default
+
+    if current is None or current == '': #参数为空
+        return default
+    else:
+        return current

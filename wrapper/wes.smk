@@ -48,7 +48,7 @@ paired_res_list = [
     '{project}/{genome_version}/logs/paired/conpair/{sample}.done' if 'conpair'          in stages else None,
 
     ##### for SNV/INDEL calling #####
-    "{project}/{genome_version}/results/maf/paired/{sample}/merge/{sample}.maf",
+    "{project}/{genome_version}/results/maf/paired/{sample}/merge/{sample}.maf" if 'call_mut' in stages else None,
 
     # somatic_cnv_list = ['purple','ASCAT','facets','sequenza','freec','dryclean']
     ##### for CNV result ##### There is a bug for snakemake rules namelist when include *smk for 3-4 levels

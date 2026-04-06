@@ -3,8 +3,8 @@ import pysam
 from pathlib import Path
 
 vcf_inputs = [
-    'test/b37/results/vcf2vcf/paired/CGGA_1288/cgppindel.vcf',
     'test/b37/results/vcf2vcf/paired/CGGA_1288/muse.vcf',
+    'test/b37/results/vcf2vcf/paired/CGGA_1288/caveman.vcf',
     'test/b37/results/vcf2vcf/paired/CGGA_1288/Mutect2.vcf']
 
 # vcf_inputs = list(snakemake.input.vcfs)
@@ -234,6 +234,13 @@ def extract_ad_dp_from_sample(rec, sample_name, caller):
             ad2 = (refu[0], altu[0])
             return ad2, int(sum(ad2))
 
+    # 6) CgpPindel indel: AD = PP + NP,DP = PR + NR
+    tar = _as_int_list(_get_sample_field(sample, "PP"))
+    tir = _as_int_list(_get_sample_field(sample, "NP"))
+    if tar is not None and tir is not None and n_alt == 1:
+        ad2 = (tar[0], tir[0])
+        return ad2, int(sum(ad2))
+    
     # 6) 只有 DP
     if dp is not None:
         return None, dp
@@ -351,14 +358,14 @@ with pysam.VariantFile(merged_vcf, "w", header=header) as out_all: #, \
         rec = create_output_record(out_all, src_rec)
         rec.info["CALLERS"] = callers
         rec.info["NCALLERS"] = ncallers
-        rec.info["CALLER_FILTERS"] = filter_items
-        rec.info["CALLER_QUALS"] = qual_items
+        # rec.info["CALLER_FILTERS"] = filter_items
+        # rec.info["CALLER_QUALS"] = qual_items
 
         master_caller = callers[0]
         tumor_name = variant_samples[key][master_caller]["tumor"] or "."
         normal_name = variant_samples[key][master_caller]["normal"] or "."
-        rec.info["TUMOR_SAMPLE"] = tumor_name
-        rec.info["NORMAL_SAMPLE"] = normal_name
+        # rec.info["TUMOR_SAMPLE"] = tumor_name
+        # rec.info["NORMAL_SAMPLE"] = normal_name
 
         allele_count = 1 + len(rec.alts or [])
         tumor_ads, tumor_dps, tumor_payloads = [], [], []
@@ -416,17 +423,17 @@ with pysam.VariantFile(merged_vcf, "w", header=header) as out_all: #, \
             if final_tumor_dp is not None:
                 out_sample["DP"] = final_tumor_dp
 
-            for caller in caller_names:
-                tag = sanitize_tag(caller)
-                ad_tag = f"AD_{tag}"
-                dp_tag = f"DP_{tag}"
-                payload = variant_sampledata[key].get(caller, {}).get("tumor", {})
-                ad_val = pad_ad(payload.get("AD"), allele_count)
-                dp_val = payload.get("DP")
-                if ad_val is not None:
-                    out_sample[ad_tag] = ad_val
-                if dp_val is not None:
-                    out_sample[dp_tag] = int(dp_val)
+            # for caller in caller_names:
+            #     tag = sanitize_tag(caller)
+            #     ad_tag = f"AD_{tag}"
+            #     dp_tag = f"DP_{tag}"
+            #     payload = variant_sampledata[key].get(caller, {}).get("tumor", {})
+            #     ad_val = pad_ad(payload.get("AD"), allele_count)
+            #     dp_val = payload.get("DP")
+            #     if ad_val is not None:
+            #         out_sample[ad_tag] = ad_val
+            #     if dp_val is not None:
+            #         out_sample[dp_tag] = int(dp_val)
 
         if normal_name in rec.samples.keys():
             out_sample = rec.samples[normal_name]
@@ -442,17 +449,17 @@ with pysam.VariantFile(merged_vcf, "w", header=header) as out_all: #, \
             if final_normal_dp is not None:
                 out_sample["DP"] = final_normal_dp
 
-            for caller in caller_names:
-                tag = sanitize_tag(caller)
-                ad_tag = f"AD_{tag}"
-                dp_tag = f"DP_{tag}"
-                payload = variant_sampledata[key].get(caller, {}).get("normal", {})
-                ad_val = pad_ad(payload.get("AD"), allele_count)
-                dp_val = payload.get("DP")
-                if ad_val is not None:
-                    out_sample[ad_tag] = ad_val
-                if dp_val is not None:
-                    out_sample[dp_tag] = int(dp_val)
+            # for caller in caller_names:
+            #     tag = sanitize_tag(caller)
+            #     ad_tag = f"AD_{tag}"
+            #     dp_tag = f"DP_{tag}"
+            #     payload = variant_sampledata[key].get(caller, {}).get("normal", {})
+            #     ad_val = pad_ad(payload.get("AD"), allele_count)
+            #     dp_val = payload.get("DP")
+            #     if ad_val is not None:
+            #         out_sample[ad_tag] = ad_val
+            #     if dp_val is not None:
+            #         out_sample[dp_tag] = int(dp_val)
 
         if final_tumor_dp is not None:
             rec.info["TDP"] = int(final_tumor_dp)
