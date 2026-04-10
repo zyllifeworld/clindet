@@ -13,7 +13,7 @@ rule CNA_ASCAT:
         replictimingfile=config['softwares']['ascat_wgs'][genome_version]['replictimingfile'],
         # sample_index= lambda wildcards: wildcards.sample
     threads: 8
-    conda: config['conda']['clindet_main']
+    conda: flexible_conda_env(config,['conda','clindet_main'],env_yaml = 'envs/clindet.yaml')
     script:
         "../../../../scripts/ASCAT.R"
 
@@ -25,7 +25,7 @@ rule ASCAT_EXTRACT_PURITYPLOIDY:
         tsv="{project}/{genome_version}/results/cnv/paired/ascat/{sample}/{sample}_purity.ploidy.tsv",
     params:
         # sample_index= lambda wildcards: wildcards.sample
-    conda: config['conda']['clindet_main']
+    conda: flexible_conda_env(config,['conda','clindet_main'],env_yaml = 'envs/clindet.yaml')
     script:
         "../../../../scripts/ascat_pp.R"
 
@@ -39,7 +39,7 @@ rule CNA_ASCAT_sc:
         # gender=,
         sample_index= lambda wildcards: wildcards.sample
     threads: 8
-    conda: config['conda']['clindet_main']
+    conda: flexible_conda_env(config,['conda','clindet_main'],env_yaml = 'envs/clindet.yaml')
     script:
         "../../../../scripts/ASCATsc.R"
 
@@ -50,7 +50,7 @@ rule ASCAT_GISTIC:
         # rdata="{project}/{genome_version}/results/cnv/paired/{sample}/{sample}_ASCAT.rdata",
         seg="{project}/{genome_version}/results/cnv/paired/GISTIC2_seg/{sample}/{sample}.seg"
         # absolute_pdf="{project}/{genome_version}/results/cnv/ABSOLUTE/{sample}/DoAbsolute.called.ABSOLUTE.plots.pdf"
-    conda: config['conda']['clindet_main']
+    conda: flexible_conda_env(config,['conda','clindet_main'],env_yaml = 'envs/clindet.yaml')
     params:
         wd="{project}/{genome_version}/results/cnv/paired/ascat/{sample}",
         # gender=,

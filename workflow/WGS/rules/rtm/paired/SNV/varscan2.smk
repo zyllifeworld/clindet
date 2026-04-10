@@ -9,7 +9,7 @@ rule varscan2_mpileup:
         normal=temp("{project}/{genome_version}/results/recal/paired/{sample}-NC.mp"),
         tumor=temp("{project}/{genome_version}/results/recal/paired/{sample}-T.mp")
     threads: 2
-    conda: config['conda']['clindet_main']
+    conda: flexible_conda_env(config,['conda','clindet_main'],env_yaml = 'envs/clindet.yaml')
     benchmark:
         "{project}/{genome_version}/results/benchmarks/mut/{sample}.varscan.mpileup.txt"
     shell:
@@ -51,7 +51,7 @@ rule varscan2_call:
         indel="{project}/{genome_version}/results/vcf/paired/{sample}/varscan2.indel.vcf"
     log:
         "{project}/{genome_version}/logs/varscan2/paired/{sample}.log"
-    conda: config['conda']['clindet_main']
+    conda: flexible_conda_env(config,['conda','clindet_main'],env_yaml = 'envs/clindet.yaml')
     benchmark:
         "{project}/{genome_version}/results/benchmarks/mut/{sample}.varscan.call.txt"
     shell:
@@ -77,7 +77,7 @@ rule varscan2_processSomatic:
         indel_germ="{project}/{genome_version}/results/vcf/paired/{sample}/varscan2.indel.Germline.vcf",
         indel_germ_hc="{project}/{genome_version}/results/vcf/paired/{sample}/varscan2.indel.Germline.hc.vcf",
     threads: 1
-    conda: config['conda']['clindet_main']
+    conda: flexible_conda_env(config,['conda','clindet_main'],env_yaml = 'envs/clindet.yaml')
     shell:
         """
         varscan processSomatic {input.snp}
@@ -90,7 +90,7 @@ rule varscan2_som_filter:
         snp_som_hc="{project}/{genome_version}/results/vcf/paired/{sample}/varscan2.snp.Somatic.hc.vcf"
     output:
         vcf="{project}/{genome_version}/results/vcf/paired/{sample}/varscan2.snp.Somatic.hc.filter.vcf"
-    conda: config['conda']['clindet_main']
+    conda: flexible_conda_env(config,['conda','clindet_main'],env_yaml = 'envs/clindet.yaml')
     shell:
         """
         varscan somaticFilter {input.snp_som_hc} --indel-file {input.indel} --output-file {output.vcf}
@@ -105,7 +105,7 @@ rule varscan2_merge_somatic:
     threads: 1
     params:
         caller='varscan2'
-    conda: config['conda']['clindet_main']
+    conda: flexible_conda_env(config,['conda','clindet_main'],env_yaml = 'envs/clindet.yaml')
     shell:
         """
         bgzip {input.snp_som_hc_filter} -k -o {input.snp_som_hc_filter}.gz

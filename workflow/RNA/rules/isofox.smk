@@ -14,7 +14,7 @@ rule STAR_isofox_map:
         sort_mem_per_thread='1G'
     threads: 10
     conda:
-        config['softwares']['star']['conda']
+        flexible_conda_env(config,['conda','rna'],env_yaml = 'envs/rsem.yaml')
     shell:
         """ 
         STAR --genomeDir {params.star_index} --runThreadN={threads} \
@@ -57,7 +57,7 @@ rule isofox_call:
         # Allocate memory based on input file size, with a minimum of 300 MB
         mem_mb=lambda wildcards, input: max(1.5 * input.size_mb, 300),
     conda:
-        config['singularity']['hmftools']['conda']
+        flexible_conda_env(config,['conda','hmftools'],env_yaml = 'envs/hmftools.yaml')
     shell:
         """ 
         isofox -Xms{resources.mem_mb}m -Xmx{resources.mem_mb}m \

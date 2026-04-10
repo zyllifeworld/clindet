@@ -39,6 +39,7 @@ resources:
   hg38:
     REFFA: "/public/ClinicalExam/lj_sih/projects/project_clindet/resources/ref_genome/hg38/GRCh38_masked_exclusions_alts_hlas.fasta"
     GENOME_BED: ""
+    GFF: "/public/ClinicalExam/lj_sih/projects/project_clindet/resources/ref_genome/hg38/Homo_sapiens.GRCh38.115.chr_prefix.gff3"
     GTF: "/public/ClinicalExam/lj_sih/projects/project_clindet/resources/ref_genome/b37/Homo_sapiens.GRCh37.87.gtf"
     WES_PON: "/public/ClinicalExam/lj_sih/projects/project_clindet/resources/ref_genome/hg38/1000g_pon.hg38.vcf.gz"
     WES_BED: "/public/ClinicalExam/lj_sih/resource/genome/human/hg38/hg38.bed"

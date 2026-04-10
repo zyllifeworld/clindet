@@ -27,3 +27,8 @@ dependencies:
   - r-r.utils
   - configparser
   - sra-tools
+  - pip
+
+  - pip:
+    - snakemake-executor-plugin-cluster-generic
+    - configparser

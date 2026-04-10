@@ -24,7 +24,7 @@ rule delly_pre_merge:
         vcf="{project}/{genome_version}/results/sv/paired/DELLY/{sample}/SV_delly_{sample}_filter.vcf"
     output:
         vcf="{project}/{genome_version}/results/sv/paired/merge/{sample}/delly.vcf"
-    conda: config['conda']['clindet_main']
+    conda: flexible_conda_env(config,['conda','clindet_main'],env_yaml = 'envs/clindet.yaml')
     params:
         ref=config['resources'][genome_version]['REFFA'],
     shell:

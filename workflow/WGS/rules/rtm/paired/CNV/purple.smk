@@ -35,7 +35,7 @@ rule paired_amber:
         normalize=False,  # optional flag to use bcftools norm to normalize indels (Valid params are -a, -f, -m, -D or -d)
     threads: 10
     # singularity:config['singularity']['hmftools']['sif']
-    conda:config['singularity']['hmftools']['conda']
+    conda: flexible_conda_env(config,['conda','hmftools'],env_yaml = 'envs/hmftools.yaml')
     shell:
         """
         amber  -tumor {wildcards.sample} -tumor_bam {input.Tum} \
@@ -61,7 +61,7 @@ rule paired_cobalt:
     resources:
         mem_mb=lambda wildcards, input: max(0.4 * input.size_files_mb[0], 1000) 
     # singularity:config['singularity']['hmftools']['sif']
-    conda:config['singularity']['hmftools']['conda']
+    conda: flexible_conda_env(config,['conda','hmftools'],env_yaml = 'envs/hmftools.yaml')
     shell:
         """
         cobalt -Xms{resources.mem_mb}m -Xmx{resources.mem_mb}m \
@@ -103,7 +103,7 @@ if purple_run_with_sv:
         resources:
             mem_mb=lambda wildcards, input: max(0.45 * input.size_files_mb[0], 1000) 
         # singularity:config['singularity']['hmftools']['sif']
-        conda:config['singularity']['hmftools']['conda']
+        conda: flexible_conda_env(config,['conda','hmftools'],env_yaml = 'envs/hmftools.yaml')
         shell:
             """
             purple -Xms{resources.mem_mb}m -Xmx{resources.mem_mb}m \
@@ -150,7 +150,7 @@ else:
             sv_vcf=get_purple_sv_vcf
         threads: 10
         # singularity:config['singularity']['hmftools']['sif']
-        conda:config['singularity']['hmftools']['conda']
+        conda: flexible_conda_env(config,['conda','hmftools'],env_yaml = 'envs/hmftools.yaml')
         resources:
             mem_mb=lambda wildcards, input: max(0.45 * input.size_files_mb[0], 1000) 
         shell:

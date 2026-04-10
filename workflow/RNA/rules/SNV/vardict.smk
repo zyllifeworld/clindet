@@ -11,7 +11,7 @@ rule unpaired_vardict_single_mode:
         allele_frequency_threshold="0.01",  # Optional, default is 0.01
         post_scripts="teststrandbias.R | var2vcf_valid.pl -A -N "
     threads: 10
-    conda: "clindet"
+    conda: flexible_conda_env(config,['conda','clindet_main'],env_yaml = 'envs/clindet.yaml')
     shell:
         """
         vardict-java -G {input.reference} \
@@ -28,6 +28,8 @@ rule unpaired_filter_vardict:
         vcf="{project}/{genome_version}/results/mut/vcf/{sample}/VarDict/{sample}.vardict.vcf"
     output:
         vcf="{project}/{genome_version}/results/mut/vcf/{sample}/vardict.vcf"
+    conda:
+        flexible_conda_env(config,['conda','clindet_main'],env_yaml = 'envs/clindet.yaml')
     shell:
         """
         bcftools view -i 'FILTER="PASS" && INFO/DP>=20 && INFO/VD>=5'  {input.vcf} -Ov -o {output.vcf}

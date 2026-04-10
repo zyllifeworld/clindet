@@ -78,7 +78,7 @@ singularity:
         ab: "/public/ClinicalExam/lj_sih/projects/project_clindet/resources/ref_genome/b37/Sanger/SNV_INDEL_ref/caveman/flagging"
         s: "HUMAN"
     hg38:
-      ignorebed: "/public/ClinicalExam/lj_sih/projects/project_clindet/resources/ref_genome/hg38/Sanger/SNV_INDEL_ref_GRCh38_hla_decoy_ebv-fragment/pindel/HiDepth.bed.gz"
+      ignorebed: "/public/ClinicalExam/lj_sih/projects/project_clindet/resources/ref_genome/hg38/Sanger/SNV_INDEL_ref_GRCh38_hla_decoy_ebv-fragment/caveman/HiDepth.tsv"
       flag:
         c: "/public/ClinicalExam/lj_sih/projects/project_clindet/resources/ref_genome/hg38/Sanger/SNV_INDEL_ref_GRCh38_hla_decoy_ebv-fragment/caveman/flagging/flag.vcf.config.ini"
         v: "/public/ClinicalExam/lj_sih/projects/project_clindet/resources/ref_genome/hg38/Sanger/SNV_INDEL_ref_GRCh38_hla_decoy_ebv-fragment/caveman/flagging/flag.to.vcf.convert.ini"
@@ -235,7 +235,7 @@ singularity:
       blacklist: "/public/ClinicalExam/lj_sih/projects/project_clindet/resources/ref_genome/b37/hmf_pipeline_resources/dna/sv/gridss_blacklist.37.bed.gz"
       pondir: "/public/ClinicalExam/lj_sih/projects/project_clindet/resources/ref_genome/b37/hmf_pipeline_resources/dna/sv"
     hg38:
-      blacklist: "/public/ClinicalExam/lj_sih/projects/project_clindet/resources/ref_genome/hg38/hmf_pipeline_resources/dna/sv/gridss_blacklist.38.bed.gz"
+      blacklist: "/public/ClinicalExam/lj_sih/projects/project_clindet/resources/ref_genome/hg38/hmf_pipeline_resources/dna/sv/sv_prep_blacklist.38.bed.gz"
       pondir: "/public/ClinicalExam/lj_sih/projects/project_clindet/resources/ref_genome/hg38/hmf_pipeline_resources/dna/sv"
 
   hmftools:

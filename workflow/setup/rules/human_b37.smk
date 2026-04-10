@@ -6,14 +6,14 @@ rules while keeping the same resource layout under `resources/` and `build_log/`
 """
 
 shell.executable("/bin/bash")
-
+SOFT_DIR = "resources/softwares"
 BUILD_LOG = "build_log/b37"
 REF_B37 = "resources/ref_genome/b37"
 
 rule build_b37_ref:
     input:
         f"{BUILD_LOG}/prereqs.ok",
-        expand(f"{BUILD_LOG}/{{env_name}}.env.done", env_name=sorted(ENV_SPECS)),
+        # expand(f"{BUILD_LOG}/{{env_name}}.env.done", env_name=sorted(ENV_SPECS)),
         f"{BUILD_LOG}/cancer_report_install_r.log",
         f"{BUILD_LOG}/pull_zenodo.log",
         f"{BUILD_LOG}/download_b37_hmftools.log",
@@ -41,18 +41,18 @@ rule build_b37_ref:
 
 
 rule download_b37_reference:
-    input:
-        env_done("gsutil")
     output:
         f"{REF_B37}/Homo_sapiens.GRCh37.GATK.illumina.fasta",
         f"{REF_B37}/Homo_sapiens.GRCh37.GATK.illumina.fasta.dict",
         f"{REF_B37}/Homo_sapiens.GRCh37.GATK.illumina.fasta.fai",
     log:
         f"{BUILD_LOG}/download_b37_reference.log"
+    conda:
+        flexible_conda_env(config,['conda','gsutils'],env_yaml = 'envs/gsutils.yaml')
     shell:
         r"""
         mkdir -p {REF_B37}
-        conda run -n gsutil gsutil -m cp -r -n \
+        gsutil -m cp -r -n \
           "gs://hmf-public/HMFtools-Resources/ref_genome/37/Homo_sapiens.GRCh37.GATK.illumina.fasta" \
           "gs://hmf-public/HMFtools-Resources/ref_genome/37/Homo_sapiens.GRCh37.GATK.illumina.fasta.dict" \
           "gs://hmf-public/HMFtools-Resources/ref_genome/37/Homo_sapiens.GRCh37.GATK.illumina.fasta.fai" \
@@ -61,18 +61,18 @@ rule download_b37_reference:
 
 
 rule download_b37_hmftools:
-    input:
-        env_done("gsutil")
     output:
         touch(f"{BUILD_LOG}/download_b37_hmftools.log")
     log:
         f"{BUILD_LOG}/download_b37_hmftools.run.log"
+    conda:
+        flexible_conda_env(config,['conda','gsutils'],env_yaml = 'envs/gsutils.yaml')
     shell:
         r"""
         mkdir -p {BUILD_LOG}
         mkdir -p {REF_B37}/hmf_pipeline_resources
         {{
-            conda run -n gsutil gsutil -m cp \
+            gsutil -m cp \
               "gs://hmf-public/HMFtools-Resources/pipeline/oncoanalyser/2.0/37/hmf_panel_resources.tso500.37_v2.0.0--3.tar.gz" \
               "gs://hmf-public/HMFtools-Resources/pipeline/oncoanalyser/2.0/37/hmf_pipeline_resources.37_v2.0.0--3.tar.gz" \
               {REF_B37}
@@ -86,8 +86,6 @@ rule download_b37_hmftools:
 
 
 rule download_b37_gatk:
-    input:
-        env_done("gsutil")
     output:
         dbsnp_vcf=f"{REF_B37}/Homo_sapiens_assembly19.dbsnp138.vcf",
         dbsnp_idx=f"{REF_B37}/Homo_sapiens_assembly19.dbsnp138.vcf.idx",
@@ -96,11 +94,13 @@ rule download_b37_gatk:
         marker=touch(f"{BUILD_LOG}/download_b37_gatk.log"),
     log:
         f"{BUILD_LOG}/download_b37_gatk.run.log"
+    conda:
+        flexible_conda_env(config,['conda','gsutils'],env_yaml = 'envs/gsutils.yaml')
     shell:
         r"""
         mkdir -p {BUILD_LOG}
         {{
-            conda run -n gsutil gsutil -m cp -r -n \
+            gsutil -m cp -r -n \
               "gs://gcp-public-data--broad-references/hg19/v0/1000G_omni2.5.b37.vcf.gz" \
               "gs://gcp-public-data--broad-references/hg19/v0/1000G_omni2.5.b37.vcf.gz.tbi" \
               "gs://gcp-public-data--broad-references/hg19/v0/1000G_phase1.snps.high_confidence.b37.vcf.gz" \
@@ -113,7 +113,7 @@ rule download_b37_gatk:
               "gs://gcp-public-data--broad-references/hg19/v0/Homo_sapiens_assembly19.dbsnp138.vcf.idx" \
               {REF_B37}
 
-            conda run -n gsutil gsutil -m cp -n -r \
+            gsutil -m cp -n -r \
                 "gs://gatk-best-practices/somatic-b37/Mutect2-WGS-panel-b37.vcf" \
                 "gs://gatk-best-practices/somatic-b37/Mutect2-WGS-panel-b37.vcf.idx" \
                 "gs://gatk-best-practices/somatic-b37/Mutect2-exome-panel.vcf" \
@@ -122,7 +122,7 @@ rule download_b37_gatk:
                 "gs://gatk-best-practices/somatic-b37/af-only-gnomad.raw.sites.vcf.idx" \
               {REF_B37}
 
-            conda run -n gsutil gsutil -m cp -n \
+            gsutil -m cp -n \
                 "gs://gatk-legacy-bundles/b37/1000G_omni2.5.b37.vcf" \
                 "gs://gatk-legacy-bundles/b37/1000G_omni2.5.b37.vcf.gz" \
                 "gs://gatk-legacy-bundles/b37/1000G_phase1.indels.b37.vcf.gz" \
@@ -135,8 +135,8 @@ rule download_b37_gatk:
               {REF_B37}
 
             gunzip -c {output.indels_gz} > {REF_B37}/1000G_phase1.indels.b37.vcf
-            conda run -n gsutil bgzip -k -f -o {output.indels_gz} {REF_B37}/1000G_phase1.indels.b37.vcf
-            conda run -n gsutil tabix -f {output.indels_gz}
+            bgzip -k -f -o {output.indels_gz} {REF_B37}/1000G_phase1.indels.b37.vcf
+            tabix -f {output.indels_gz}
         }} &> {log}
         """
 
@@ -270,8 +270,6 @@ rule download_cdna_fasta:
 
 
 rule download_rna_edit_vcf:
-    input:
-        env_done("clindet"),
     output:
         vcf_gz=f"{REF_B37}/b37.RNAediting.vcf.gz",
         tbi=f"{REF_B37}/b37.RNAediting.vcf.gz.tbi",
@@ -279,17 +277,19 @@ rule download_rna_edit_vcf:
         marker=touch(f"{BUILD_LOG}/rna_edit_vcf.log"),
     log:
         f"{BUILD_LOG}/rna_edit_vcf.run.log"
+    conda:
+        flexible_conda_env(config,['conda','clindet_main'],env_yaml = 'envs/clindet.yaml')
     shell:
         r"""
         mkdir -p {REF_B37}
         wget -P {REF_B37} -c https://data.broadinstitute.org/Trinity/CTAT_RESOURCE_LIB/MUTATION_LIB_SUPPLEMENT/rna_editing/GRCh37.RNAediting.vcf.gz
         wget -P {REF_B37} -c https://raw.githubusercontent.com/lindenb/jvarkit/refs/heads/master/src/main/resources/chromnames/hg19_to_g1kv37.tsv
         gunzip -c {REF_B37}/GRCh37.RNAediting.vcf.gz > {REF_B37}/GRCh37.RNAediting.vcf
-        conda run -n clindet bgzip -f {REF_B37}/GRCh37.RNAediting.vcf
-        conda run -n clindet tabix -f {REF_B37}/GRCh37.RNAediting.vcf.gz
-        conda run -n clindet bcftools annotate --rename-chrs {REF_B37}/hg19_to_g1kv37.tsv {REF_B37}/GRCh37.RNAediting.vcf.gz -Ov -o {REF_B37}/b37.RNAediting.vcf
-        conda run -n clindet bgzip -f {REF_B37}/b37.RNAediting.vcf
-        conda run -n clindet tabix -f {REF_B37}/b37.RNAediting.vcf.gz
+        bgzip -f {REF_B37}/GRCh37.RNAediting.vcf
+        tabix -f {REF_B37}/GRCh37.RNAediting.vcf.gz
+        bcftools annotate --rename-chrs {REF_B37}/hg19_to_g1kv37.tsv {REF_B37}/GRCh37.RNAediting.vcf.gz -Ov -o {REF_B37}/b37.RNAediting.vcf
+        bgzip -f {REF_B37}/b37.RNAediting.vcf
+        tabix -f {REF_B37}/b37.RNAediting.vcf.gz
         cp {REF_B37}/b37.RNAediting.vcf.gz {output.vcf_gz}
         cp {REF_B37}/b37.RNAediting.vcf.gz.tbi {output.tbi}
         echo "RNA editing VCF ready" > {log}
@@ -298,22 +298,22 @@ rule download_rna_edit_vcf:
 
 rule build_bwa_index:
     input:
-        env_done("clindet"),
         fasta=f"{REF_B37}/Homo_sapiens.GRCh37.GATK.illumina.fasta",
     output:
         f"{REF_B37}/Homo_sapiens.GRCh37.GATK.illumina.fasta.amb",
     log:
         f"{BUILD_LOG}/bwa_index.run.log"
+    conda:
+        flexible_conda_env(config,['conda','clindet_main'],env_yaml = 'envs/clindet.yaml')
     shell:
         r"""
-        conda run -n clindet bwa index {input.fasta}
+        bwa index {input.fasta}
         echo "BWA index ready" > {log}
         """
 
 
 rule build_star_index:
     input:
-        env_done("clindet_rsem"),
         fasta=f"{REF_B37}/Homo_sapiens.GRCh37.GATK.illumina.fasta",
         gtf=f"{REF_B37}/Homo_sapiens.GRCh37.87.gtf",
     output:
@@ -321,10 +321,12 @@ rule build_star_index:
         marker=touch(f"{BUILD_LOG}/star_index.log"),
     log:
         f"{BUILD_LOG}/star_index.run.log"
+    conda:
+        flexible_conda_env(config,['conda','rna'],env_yaml = 'envs/rsem.yaml')
     shell:
         r"""
         mkdir -p {REF_B37}/STAR/b37
-        conda run -n clindet_rsem STAR \
+        STAR \
           --runThreadN 20 \
           --runMode genomeGenerate \
           --genomeFastaFiles {input.fasta} \
@@ -337,7 +339,6 @@ rule build_star_index:
 
 rule build_rsem_reference:
     input:
-        env_done("clindet_rsem"),
         fasta=f"{REF_B37}/Homo_sapiens.GRCh37.GATK.illumina.fasta",
         gtf=f"{REF_B37}/Homo_sapiens.GRCh37.87.gtf",
     output:
@@ -345,10 +346,12 @@ rule build_rsem_reference:
         marker=touch(f"{BUILD_LOG}/rsem_star_index.log"),
     log:
         f"{BUILD_LOG}/rsem_star_index.run.log"
+    conda:
+        flexible_conda_env(config,['conda','rna'],env_yaml = 'envs/rsem.yaml')
     shell:
         r"""
         mkdir -p {REF_B37}/RSEM/b37
-        conda run -n clindet_rsem rsem-prepare-reference \
+        rsem-prepare-reference \
           --gtf {input.gtf} \
           --star -p 20 \
           {input.fasta} \
@@ -358,8 +361,9 @@ rule build_rsem_reference:
 
 
 rule build_kallisto_salmon_index:
+    conda:
+        flexible_conda_env(config,['conda','rna'],env_yaml = 'envs/rsem.yaml')
     input:
-        env_done("clindet_rsem"),
         fasta=f"{REF_B37}/Homo_sapiens.GRCh37.cdna.all.fa",
         gz=f"{REF_B37}/Homo_sapiens.GRCh37.cdna.all.fa.gz",
     output:
@@ -368,19 +372,20 @@ rule build_kallisto_salmon_index:
         marker=touch(f"{BUILD_LOG}/kallisto_salmon_index.log"),
     log:
         f"{BUILD_LOG}/kallisto_salmon_index.run.log"
+    conda:
+        flexible_conda_env(config,['conda','rna'],env_yaml = 'envs/rsem.yaml')
     shell:
         r"""
         mkdir -p {REF_B37}/kallisto/b37
         mkdir -p {REF_B37}/salmon/b37
-        conda run -n clindet_rsem kallisto index -i {REF_B37}/kallisto/b37/b37 {input.fasta} -t 20
-        conda run -n clindet_rsem salmon index -t {input.gz} -i {REF_B37}/salmon/b37/b37
+        kallisto index -i {REF_B37}/kallisto/b37/b37 {input.fasta} -t 20
+        salmon index -t {input.gz} -i {REF_B37}/salmon/b37/b37
         echo "kallisto/salmon index ready" > {log}
         """
 
 
 rule install_clindet_extras:
     input:
-        env_done("clindet"),
         gatk_dir=directory(f"{SOFT_DIR}/gatk"),
         dbsnp_vcf=f"{REF_B37}/Homo_sapiens_assembly19.dbsnp138.vcf",
     output:
@@ -392,14 +397,11 @@ rule install_clindet_extras:
         mkdir -p {BUILD_LOG}
         {{
             echo "Add extra tools to clindet env"
-            conda install -n clindet ucsc-fasplit -y
-            conda run -n clindet pip install snakemake-executor-plugin-cluster-generic
-            conda run -n clindet pip install configparser
             echo "Create dbsnp bgzip and indel resources"
-            conda run -n clindet bgzip -k -f -o {REF_B37}/Homo_sapiens_assembly19.dbsnp138.vcf.gz {input.dbsnp_vcf}
-            conda run -n clindet tabix -f {REF_B37}/Homo_sapiens_assembly19.dbsnp138.vcf.gz
-            conda run -n clindet bcftools view -v indels --write-index -Oz -o {REF_B37}/Homo_sapiens_assembly19.dbsnp138.indel.vcf.gz {REF_B37}/Homo_sapiens_assembly19.dbsnp138.vcf.gz
-            conda run -n clindet tabix -f {REF_B37}/Homo_sapiens_assembly19.dbsnp138.indel.vcf.gz
+            bgzip -k -f -o {REF_B37}/Homo_sapiens_assembly19.dbsnp138.vcf.gz {input.dbsnp_vcf}
+            tabix -f {REF_B37}/Homo_sapiens_assembly19.dbsnp138.vcf.gz
+            bcftools view -v indels --write-index -Oz -o {REF_B37}/Homo_sapiens_assembly19.dbsnp138.indel.vcf.gz {REF_B37}/Homo_sapiens_assembly19.dbsnp138.vcf.gz
+            tabix -f {REF_B37}/Homo_sapiens_assembly19.dbsnp138.indel.vcf.gz
             echo "Create sequence dictionary"
             {SOFT_DIR}/gatk/gatk CreateSequenceDictionary -R {REF_B37}/Homo_sapiens.GRCh37.GATK.illumina.fasta
             echo "Clone TRUST4"

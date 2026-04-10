@@ -1,5 +1,4 @@
 ## varscan2 call #####
-varscan2_conda = 'snake'
 rule varscan2_mpileup_unpaired:
     input:
         regions=config['resources'][genome_version]['WES_BED'],
@@ -8,7 +7,7 @@ rule varscan2_mpileup_unpaired:
     output:
         tumor="{project}/{genome_version}/results/mut/dedup/{sample}-T.mp"
     threads: 2
-    conda:varscan2_conda
+    conda: flexible_conda_env(config,['conda','clindet_main'],env_yaml = 'envs/clindet.yaml')
     shell:
         """
         samtools mpileup -q 1 -Q 1 -f {input.ref} -l {input.regions} {input.tumor} > {output.tumor}
@@ -21,7 +20,7 @@ rule varscan2_call_unpaired_snp:
         regions=config['resources'][genome_version]['WES_BED'],
     output:
         snp="{project}/{genome_version}/results/mut/vcf/{sample}/varscan/varscan2.snp.vcf"
-    conda:varscan2_conda
+    conda: flexible_conda_env(config,['conda','clindet_main'],env_yaml = 'envs/clindet.yaml')
     shell:
         """
         varscan mpileup2snp  {input.tumor} --min-coverage 10 --min-var-freq 0.20 --p-value 0.05 --output-vcf 1 > {output.snp}
@@ -35,7 +34,7 @@ rule varscan2_call_unpaired_indel:
         regions=config['resources'][genome_version]['WES_BED'],
     output:
         indel="{project}/{genome_version}/results/mut/vcf/{sample}/varscan/varscan2.indel.vcf"
-    conda:varscan2_conda
+    conda: flexible_conda_env(config,['conda','clindet_main'],env_yaml = 'envs/clindet.yaml')
     shell:
         """
         varscan mpileup2indel {input.tumor} --min-coverage 10 --min-var-freq 0.10 --p-value 0.10 --output-vcf 1 > {output.indel}
@@ -47,7 +46,7 @@ rule varscan2_filter_snp:
         indel="{project}/{genome_version}/results/mut/vcf/{sample}/varscan/varscan2.indel.vcf"
     output:
         snp="{project}/{genome_version}/results/mut/vcf/{sample}/varscan/varscan2.snp.filter.vcf"
-    conda:varscan2_conda
+    conda: flexible_conda_env(config,['conda','clindet_main'],env_yaml = 'envs/clindet.yaml')
     shell:
        """
         varscan filter {input.snp} --indel-file {input.indel} --output-file {output.snp}
@@ -58,7 +57,7 @@ rule varscan2_filter_indel:
         indel="{project}/{genome_version}/results/mut/vcf/{sample}/varscan/varscan2.indel.vcf"
     output:
         indel="{project}/{genome_version}/results/mut/vcf/{sample}/varscan/varscan2.indel.filter.vcf"
-    conda:varscan2_conda
+    conda: flexible_conda_env(config,['conda','clindet_main'],env_yaml = 'envs/clindet.yaml')
     shell:
        """
         varscan filter {input.indel} --min-reads2 4 --min-var-freq 0.15 --p-value 0.05 --output-file {output.indel}
@@ -72,6 +71,7 @@ rule varscan2_merge_unpaired:
         vcf="{project}/{genome_version}/results/mut/vcf/{sample}/varscan2.vcf",
         name_change="{project}/{genome_version}/results/mut/vcf/{sample}/varscan/sample_name.txt"
     threads: 1
+    conda: flexible_conda_env(config,['conda','clindet_main'],env_yaml = 'envs/clindet.yaml')
     params:
         name_change="{project}/{genome_version}/results/mut/vcf/{sample}/varscan/sample_name.txt"
     shell:

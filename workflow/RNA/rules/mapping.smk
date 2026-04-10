@@ -13,7 +13,7 @@ rule STAR_1_pass:
         rg=r"ID:{sample} PL:ILLUMINA.NovaSeq LB:RNA-Seq SM:{sample}"
     threads: 10
     conda:
-        config['softwares']['star']['conda']
+        flexible_conda_env(config,['conda','rna'],env_yaml = 'envs/resm.yaml')
     shell:
         """ 
         STAR --genomeDir {params.star_index} --runThreadN={threads} \
@@ -42,7 +42,7 @@ rule STAR_arriba_map:
         rg=r"ID:{sample} PL:ILLUMINA.NovaSeq LB:RNA-Seq SM:{sample}"
     threads: 10
     conda:
-        config['softwares']['star']['conda']
+        flexible_conda_env(config,['conda','rna'],env_yaml = 'envs/resm.yaml')
     shell:
         """ 
         STAR --genomeDir {params.star_index} --runThreadN={threads} \
@@ -87,7 +87,7 @@ rule STAR_mut_map:
         sort_mem_per_thread='1G'
     threads: 10
     conda:
-        config['softwares']['star']['conda']
+        flexible_conda_env(config,['conda','rna'],env_yaml = 'envs/resm.yaml')
     shell:
         """ 
         STAR --genomeDir {params.star_index} --runThreadN={threads} \
@@ -130,7 +130,7 @@ rule cal_exp_RSEM:
         result_prefix="{project}/{genome_version}/results/summary/RSEM"
     threads: 10
     conda:
-        config['softwares']['rsem']['conda']
+        flexible_conda_env(config,['conda','rna'],env_yaml = 'envs/resm.yaml')
     output:
         genes="{project}/{genome_version}/results/summary/RSEM/{sample}/{sample}.genes.results",
         isoforms="{project}/{genome_version}/results/summary/RSEM/{sample}/{sample}.isoforms.results",
@@ -151,7 +151,7 @@ rule RSEM_sort_genome:
         bam="{project}/{genome_version}/results/summary/RSEM/{sample}/{sample}.STAR.genome.bam"
     threads: 10
     conda:
-        config['softwares']['rsem']['conda']
+        flexible_conda_env(config,['conda','rna'],env_yaml = 'envs/resm.yaml')
     output:
         bam_sort=temp("{project}/{genome_version}/results/summary/RSEM/{sample}/{sample}.STAR.genome.sorted.bam"),
     shell:
@@ -182,7 +182,7 @@ rule kallisto:
         result_prefix="{project}/{genome_version}/results/summary/kallisto/{sample}"
     threads: 10
     conda:
-        config['softwares']['kallisto']['conda']
+        flexible_conda_env(config,['conda','rna'],env_yaml = 'envs/resm.yaml')
     output:
         tsv="{project}/{genome_version}/results/summary/kallisto/{sample}/abundance.tsv",
     shell:
@@ -198,7 +198,7 @@ rule salmon:
         result_prefix="{project}/{genome_version}/results/summary/salmon/{sample}"
     threads: 10
     conda:
-        config['softwares']['salmon']['conda']
+        flexible_conda_env(config,['conda','rna'],env_yaml = 'envs/resm.yaml')
     output:
         tsv="{project}/{genome_version}/results/summary/salmon/{sample}/quant.sf",
     shell:

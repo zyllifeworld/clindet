@@ -11,7 +11,7 @@ rule fastp_trim:
         extra="--merge"
     threads: 2
     conda:
-        config['softwares']['fastp']['conda']
+        flexible_conda_env(config,['conda','clindet_mian'],env_yaml = 'envs/clindet.yaml')
     shell:
         """fastp --thread {threads} \
             -i {input.R1} -I {input.R2} \

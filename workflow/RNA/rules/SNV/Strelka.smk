@@ -9,7 +9,7 @@ rule unpaired_call_config_strelka:
         indelcd="{project}/{genome_version}/results/mut/vcf/{sample}/Manta/results/variants/candidateSmallIndels.vcf.gz"
     params:
     conda:
-        "strelka"
+        flexible_conda_env(config,['conda','strelka'],env_yaml = 'envs/strelka.yaml')
     shell:
         """
             [ ! -f {input.bed}.gz ] && gzip -k {input.bed}
@@ -34,7 +34,7 @@ rule unpaired_call_strelka_manta:
         tamp="{project}/{genome_version}/results/mut/vcf/{sample}/{sample}-Strelka.log"
     params:
     conda:
-        "strelka"
+        flexible_conda_env(config,['conda','strelka'],env_yaml = 'envs/strelka.yaml')
     shell:
         """
         configureStrelkaGermlineWorkflow.py \

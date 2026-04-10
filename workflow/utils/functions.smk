@@ -123,8 +123,8 @@ def get_bcftools_filter_rules(wildcards):
             "exclude": ''
         },
         "haplotypecaller": {
-            "include": 'FILTER="PASS" && QUAL >= 30',
-            "exclude": 'MQ < 40'
+            "include": 'FILTER="PASS" && QUAL >= 30 && MQ >=40',
+            "exclude": ''
         },
         "muse": {
             "include": '',
@@ -136,7 +136,7 @@ def get_bcftools_filter_rules(wildcards):
         },
         "cgppindel": {
             "include": '',
-            "exclude": 'FILTER~"FF010|FF012"'
+            "exclude": 'FILTER~"FF010"'
         }
     }
 
@@ -166,15 +166,15 @@ def build_bcftools_filter_cmd(wildcards):
 
     return " ".join(cmd_parts)
 
-def flexible_conda_env(config_dict, keys, default=None):
+def flexible_conda_env(config_dict, keys, env_yaml=None):
     current = config_dict
     for key in keys:
         if isinstance(current, dict) and key in current:
             current = current[key]
         else:
-            return default
+            return env_yaml
 
     if current is None or current == '': #参数为空
-        return default
+        return env_yaml
     else:
         return current

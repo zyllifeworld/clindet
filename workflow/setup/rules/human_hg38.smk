@@ -262,10 +262,29 @@ rule download_gtf:
         gzip -cd {output.gtf_gz} > {output.gtf}
         """
 
+rule download_ensembel_gff3:
+    output:
+        gff_gz=f"{REFDIR}/Homo_sapiens.GRCh38.115.chr.gff3.gz",
+        gff=f"{REFDIR}/Homo_sapiens.GRCh38.115.chr_prefix.gff3"
+    shell:
+        r"""
+        mkdir -p {REFDIR}
+        wget -P {REFDIR} -c https://ftp.ensembl.org/pub/release-115/gff3/homo_sapiens/Homo_sapiens.GRCh38.115.chr.gff3.gz
+        zcat {output.gff_gz} | \
+        awk 'BEGIN{FS=OFS="\t"}
+            /^#/ {print; next}
+            {
+              if ($1 ~ /^(1[0-9]|2[0-2]|[1-9]|X|Y)$/) $1="chr"$1;
+              else if ($1=="MT") $1="chrM";
+              print
+            }' > {output.gff}
+        """
+
 rule rsem_star_index:
     input:
         fasta=f"{REFDIR}/GRCh38_masked_exclusions_alts_hlas.fasta",
-        gtf=f"{REFDIR}/gencode.v49.annotation.gtf"
+        gtf=f"{REFDIR}/gencode.v49.annotation.gtf",
+        gff=f"{REFDIR}/Homo_sapiens.GRCh38.115.chr_prefix.gff3"
     output:
         done=f"{LOGDIR}/rsem_star_index.log"
     threads: 20

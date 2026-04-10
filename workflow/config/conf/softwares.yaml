@@ -223,6 +223,14 @@ softwares:
 
 conda:
   clindet_main: 'snake'
+  multiqc: 'snake'
+  clindet_rsem: 'clindet_rsem'
+  clindet_vep: 'clindet_vep'
+  facets:
+  hmftools: 'hmftools'
+  strelka: 'strelka'
+  trust4: 'clindet_resm'
+  rna: 'clindet_resm'
 
 params:
   java:

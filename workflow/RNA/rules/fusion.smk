@@ -66,7 +66,7 @@ rule TRUST4_TBCR:
     output:
         "{project}/{genome_version}/results/IG/TRUST4/{sample}_report.tsv"
     conda:
-        config['softwares']['trust4']['conda']
+        flexible_conda_env(config,['conda','rna'],env_yaml = 'envs/rsem.yaml')
     threads:10
     params:
         temp_directory=config['params']['java']['temp_directory'],

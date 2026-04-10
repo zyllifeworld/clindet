@@ -1,4 +1,3 @@
-SOFT_DIR = "resources/softwares"
 CONTAINER_DIR = "resources/containers"
 build_software_log = "build_log/envs"
 

@@ -17,7 +17,7 @@ rule paired_sage:
     threads: 30
     benchmark:
         "{project}/{genome_version}/results/benchmarks/mut/{sample}.sage.benchmark.txt"
-    conda:config['singularity']['hmftools']['conda']
+    conda: flexible_conda_env(config,['conda','hmftools'],env_yaml = 'envs/hmftools.yaml')
     # singularity:config['singularity']['hmftools']['sif']
     shell:
         """
@@ -43,7 +43,7 @@ rule pave_anno_sage:
     output:
         vcf="{project}/{genome_version}/results/vcf/paired/{sample}/sage/{sample}.sage.pave.vcf.gz",
         # dir="{project}/{genome_version}/results/vcf/paired/{sample}/deepvariant,
-    conda:config['singularity']['hmftools']['conda']
+    conda: flexible_conda_env(config,['conda','hmftools'],env_yaml = 'envs/hmftools.yaml')
     # singularity:"https://depot.galaxyproject.org/singularity/hmftools-pave:1.7.1--hdfd78af_0"
     params:
         wd="{project}/{genome_version}/results/vcf/paired/{sample}/sage",
@@ -82,7 +82,7 @@ rule sage_filter_pass:
     params:
         ref=config['resources'][genome_version]['REFFA']
     threads: 1
-    conda: config['conda']['clindet_main']
+    conda: flexible_conda_env(config,['conda','clindet_main'],env_yaml = 'envs/clindet.yaml')
     shell:
         """
         bcftools filter -i 'FILTER="PASS"'  {input.vcf} > {output.vcf} 
@@ -108,7 +108,7 @@ rule paired_sage_germline:
     threads: 30
     benchmark:
         "{project}/{genome_version}/results/benchmarks/mut/{sample}.sage_germline.benchmark.txt"
-    conda:config['singularity']['hmftools']['conda']
+    conda: flexible_conda_env(config,['conda','hmftools'],env_yaml = 'envs/hmftools.yaml')
     benchmark:
         "{project}/{genome_version}/results/benchmarks/mut/{sample}.sage.benchmark.txt"
     shell:
@@ -137,7 +137,7 @@ rule pave_anno_sage_germline:
     output:
         vcf="{project}/{genome_version}/results/vcf_germ/paired/{sample}/sage/{sample}.sage.germline.pave.vcf.gz",
         # dir="{project}/{genome_version}/results/vcf/paired/{sample}/deepvariant,
-    conda:config['singularity']['hmftools']['conda']
+    conda: flexible_conda_env(config,['conda','hmftools'],env_yaml = 'envs/hmftools.yaml')
     # singularity:"https://depot.galaxyproject.org/singularity/hmftools-pave:1.7.1--hdfd78af_0"
     params:
         wd="{project}/{genome_version}/results/vcf_germ/paired/{sample}/sage",

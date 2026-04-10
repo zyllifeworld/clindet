@@ -12,7 +12,7 @@ rule call_config_strelka:
     params:
     threads:20
     conda:
-        "strelka"
+        flexible_conda_env(config,['conda','strelka'],env_yaml = 'envs/strelka.yaml')
     shell:
         """
             configManta.py \
@@ -37,7 +37,7 @@ rule call_strelka_manta:
         tamp="{project}/{genome_version}/results/logs/strelka/paired/{sample}-StrelkaManta.log"
     params:
     conda:
-        "strelka"
+        flexible_conda_env(config,['conda','strelka'],env_yaml = 'envs/strelka.yaml')
     shell:
         """
         configureStrelkaGermlineWorkflow.py \
@@ -62,7 +62,7 @@ rule call_strelka_somatic_manta:
         tamp="{project}/{genome_version}/results/logs/strelka/paired/{sample}-StrelkaSomaticeManta.log"
     params:
     conda:
-        "strelka"
+        flexible_conda_env(config,['conda','strelka'],env_yaml = 'envs/strelka.yaml')
     shell:
         """
         configureStrelkaSomaticWorkflow.py \
@@ -83,7 +83,7 @@ rule merge_strelka_manta:
     params:
         snp="{project}/{genome_version}/results/vcf/paired/{sample}/StrelkaManta/results/variants/variants.vcf.gz"
     conda:
-        "strelka"
+        flexible_conda_env(config,['conda','strelka'],env_yaml = 'envs/strelka.yaml')
     shell:
         """
         zcat {params.snp} | grep '#' > {output}
@@ -100,12 +100,11 @@ rule merge_strelka_somatic_manta:
         snp="{project}/{genome_version}/results/vcf/paired/{sample}/StrelkaSomaticManta/results/variants/somatic.snvs.vcf.gz",
         indel="{project}/{genome_version}/results/vcf/paired/{sample}/StrelkaSomaticManta/results/variants/somatic.indels.vcf.gz",
     conda:
-        "strelka"
+        flexible_conda_env(config,['conda','clindet_main'],env_yaml = 'envs/clindet.yaml')
     shell:
         """
-        zcat {params.snp} | grep '#' > {output}
-        zcat {params.snp} | grep -v '#' | {{ grep 'PASS' || true; }} >>  {output}
-        zcat {params.indel} | grep -v '#' | {{ grep 'PASS' || true; }} >>  {output}
+        bcftools concat -a -Ou {params.snp} {params.indel} \
+        | bcftools sort -Ov -o {output}
         sed -i "s;TUMOR;{wildcards.sample}_T;"  {output}
         sed -i "s;NORMAL;{wildcards.sample}_NC;"  {output}
         """
@@ -121,7 +120,7 @@ rule call_strelka:
         tamp="{project}/{genome_version}/results/logs/strelka/paired/{sample}-Strelka.log"
     params:
     conda:
-        "strelka"
+        flexible_conda_env(config,['conda','strelka'],env_yaml = 'envs/strelka.yaml')
     shell:
         """
         configureStrelkaGermlineWorkflow.py \
@@ -144,7 +143,7 @@ rule call_strelka_somatic:
         tamp="{project}/{genome_version}/results/logs/strelka/paired/{sample}-StrelkaSomatice.log"
     params:
     conda:
-        "strelka"
+        flexible_conda_env(config,['conda','strelka'],env_yaml = 'envs/strelka.yaml')
     shell:
         """
         configureStrelkaSomaticWorkflow.py \
@@ -164,7 +163,7 @@ rule merge_strelka:
     params:
         snp="{project}/{genome_version}/results/vcf/paired/{sample}/Strelka/results/variants/variants.vcf.gz"
     conda:
-        "strelka"
+        flexible_conda_env(config,['conda','strelka'],env_yaml = 'envs/strelka.yaml')
     shell:
         """
         zcat {params.snp} | grep '#' > {output}
@@ -181,12 +180,11 @@ rule merge_strelka_somatic:
         snp="{project}/{genome_version}/results/vcf/paired/{sample}/StrelkaSomatic/results/variants/somatic.snvs.vcf.gz",
         indel="{project}/{genome_version}/results/vcf/paired/{sample}/StrelkaSomatic/results/variants/somatic.indels.vcf.gz",
     conda:
-        "strelka"
+        flexible_conda_env(config,['conda','clindet_main'],env_yaml = 'envs/clindet.yaml')
     shell:
         """
-        zcat {params.snp} | grep '#' > {output}
-        zcat {params.snp} | grep -v '#' | {{ grep 'PASS' || true; }} >>  {output}
-        zcat {params.indel} | grep -v '#' | {{ grep 'PASS' || true; }} >>  {output}
+        bcftools concat -a -Ou {params.snp} {params.indel} \
+        | bcftools sort -Ov -o {output}
         sed -i "s;TUMOR;{wildcards.sample}_T;"  {output}
         sed -i "s;NORMAL;{wildcards.sample}_NC;"  {output}
         """
