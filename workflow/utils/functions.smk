@@ -123,7 +123,7 @@ def get_bcftools_filter_rules(wildcards):
             "exclude": ''
         },
         "haplotypecaller": {
-            "include": 'FILTER="PASS" && QUAL >= 30 && MQ >=40',
+            "include": 'FILTER="PASS" && QUAL >= 30',
             "exclude": ''
         },
         "muse": {

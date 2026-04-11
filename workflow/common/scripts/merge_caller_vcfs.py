@@ -1,12 +1,29 @@
 from collections import defaultdict
+from typing import List, Optional, Tuple
 import pysam
 from pathlib import Path
 
-vcf_inputs = [
-    'test/b37/results/vcf2vcf/paired/CGGA_1288/muse.vcf',
-    'test/b37/results/vcf2vcf/paired/CGGA_1288/caveman.vcf',
-    'test/b37/results/vcf2vcf/paired/CGGA_1288/Mutect2.vcf']
+# vcf_inputs = [
+#     'test/hg38/results/vcf_norm/paired/CGGA_1288/cgppindel.vcf',
+#     'test/hg38/results/vcf_norm/paired/CGGA_1288/caveman.vcf',
+#     'test/hg38/results/vcf_norm/paired/CGGA_1288/muse.vcf',
+#     'test/hg38/results/vcf_norm/paired/CGGA_1288/Mutect2.vcf',
+#     'test/hg38/results/vcf_norm/paired/CGGA_1288/strelkasomaticmanta.vcf']
 
+# vcf_inputs = [
+#     'test/b37/results/vcf_norm/paired/CGGA_1288/cgppindel.vcf',
+#     'test/b37/results/vcf_norm/paired/CGGA_1288/caveman.vcf',
+#     'test/b37/results/vcf_norm/paired/CGGA_1288/muse.vcf',
+#     'test/b37/results/vcf_norm/paired/CGGA_1288/Mutect2.vcf',
+#     'test/b37/results/vcf_norm/paired/CGGA_1288/strelkasomaticmanta.vcf']
+
+vcf_inputs = [
+    'test/b37/results/vcf_norm/paired/CGGA_1287/cgppindel.vcf',
+    'test/b37/results/vcf_norm/paired/CGGA_1287/caveman.vcf',
+    'test/b37/results/vcf_norm/paired/CGGA_1287/muse.vcf',
+    'test/b37/results/vcf_norm/paired/CGGA_1287/Mutect2.vcf',
+    'test/b37/results/vcf_norm/paired/CGGA_1287/strelkasomaticmanta.vcf']
+    
 # vcf_inputs = list(snakemake.input.vcfs)
 caller_names = [ Path(vcf).stem for vcf in vcf_inputs]
 caller_to_vcf = dict(zip(caller_names, vcf_inputs))
@@ -15,10 +32,18 @@ caller_to_vcf = dict(zip(caller_names, vcf_inputs))
 # consensus_vcf = snakemake.output.consensus_vcf
 summary_tsv = None
 
-# min_callers = int(snakemake.params.consensus_min_callers)
-# required_callers = set(snakemake.params.consensus_require)
-tumor_sample_name = 'CGGA_1288_T'
-normal_sample_name = 'CGGA_1288_NC'
+# tumor_sample_name = 'CGGA_1288_T'
+# normal_sample_name = 'CGGA_1288_NC'
+
+# unifed_tumor_sample_name = 'CGGA_1288_T'
+# unifed_normal_sample_name = 'CGGA_1288_NC'
+
+tumor_sample_name = 'CGGA_1287_T'
+normal_sample_name = 'CGGA_1287_NC'
+
+unifed_tumor_sample_name = 'CGGA_1287_T'
+unifed_normal_sample_name = 'CGGA_1287_NC'
+
 
 template = pysam.VariantFile(vcf_inputs[0])
 header = template.header.copy()
@@ -49,12 +74,14 @@ def ensure_header():
         if key not in header.info:
             header.info.add(key, num, typ, desc)
 
-    # 最终输出的标准 AD/DP
+    # 最终输出的标准 AD_ALT/DP
     if "AD" not in header.formats:
         header.formats.add(
             "AD", "R", "Integer",
             "Final allele depths using component-wise maximum across callers"
         )
+    if "AD_ALT" not in header.formats:
+        header.formats.add("AD_ALT", number=1, type="Integer", description="variant allele depth only")
     if "DP" not in header.formats:
         header.formats.add(
             "DP", 1, "Integer",
@@ -62,20 +89,21 @@ def ensure_header():
         )
 
     # 每个 caller 的 AD / DP
-    for caller in caller_names:
-        tag = sanitize_tag(caller)
-        ad_tag = f"AD_{tag}"
-        dp_tag = f"DP_{tag}"
-        if ad_tag not in header.formats:
-            header.formats.add(
-                ad_tag, "R", "Integer",
-                f"Allele depths reported by {caller}"
-            )
-        if dp_tag not in header.formats:
-            header.formats.add(
-                dp_tag, 1, "Integer",
-                f"Read depth reported by {caller}"
-            )
+    # in this version, will not out put per-caller info
+    # for caller in caller_names:
+    #     tag = sanitize_tag(caller)
+    #     ad_tag = f"AD_{tag}"
+    #     dp_tag = f"DP_{tag}"
+    #     if ad_tag not in header.formats:
+    #         header.formats.add(
+    #             ad_tag, "R", "Integer",
+    #             f"Allele depths reported by {caller}"
+    #         )
+    #     if dp_tag not in header.formats:
+    #         header.formats.add(
+    #             dp_tag, 1, "Integer",
+    #             f"Read depth reported by {caller}"
+    #         )
  
     if "TDP" not in header.info:
         header.info.add("TDP", 1, "Integer", "Tumor depth (max across callers)")
@@ -187,15 +215,20 @@ def extract_ad_dp_from_sample(rec, sample_name, caller):
     ref = rec.ref
     alts = list(rec.alts or [])
     n_alt = len(alts)
+    caller_l = caller.lower()
 
     # 1) 通用 AD + DP
     ad = _as_int_list(_get_sample_field(sample, "AD"))
     dp = _get_sample_field(sample, "DP")
     dp = None if dp in (None, ".") else int(dp)
     if ad is not None and len(ad) >= 1 + n_alt:
-        return tuple(ad[:1 + n_alt]), dp if dp is not None else int(sum(ad))
-
-    caller_l = caller.lower()
+        # 1.1) Muse AD + DP
+        if caller_l.startswith("muse"):
+            return ad[1], dp if dp is not None else int(sum(ad))
+        elif caller_l.startswith("mutect"):
+            return ad[1], dp if dp is not None else int(sum(ad))
+        else:
+            return tuple(ad[:1 + n_alt]), dp if dp is not None else int(sum(ad))
 
     # 2) VarScan2: RD + AD
     if caller_l.startswith("varscan"):
@@ -221,8 +254,9 @@ def extract_ad_dp_from_sample(rec, sample_name, caller):
     tar = _as_int_list(_get_sample_field(sample, "TAR"))
     tir = _as_int_list(_get_sample_field(sample, "TIR"))
     if tar is not None and tir is not None and n_alt == 1:
-        ad2 = (tar[0], tir[0])
-        return ad2, int(sum(ad2))
+        ad2 = tir[0]
+        dp2 =  int(sum((tir[0] ,tar[0])))
+        return ad2, dp2
 
     # 5) Strelka2 SNV: refU / altU
     if n_alt == 1:
@@ -231,16 +265,41 @@ def extract_ad_dp_from_sample(rec, sample_name, caller):
         refu = _as_int_list(_get_sample_field(sample, ref_tag))
         altu = _as_int_list(_get_sample_field(sample, alt_tag))
         if refu is not None and altu is not None:
-            ad2 = (refu[0], altu[0])
-            return ad2, int(sum(ad2))
+            ad2 = altu[0] ## use only tier 1
+            return ad2, dp
 
     # 6) CgpPindel indel: AD = PP + NP,DP = PR + NR
-    tar = _as_int_list(_get_sample_field(sample, "PP"))
-    tir = _as_int_list(_get_sample_field(sample, "NP"))
-    if tar is not None and tir is not None and n_alt == 1:
-        ad2 = (tar[0], tir[0])
-        return ad2, int(sum(ad2))
-    
+    if caller_l.startswith("cgppindel"):
+        pp = _as_int_list(_get_sample_field(sample, "PP"))
+        np = _as_int_list(_get_sample_field(sample, "NP"))
+        pr = _as_int_list(_get_sample_field(sample, "PR"))
+        nr = _as_int_list(_get_sample_field(sample, "NR"))
+        if pp is not None and np is not None and pr is not None and nr is not None and n_alt == 1:
+            ad2 = int(sum((pp[0], np[0])))
+            dp2 = int(sum((pr[0], nr[0])))
+            return ad2, dp2
+
+    # 7) caveman indel: AD = PP + NP,DP = PR + NR
+    if caller_l.startswith("caveman"):
+        faz = _as_int_list(_get_sample_field(sample, "FAZ"))
+        fcz = _as_int_list(_get_sample_field(sample, "FCZ"))
+        fgz = _as_int_list(_get_sample_field(sample, "FGZ"))
+        ftz = _as_int_list(_get_sample_field(sample, "FTZ"))
+        raz = _as_int_list(_get_sample_field(sample, "RAZ"))
+        rcz = _as_int_list(_get_sample_field(sample, "RCZ"))
+        rgz = _as_int_list(_get_sample_field(sample, "RGZ"))
+        rtz = _as_int_list(_get_sample_field(sample, "RTZ"))
+        alleles = ['A','T','G','C']
+        if all(x is not None for x in (faz, fcz, fgz, ftz, raz, rcz, rgz, rtz)):
+            base_depths = {
+                "A": faz[0] + raz[0],
+                "C": fcz[0] + rcz[0],
+                "G": fgz[0] + rgz[0],
+                "T": ftz[0] + rtz[0],
+            }
+            ad2 = base_depths.get(alts[0])
+            dp2 = int(sum([base_depths.get(allele, "") for allele in alleles]))
+            return ad2, dp2
     # 6) 只有 DP
     if dp is not None:
         return None, dp
@@ -256,20 +315,75 @@ def pad_ad(ad_tuple, target_len):
     return tuple(list(ad_tuple) + [0] * (target_len - len(ad_tuple)))
 
 
-def max_ad(ad_list, allele_count):
-    vals = [pad_ad(ad, allele_count) for ad in ad_list if ad is not None]
-    vals = [v for v in vals if v is not None]
-    if not vals:
-        return None
-    out = [0] * allele_count
-    for i in range(allele_count):
-        out[i] = max(v[i] for v in vals)
-    return tuple(out)
+from typing import List, Optional, Tuple
 
+def pick_max_vaf_caller(
+    ad_list: List[Optional[int]],
+    dp_list: List[Optional[int]],
+) -> Tuple[Optional[int], Optional[int], Optional[int]]:
+    """
+    从多个 caller 的 AD/DP 中选出 VAF(=AD/DP) 最大的 caller。
 
-def max_dp(dp_list):
-    vals = [int(v) for v in dp_list if v not in (None, ".")]
-    return max(vals) if vals else None
+    参数
+    ----------
+    ad_list : List[Optional[int]]
+        各 caller 的肿瘤 ALT AD
+    dp_list : List[Optional[int]]
+        各 caller 的肿瘤 DP
+
+    返回
+    ----------
+    (best_index, best_ad, best_dp)
+        - best_index: VAF 最大的 caller 下标
+        - best_ad:    该 caller 的 AD
+        - best_dp:    该 caller 的 DP
+
+    规则
+    ----------
+    - ad_list 和 dp_list 必须等长
+    - 跳过以下无效值：
+        - AD is None
+        - DP is None
+        - DP <= 0
+    - 如果所有值都无效，返回 (None, None, None)
+    - 若 VAF 相同，保留最先出现的 index
+    """
+    if len(ad_list) != len(dp_list):
+        raise ValueError("ad_list and dp_list must have the same length")
+
+    best_index = None
+    best_ad = None
+    best_dp = None
+    best_vaf = -1.0
+
+    for i, (ad, dp) in enumerate(zip(ad_list, dp_list)):
+        # 只跳过 None，不跳过 dp=0
+        if ad is None or dp is None:
+            continue
+
+        # 特殊情况：AD=0 且 DP=0
+        if ad == 0 and dp == 0:
+            # 如果当前还没有有效结果，记录它
+            if best_index is None:
+                best_index = i
+                best_ad = 0
+                best_dp = 0
+            continue
+
+        # 避免除零
+        if dp == 0:
+            continue
+
+        vaf = ad / dp
+
+        if vaf > best_vaf:
+            best_vaf = vaf
+            best_index = i
+            best_ad = ad
+            best_dp = dp
+
+    return best_index, best_ad, best_dp
+
 
 
 def pick_gt(sample_payloads):
@@ -322,7 +436,7 @@ for caller, path in caller_to_vcf.items():
         variant_callers[key].add(caller)
         variant_filters[key][caller] = get_filter_string(rec)
         variant_quals[key][caller] = get_qual_string(rec)
-        variant_samples[key][caller] = {"tumor": tumor_name, "normal": normal_name}
+        variant_samples[key][caller] = {"tumor": unifed_tumor_sample_name, "normal": unifed_normal_sample_name}
 
         tumor_ad, tumor_dp = extract_ad_dp_from_sample(rec, tumor_name, caller)
         normal_ad, normal_dp = extract_ad_dp_from_sample(rec, normal_name, caller)
@@ -358,14 +472,10 @@ with pysam.VariantFile(merged_vcf, "w", header=header) as out_all: #, \
         rec = create_output_record(out_all, src_rec)
         rec.info["CALLERS"] = callers
         rec.info["NCALLERS"] = ncallers
-        # rec.info["CALLER_FILTERS"] = filter_items
-        # rec.info["CALLER_QUALS"] = qual_items
 
         master_caller = callers[0]
         tumor_name = variant_samples[key][master_caller]["tumor"] or "."
         normal_name = variant_samples[key][master_caller]["normal"] or "."
-        # rec.info["TUMOR_SAMPLE"] = tumor_name
-        # rec.info["NORMAL_SAMPLE"] = normal_name
 
         allele_count = 1 + len(rec.alts or [])
         tumor_ads, tumor_dps, tumor_payloads = [], [], []
@@ -381,31 +491,16 @@ with pysam.VariantFile(merged_vcf, "w", header=header) as out_all: #, \
             normal_dps.append(payload["normal"]["DP"])
 
         # 最终输出：所有 caller 中的最大 DP；AD 用逐分量最大值
-        final_tumor_ad = max_ad(tumor_ads, allele_count)
-        final_tumor_dp = max_dp(tumor_dps)
+        best_index, final_tumor_ad,final_tumor_dp = pick_max_vaf_caller(ad_list = tumor_ads,dp_list = tumor_dps)
+        t_vaf = final_tumor_ad / final_tumor_dp if final_tumor_dp else 0
         ## 计算肿瘤t_vaf
-        tvaf = None
-        if final_tumor_ad is not None and final_tumor_dp not in (None, 0):
-            # 只取第一个 ALT（最常见情况）
-            if len(final_tumor_ad) >= 2:
-                alt_depth = final_tumor_ad[1]
-                tvaf = alt_depth / final_tumor_dp
-            else:
-                alt_depth = final_tumor_ad
-                tvaf = alt_depth / final_tumor_dp
 
-        final_normal_ad = max_ad(normal_ads, allele_count)
-        final_normal_dp = max_dp(normal_dps)
+        final_normal_ad = normal_ads[best_index] if normal_ads and best_index < len(normal_ads) else None
+        final_normal_dp = normal_dps[best_index] if normal_dps and best_index < len(normal_dps) else None
         ## 计算正常对照t_vaf
         nvaf = None
         if final_normal_ad is not None and final_normal_dp not in (None, 0):
-            # 只取第一个 ALT（最常见情况）
-            if len(final_normal_ad) >= 2:
-                alt_depth = final_normal_ad[1]
-                nvaf = alt_depth / final_normal_dp
-            else:
-                alt_depth = final_normal_ad
-                nvaf = alt_depth / final_normal_dp
+            nvaf = final_normal_ad / final_normal_dp if final_normal_dp else 0
 
         sample_names = list(rec.samples.keys())
 
@@ -418,8 +513,9 @@ with pysam.VariantFile(merged_vcf, "w", header=header) as out_all: #, \
 
         if out_sample is not None:
             out_sample["GT"] = pick_gt(tumor_payloads)
-            if final_tumor_ad is not None:
-                out_sample["AD"] = final_tumor_ad
+            if final_tumor_ad is not None and (len(rec.alts) <= 1):
+                out_sample["AD_ALT"] = final_tumor_ad
+                out_sample["AD"] = (int(final_tumor_dp - final_tumor_ad), final_tumor_ad)
             if final_tumor_dp is not None:
                 out_sample["DP"] = final_tumor_dp
 
@@ -444,22 +540,11 @@ with pysam.VariantFile(merged_vcf, "w", header=header) as out_all: #, \
 
         if out_sample is not None:
             out_sample["GT"] = pick_gt(normal_payloads)
-            if final_normal_ad is not None:
-                out_sample["AD"] = final_normal_ad
+            if final_normal_ad is not None and (len(rec.alts) <= 1):
+                out_sample["AD_ALT"] = final_normal_ad
+                out_sample["AD"] = (int(final_normal_dp - final_normal_ad), final_normal_ad)
             if final_normal_dp is not None:
                 out_sample["DP"] = final_normal_dp
-
-            # for caller in caller_names:
-            #     tag = sanitize_tag(caller)
-            #     ad_tag = f"AD_{tag}"
-            #     dp_tag = f"DP_{tag}"
-            #     payload = variant_sampledata[key].get(caller, {}).get("normal", {})
-            #     ad_val = pad_ad(payload.get("AD"), allele_count)
-            #     dp_val = payload.get("DP")
-            #     if ad_val is not None:
-            #         out_sample[ad_tag] = ad_val
-            #     if dp_val is not None:
-            #         out_sample[dp_tag] = int(dp_val)
 
         if final_tumor_dp is not None:
             rec.info["TDP"] = int(final_tumor_dp)
@@ -470,4 +555,7 @@ with pysam.VariantFile(merged_vcf, "w", header=header) as out_all: #, \
         if nvaf is not None:
             rec.info["NVAF"] = round(nvaf, 6)
 
-        out_all.write(rec)
+        if len(rec.alleles) >= 3:
+            next
+        else:
+            out_all.write(rec)
