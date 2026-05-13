@@ -167,3 +167,12 @@ workflow/WES/scripts/hatchet/config_hatchet.py
 workflow/WES/scripts/hatchet/hatchet.ini
 workflow/WES/rules/rtm/paired/CNV/hatchet.smk
 workflow/WES/rules/report/main.R
+workflow/WES/rules/report/sections/00_setup.R
+workflow/WES/rules/report/sections/01_patient_info.R
+workflow/WES/rules/report/sections/02_assay_qc.R
+workflow/WES/rules/report/sections/03_genomic_cnv.R
+workflow/WES/rules/report/sections/03_genomic_snv.R
+workflow/WES/rules/report/sections/04_annotation.R
+workflow/WES/rules/report/sections/05_actionability.R
+workflow/WES/rules/report/sections/06_summary.R
+workflow/WES/rules/report/sections/07_appendix.R
