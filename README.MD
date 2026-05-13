@@ -2,6 +2,7 @@
 [![run with conda](http://img.shields.io/badge/run%20with-conda-3EB049?labelColor=000000&logo=anaconda)](https://docs.conda.io/en/latest/)
 [![run with docker](https://img.shields.io/badge/run%20with-docker-0db7ed?labelColor=000000&logo=docker)](https://www.docker.com/)
 [![run with singularity](https://img.shields.io/badge/run%20with-singularity-1d355c.svg?labelColor=000000)](https://sylabs.io/docs/)
+[![wakatime](https://wakatime.com/badge/user/94f8e465-a61f-47b9-a978-b968e89d900c/project/c6818ba9-2a84-4915-b3b0-3efb385cd2fe.svg)](https://wakatime.com/badge/user/94f8e465-a61f-47b9-a978-b968e89d900c/project/c6818ba9-2a84-4915-b3b0-3efb385cd2fe)
 
 
 ## Introduction
