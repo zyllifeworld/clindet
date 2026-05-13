@@ -19,7 +19,7 @@ rule pon_facetsCH:
         expand("{project}/{genome_version}/results/cnv/db/pon_pileups/{MM_sample}_pileup.tsv.gz",MM_sample = paired_samples,project = project,genome_version = genome_version)
     output:
         log='logs/paired/facets_PoNDB_{sample}.log'
-    conda: 'clindet'
+    conda: flexible_conda_env(config,['conda','clindet_main'],env_yaml = 'envs/clindet.yaml')
     params:
         wd="{project}/{genome_version}/results/cnv/db/pon_pileups"
     threads: 10

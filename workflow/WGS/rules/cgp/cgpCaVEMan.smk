@@ -14,7 +14,9 @@ if genome_version in ['hg19','b37','hg38','hg38_EBV'] and ascat_config:
             # gender=,
             sample_index= lambda wildcards: wildcards.sample
         threads: 1
-        conda: config['conda']['clindet_main']
+        conda: 
+            config['conda']['clindet_main']
+            # flexible_conda_env(config,['conda','clindet_main'],env_yaml = 'envs/clindet.yaml')
         script:
             "../../scripts/caveman/cnv_bed.R"
     
