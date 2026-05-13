@@ -5,7 +5,7 @@ rule vcf_norm:
     output:
         vcf='{project}/{genome_version}/results/vcf_norm/paired/{sample}/{caller}.vcf',
     conda:
-        config['softwares']['vcf2maf']['conda']
+        flexible_conda_env(config,['conda','clindet_vep'],env_yaml = 'envs/clindet_vep.yaml')
     params:
         gff3=lambda wildcards: get_config_value(
             config,
@@ -19,29 +19,6 @@ rule vcf_norm:
         bcftools norm -f {input.ref} {params.gff3} {input.vcf} -Ou | \
         bcftools view {params.filter_cmd} -Ov -o {output.vcf}
         """
-
-rule vcf2vcf:
-    input:
-        vcf='{project}/{genome_version}/results/vcf_norm/paired/{sample}/{caller}.vcf',
-        ref=config['resources'][genome_version]['REFFA']
-    output:
-        vcf='{project}/{genome_version}/results/vcf2vcf/paired/{sample}/{caller}.vcf',
-    conda:
-        config['softwares']['vcf2maf']['conda']
-    params:
-        name=vcf2vcf_name
-    shell:
-        """
-        vcf2vcf.pl --input-vcf {input.vcf} \
-        --output-vcf {output.vcf} --ref-fasta {input.ref} \
-        {params.name} \
-        --add-header '##INFO=<ID=CALLER,Number=1,Type=String,Description="Variant caller">' \
-        --add-info 'CALLER={wildcards.caller}' \
-        --new-tumor-id   {wildcards.sample}_T \
-        --new-normal-id  {wildcards.sample}_NC \
-        --retain-info SOMATIC,SS,I16,MQSB,CALLER
-        """
-
 
 merge_maf_script = {
     "wes": "../../WES/scripts/merge_maf.R",
@@ -57,7 +34,7 @@ rule loop_vcf2maf_paired:
     output:
         maf="{project}/{genome_version}/results/maf/paired/{sample}/{caller}.vcf.maf"
     conda:
-        config['softwares']['vcf2maf']['conda']
+        flexible_conda_env(config,['conda','clindet_vep'],env_yaml = 'envs/clindet_vep.yaml')
     benchmark:
         "{project}/{genome_version}/results/benchmarks/mut/{sample}.{caller}_vcf2maf.benchmark.txt"
     params:
@@ -87,7 +64,7 @@ rule loop_vcf2maf_unpaired:
     output:
         maf="{project}/{genome_version}/results/maf/unpaired/{sample}/{caller}.vcf.maf"
     conda:
-        config['softwares']['vcf2maf']['conda']
+        flexible_conda_env(config,['conda','clindet_vep'],env_yaml = 'envs/clindet_vep.yaml')
     params:
         name=get_vcf_name,
         vep_data=config['softwares_params'][genome_version]['vcf2maf']['vep']['vep_data'],
@@ -115,22 +92,12 @@ rule merge_paired_maf:
         ref=config['resources'][genome_version]['REFFA']
     output:
         maf="{project}/{genome_version}/results/maf/paired/{sample}/merge/{sample}.maf"
-    conda: config['conda']['clindet_main']
+    conda: 
+        flexible_conda_env(config,['conda','clindet_main'],env_yaml = 'envs/clindet.yaml')
     params:
         dir="{project}/{genome_version}/results/maf/paired/{sample}"
     script: merge_maf_script[config["run_type"]]
 
-rule merge_paired_vcf:
-    input:
-        vcf=expand("{project}/{genome_version}/results/vcf2vcf/paired/{{sample}}/{caller}.vcf",caller = caller_list,project = project,genome_version = genome_version),
-        ref=config['resources'][genome_version]['REFFA']
-    output:
-        vcf="{project}/{genome_version}/results/vcf2vcf/paired/{sample}/merge/{sample}.vcf"
-    conda: config['conda']['clindet_main']
-    params:
-        # dir="{project}/{genome_version}/results/vcf2vcf/paired/{sample}"
-    script:
-        '../scripts/merge_caller_vcf.py'
 
 rule paired_maf_report:
     input:
@@ -145,7 +112,6 @@ rule paired_maf_report:
         "wc -l {input.maf} > {output}"
 
 # add bcftools normal
-
 rule merge_unpaired_maf:
     input:
         vcf1=expand("{project}/{genome_version}/results/vcf/unpaired/{{sample}}/{caller}.vcf",caller = tumor_only_caller,project = project,genome_version = genome_version),
@@ -153,8 +119,8 @@ rule merge_unpaired_maf:
         ref=config['resources'][genome_version]['REFFA']
     output:
         maf="{project}/{genome_version}/results/maf/unpaired/{sample}/merge/{sample}.maf",
-        # filter_maf="{project}/{genome_version}/results/maf/unpaired/{sample}/merge/{sample}_filter.maf"
-    conda: config['conda']['clindet_main']
+    conda: 
+        flexible_conda_env(config,['conda','clindet_main'],env_yaml = 'envs/clindet.yaml')
     params:
         dir="{project}/{genome_version}/results/maf/unpaired/{sample}"
     script: merge_maf_script[config["run_type"]]

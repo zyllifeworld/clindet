@@ -11,7 +11,10 @@ rule lofreq_somatic_unpaired:
         out_prefix="{project}/{genome_version}/results/vcf/unpaired/{sample}/Lofreq/out_",
         dbsnp="",
     threads: 10
-    singularity: config['singularity']['lofreq']['sif']
+    benchmark:
+        "{project}/{genome_version}/results/benchmarks/mut/{sample}.lofreq.benchmark.txt"
+    singularity: 
+         flexible_container_img(config,['singularity','lofreq','sif'],image_url = config['singularity']['lofreq']['repo'])
     shell:
         """
         lofreq call-parallel --pp-threads {threads} -f {params.ref} -l {input.regions} -o {output.vcf} {input.Tum} -s
@@ -26,5 +29,5 @@ rule unpair_lofreq_filter:
         #bcftools filter -e 'QUAL<20 | INFO/DP[0] < 10'  {input.vcf} > {output.vcf}
     shell:
         """
-         cp {input.vcf}  {output.vcf}
+        cp {input.vcf}  {output.vcf}
         """

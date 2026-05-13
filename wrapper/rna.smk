@@ -5,15 +5,15 @@ SE_samples = samples_info.loc[pd.isna(samples_info['R2_file_path'])].index.tolis
 PE_samples = samples_info.loc[~pd.isna(samples_info['R1_file_path'])].index.tolist()
 
 ## split config files 
-configfile: "/public/ClinicalExam/lj_sih/projects/project_clindet/workflow/config/conf/genomes.yaml"
-configfile: "/public/ClinicalExam/lj_sih/projects/project_clindet/workflow/config/conf/singularity.yaml"
-configfile: "/public/ClinicalExam/lj_sih/projects/project_clindet/workflow/config/conf/softwares.yaml"
+configfile: "workflow/config/conf/genomes.yaml"
+configfile: "workflow/config/conf/singularity.yaml"
+configfile: "workflow/config/conf/softwares.yaml"
+configfile: "workflow/config/conf/softwares_params.yaml"
 
-groups = ['NC','T']
-stages = ['salmon','isofox','RSEM','arriba']#]'RSEM','arriba','salmon','TRUST4','salmon','kallisto','isofox']
-rna_caller_list = ['sentieon','Mutect2_filter','vardict','varscan2','lofreq']#,'strelka']# vardict,varscan2,
+stages = config['run_params']['stages']
+rna_caller_list = config['run_params']['rna_caller_list']
 project = config['project']['output_dir']
-# genome_version = 'hg38'
+
 genome_version = config['project']['genome_version']
 
 rna_res_list = [
@@ -30,38 +30,21 @@ rna_res_list = [
     ##### for TRUST4 immu analysis #####
     "{project}/{genome_version}/results/summary/isofox/{sample}/{sample}.sorted.bam"  if 'isofox'    in stages else None,
     # "{project}/{genome_version}/results/mut/STAR/{sample}/{sample}.sorted.bam",
-    "{project}/{genome_version}/results/mut/dedup/{sample}.split.bam",
-    "{project}/{genome_version}/results/summary/isofox/{sample}/{sample}.isf.fusions.csv",
     #### Case report #####
 
-    #### mutation section #####
-    ## mutect2 ##
-    "{project}/{genome_version}/results/mut/vcf/{sample}/Mutect2_filter.vcf",
-    ## vardict ##
-    "{project}/{genome_version}/results/mut/vcf/{sample}/vardict.vcf",
-    ## freebayes ##
-    # "{project}/{genome_version}/results/mut/vcf/{sample}/freebayes.vcf",
-    ## Strelka ##
-    # "{project}/{genome_version}/results/mut/vcf/{sample}/strelka.vcf",
-    ## Lofreq ##
-    "{project}/{genome_version}/results/mut/vcf/{sample}/lofreq.vcf",
-    ## sentieon ##
-    "{project}/{genome_version}/results/mut/vcf/{sample}/sentieon.vcf",
-    "{project}/{genome_version}/results/mut/vcf/{sample}/varscan2.vcf",
-    ## ##
-    "{project}/{genome_version}/results/mut/maf/{sample}/merge/{sample}.maf"
+    # #### mutation section #####
+    "{project}/{genome_version}/results/mut/maf/{sample}/merge/{sample}.maf" if 'call_mut' in stages else None,
 ]
 rna_res_list = list(filter(None, rna_res_list))
 rule rna_pipeline:
     input:
         ## paired sample
         expand(rna_res_list,
-        # sample = PE_samples,
-        sample = ['CD1','COLO829'],
+        sample = PE_samples,
         project = project,
         genome_version = genome_version
         ),
         
 ##### Modules #####
 include: "../workflow/RNA/Snakefile"
-include: "../workflow/RNA/rules/isofox.smk"
+

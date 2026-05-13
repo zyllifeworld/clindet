@@ -3,22 +3,25 @@ rule unpaired_mutect2_call:
         Tum="{project}/{genome_version}/results/recal/unpaired/{sample}-T.bam",
         ref=config['resources'][genome_version]['REFFA'],
         bed=get_sample_bed,
-        pon=lambda wildcards: get_config_value(config,['resources', wildcards.genome_version, 'WES_PON'], params='-pon', default=""),
         germ_vcf=config['resources'][genome_version]['MUTECT2_germline_vcf'],
     output:
-        vcf="{project}/{genome_version}/results/vcf/unpaired/{sample}/Mutect2.vcf"
+        vcf="{project}/{genome_version}/results/vcf/unpaired/{sample}/Mutect2_raw.vcf"
     params:
-        gatk4=config['softwares']['gatk4']['call'],
         temp_directory=config['params']['java']['temp_directory'],
+        pon=lambda wildcards: get_config_value(config,['resources', wildcards.genome_version, 'WES_PON'], params='-pon', default=""),
     threads: 10
+    singularity:
+        flexible_container_img(config,['singularity','gatk4','sif'],image_url = config['singularity']['gatk4']['repo'])
+    benchmark:
+        "{project}/{genome_version}/results/benchmarks/mut/{sample}.mutect2.benchmark.txt"
     shell:
         """
-        export _JAVA_OPTIONS=-Djava.io.tmpdir={params.temp_directory} && {params.gatk4} \
+        export _JAVA_OPTIONS=-Djava.io.tmpdir={params.temp_directory} && gatk \
         Mutect2 -R {input.ref} \
         --native-pair-hmm-threads {threads} \
         -I {input.Tum} \
         -O {output.vcf} \
-        -pon {input.pon} \
+        {params.pon} \
         --germline-resource {input.germ_vcf} \
         --intervals {input.bed}
         """
@@ -28,16 +31,17 @@ rule M2_filter_unpaired:
         Tum="{project}/{genome_version}/results/recal/unpaired/{sample}-T.bam",
         ref=config['resources'][genome_version]['REFFA'],
         bed=get_sample_bed,
-        vcf="{project}/{genome_version}/results/vcf/unpaired/{sample}/Mutect2.vcf",
+        vcf="{project}/{genome_version}/results/vcf/unpaired/{sample}/Mutect2_raw.vcf",
     output:
-        vcf="{project}/{genome_version}/results/vcf/unpaired/{sample}/Mutect2_filter.vcf"
+        vcf="{project}/{genome_version}/results/vcf/unpaired/{sample}/Mutect2.vcf"
     params:
-        gatk4=config['softwares']['gatk4']['call'],
         temp_directory=config['params']['java']['temp_directory'],
     threads: 10
+    singularity:
+        flexible_container_img(config,['singularity','gatk4','sif'],image_url = config['singularity']['gatk4']['repo'])
     shell:
         """
-        export _JAVA_OPTIONS=-Djava.io.tmpdir={params.temp_directory} && {params.gatk4} \
+        export _JAVA_OPTIONS=-Djava.io.tmpdir={params.temp_directory} && gatk \
         FilterMutectCalls \
         -R {input.ref} \
         -V {input.vcf} \

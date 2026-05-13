@@ -354,3 +354,32 @@ rule kallisto_salmon_index:
 
         touch {output.done}
         """
+
+rule download_mutation_anno_bed_hg38:
+    output:
+        output=f"{LOGDIR}/download_bed_files.log"
+    conda:
+        flexible_conda_env(config,['conda','clindet_main'],env_yaml = 'envs/clindet.yaml')
+    shell:
+        r"""
+        mkdir -p {REF_B37}/bed/giab
+        wget -P {REF_B37}/bed/giab -c https://ftp-trace.ncbi.nlm.nih.gov/ReferenceSamples/giab/release/genome-stratifications/v3.6/GRCh38@all/Union/GRCh38_alldifficultregions.bed.gz
+        wget -P {REF_B37}/bed/giab -c https://ftp-trace.ncbi.nlm.nih.gov/ReferenceSamples/giab/release/genome-stratifications/v3.6/GRCh38@all/Union/GRCh38_alllowmapandsegdupregions.bed.gz
+        wget -P {REF_B37}/bed/giab -c https://ftp-trace.ncbi.nlm.nih.gov/ReferenceSamples/giab/release/genome-stratifications/v3.5/GRCh38@all/FunctionalTechnicallyDifficult/GRCh38_BadPromoters.bed.gz
+        wget -P {REF_B37}/bed/giab -c https://ftp-trace.ncbi.nlm.nih.gov/ReferenceSamples/giab/release/genome-stratifications/v3.6/GRCh38@all/Union/GRCh38_alldifficultregions.bed.gz
+        wget -P {REF_B37}/bed/giab -c https://ftp-trace.ncbi.nlm.nih.gov/ReferenceSamples/giab/release/genome-stratifications/v3.5/GRCh38@all/XY/GRCh38_chrX_PAR.bed.gz
+        wget -P {REF_B37}/bed/giab -c https://ftp-trace.ncbi.nlm.nih.gov/ReferenceSamples/giab/release/genome-stratifications/v3.5/GRCh38@all/XY/GRCh38_chrX_XTR.bed.gz
+        wget -P {REF_B37}/bed/giab -c https://ftp-trace.ncbi.nlm.nih.gov/ReferenceSamples/giab/release/genome-stratifications/v3.5/GRCh38@all/XY/GRCh38_chrY_PAR.bed.gz
+        wget -P {REF_B37}/bed/giab -c https://ftp-trace.ncbi.nlm.nih.gov/ReferenceSamples/giab/release/genome-stratifications/v3.5/GRCh38@all/XY/GRCh38_chrY_XTR.bed.gz
+        wget -P {REF_B37}/bed/giab -c https://ftp-trace.ncbi.nlm.nih.gov/ReferenceSamples/giab/release/genome-stratifications/v3.5/GRCh38@all/OtherDifficult/GRCh38_KIR.bed.gz
+        wget -P {REF_B37}/bed/giab -c https://ftp-trace.ncbi.nlm.nih.gov/ReferenceSamples/giab/release/genome-stratifications/v3.5/GRCh38@all/OtherDifficult/GRCh38_MHC.bed.gz
+        wget -P {REF_B37}/bed/giab -c https://ftp-trace.ncbi.nlm.nih.gov/ReferenceSamples/giab/release/genome-stratifications/v3.5/GRCh38@all/OtherDifficult/GRCh38_KIR.bed.gz
+
+        wget -P {REF_B37}/bed/giab -c https://zenodo.org/records/16755940/files/hg38.pm151b-v3.easy.bed.gz
+        wget -P {REF_B37}/bed/giab -c https://zenodo.org/records/16755940/files/hg38.longdust.bed.gz
+        wget https://github.com/parklab/SMaHT_Regional_Categorization/raw/main/SMaHT_easy_hg38.bed.gz
+        wget https://github.com/parklab/SMaHT_Regional_Categorization/raw/main/SMaHT_difficult_hg38.bed.gz
+        wget https://github.com/parklab/SMaHT_Regional_Categorization/raw/main/SMaHT_extreme_hg38.bed.gz
+
+        touch {output}
+        """

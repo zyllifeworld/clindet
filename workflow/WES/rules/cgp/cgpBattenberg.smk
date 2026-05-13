@@ -9,16 +9,16 @@ rule battenberg_call:
     threads: 20
     params:
         ref=config['resources'][genome_version]['REFFA'],
-        igbed=config['singularity']['cgpbattenberg']['ignorebed'],
-        gc=config['singularity']['cgpbattenberg']['gc'],
-        impute=config['singularity']['cgpbattenberg']['impute'],
-        prob_loci=config['singularity']['cgpbattenberg']['prob_loci'],
-        loci_1000=config['singularity']['cgpbattenberg']['loci_1000'],
+        igbed=config['softwares_params'][genome_version]['cgpbattenberg']['ignorebed'],
+        gc=config['softwares_params'][genome_version]['cgpbattenberg']['gc'],
+        impute=config['softwares_params'][genome_version]['cgpbattenberg']['impute'],
+        prob_loci=config['softwares_params'][genome_version]['cgpbattenberg']['prob_loci'],
+        loci_1000=config['softwares_params'][genome_version]['cgpbattenberg']['loci_1000'],
         out_dir='results/vcf/paired/{sample}/battenberg',
         log='results/vcf/paired/{sample}/battenberg/log'
         # gender=get_gender
     singularity:
-        config['singularity']['cgpbattenberg']['sif']
+        flexible_container_img(config,['singularity','cgpbattenberg','sif'],image_url = config['softwares_params'][genome_version]['cgpbattenberg']['repo'])
     shell:
         """
         battenberg.pl -outdir {params.out_dir} \

@@ -12,7 +12,8 @@ rule vardict_paired_mode:
         allele_frequency_threshold="0.01",  # Optional, default is 0.01
         post_scripts="testsomatic.R | var2vcf_paired.pl -N "
     threads: 10
-    conda: config['conda']['clindet_main']
+    singularity:
+        flexible_container_img(config,['singularity','vardict_java','sif'],image_url = config['singularity']['vardict_java']['repo'])
     benchmark:
         "{project}/{genome_version}/results/benchmarks/mut/{sample}.vardict.benchmark.txt"
     shell:
@@ -34,7 +35,8 @@ rule vardict_filter_somatic:
     threads: 1
     params:
         caller='vardict'
-    conda: config['conda']['clindet_main']
+    conda: 
+        flexible_conda_env(config,['conda','clindet_main'],env_yaml = 'envs/clindet.yaml')
     shell:
         """
         bcftools view -i '(INFO/STATUS~"StrongSomatic" || INFO/STATUS~"LikelySomatic") && FILTER="PASS" && INFO/SSF <= 0.05' {input.vcf} > {output.vcf} 
@@ -48,7 +50,8 @@ rule vardict_filter_germline:
     threads: 1
     params:
         caller='vardict'
-    conda: config['conda']['clindet_main']
+    conda: 
+        flexible_conda_env(config,['conda','clindet_main'],env_yaml = 'envs/clindet.yaml')
     shell:
         """
         bcftools view -i 'INFO/STATUS~"Germline" && FILTER="PASS"' {input.vcf} > {output.vcf} 

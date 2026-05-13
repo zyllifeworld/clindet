@@ -6,11 +6,15 @@ rule unpaired_call_variants_HaplotypeCaller:
     output:
         vcf="{project}/{genome_version}/results/vcf/unpaired/{sample}/HaplotypeCaller.vcf",
     params:
-        gatk4=config['softwares']['gatk4']['call']
+        temp_directory=config['params']['java']['temp_directory']
     threads:10
+    singularity:
+        flexible_container_img(config,['singularity','gatk4','sif'],image_url = config['singularity']['gatk4']['repo'])
+    benchmark:
+        "{project}/{genome_version}/results/benchmarks/mut/{sample}.HaplotypeCaller.unpaired.benchmark.txt"
     shell:
         """
-        {params.gatk4} \
+        export _JAVA_OPTIONS=-Djava.io.tmpdir={params.temp_directory} && {params.gatk4} \
         HaplotypeCaller -R {input.ref} \
         -I {input.Tum} \
         -O {output.vcf} \

@@ -1,10 +1,10 @@
-include: "rules/qc.smk"
+include: "../common/rules/qc.smk"
 include: "../common/rules/mapping.smk"
 
 ## cgp pipeline caller
 include: "rules/cgp/cgppindel.smk"
 include: "rules/cgp/cgpCaVEMan.smk"
-include: "rules/cgp/cgpBattenberg.smk"
+
 
 # rtm pipeline caller
 include: "rules/rtm/paired/SNV.smk"
@@ -17,6 +17,8 @@ include: "rules/rtm/unpaired/CNV.smk"
 # post process steps
 include: "../common/rules/merge_loop.smk"
 include: "../common/rules/merge_loop_germline.smk"
+include: "../common/rules/mutation_flag.smk"
+include: "../common/rules/case_report.smk"
 include: "rules/report/multiqc.smk"
 
 # case report

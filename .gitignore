@@ -166,3 +166,4 @@ build_mouse_GRCm38.sh
 workflow/WES/scripts/hatchet/config_hatchet.py
 workflow/WES/scripts/hatchet/hatchet.ini
 workflow/WES/rules/rtm/paired/CNV/hatchet.smk
+workflow/WES/rules/report/main.R

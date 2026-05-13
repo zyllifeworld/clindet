@@ -25,7 +25,8 @@ rule CNA_ABSOLUTE_GISTIC:
         ndt_maf="{project}/{genome_version}/results/clone/PhylogicNDT/{sample}/{sample}.maf",
         absolute_dir=directory("{project}/{genome_version}/results/cnv/ABSOLUTE/{sample}"),
         # absolute_pdf="{project}/{genome_version}/results/cnv/ABSOLUTE/{sample}/DoAbsolute.called.ABSOLUTE.plots.pdf"
-    conda: config['conda']['clindet_main']
+    conda: 
+        flexible_conda_env(config,['conda','clindet_main'],env_yaml = 'envs/clindet.yaml')
     params:
         wd="{project}/{genome_version}/results/cnv/paired/{sample}",
         # gender=,
@@ -59,7 +60,7 @@ rule CNA_Battenberg:
         -o {params.wd}
         """
 
-ascat_config = config['softwares']['ascat_wgs'].get(genome_version, False)
+ascat_config = config['softwares_params'][genome_version].get('ascat_wgs', False)
 if ascat_config:
     include:"CNV/ASCAT.smk"
 ### PoN of factesCH

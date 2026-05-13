@@ -17,7 +17,7 @@ rule unpaired_amber:
         normalize=False,  # optional flag to use bcftools norm to normalize indels (Valid params are -a, -f, -m, -D or -d)
     threads: 10
     # singularity:config['singularity']['hmftools']['sif']
-    conda:config['singularity']['hmftools']['conda']
+    conda: flexible_conda_env(config,['conda','hmftools'],env_yaml = 'envs/hmftools.yaml')
     shell:
         """
         amber  -tumor {wildcards.sample} -tumor_bam {input.Tum} \
@@ -37,13 +37,13 @@ rule unpaired_cobalt:
         output_dir=directory("{project}/{genome_version}/results/cnv/unpaired/purple/{sample}/cobalt")
     params:
         output_dir="{project}/{genome_version}/results/cnv/unpaired/purple/{sample}/cobalt",
-        tumor_only_diploid_bed=config['singularity']['hmftools'][genome_version]['cobalt']['tumor_only_diploid_bed'],
-        gc_profile=config['singularity']['hmftools'][genome_version]['cobalt']['gc_profile'],
+        tumor_only_diploid_bed=config['softwares_params'][genome_version]['hmftools']['cobalt']['tumor_only_diploid_bed'],
+        gc_profile=config['softwares_params'][genome_version]['hmftools']['cobalt']['gc_profile'],
     threads: 10
     resources:
         mem_mb=lambda wildcards, input: max(0.4 * input.size_files_mb[0], 1000) 
     # singularity:config['singularity']['hmftools']['sif']
-    conda:config['singularity']['hmftools']['conda']
+    conda:flexible_conda_env(config,['conda','hmftools'],env_yaml = 'envs/hmftools.yaml')
     shell:
         """
         cobalt -Xms{resources.mem_mb}m -Xmx{resources.mem_mb}m \
@@ -70,15 +70,15 @@ rule unpaired_purple:
         output_dir=directory("{project}/{genome_version}/results/cnv/unpaired/purple/{sample}/purple")
     params:
         output_dir="{project}/{genome_version}/results/cnv/unpaired/purple/{sample}/amber",
-        tumor_only_diploid_bed=config['singularity']['hmftools'][genome_version]['purple']['tumor_only_diploid_bed'],
-        gc_profile=config['singularity']['hmftools'][genome_version]['purple']['gc_profile'],
-        ensembl_data_dir=config['singularity']['hmftools'][genome_version]['purple']['ensembl_data_dir'],
-        somatic_hotspots=config['singularity']['hmftools'][genome_version]['purple']['somatic_hotspots'],
-        driver_gene_panel=config['singularity']['hmftools'][genome_version]['purple']['driver_gene_panel'],
-        ref_genome_version=config['singularity']['hmftools'][genome_version]['purple']['ref_genome_version'],
+        tumor_only_diploid_bed=config['softwares_params'][genome_version]['hmftools']['purple']['tumor_only_diploid_bed'],
+        gc_profile=config['softwares_params'][genome_version]['hmftools']['purple']['gc_profile'],
+        ensembl_data_dir=config['softwares_params'][genome_version]['hmftools']['purple']['ensembl_data_dir'],
+        somatic_hotspots=config['softwares_params'][genome_version]['hmftools']['purple']['somatic_hotspots'],
+        driver_gene_panel=config['softwares_params'][genome_version]['hmftools']['purple']['driver_gene_panel'],
+        ref_genome_version=config['softwares_params'][genome_version]['hmftools']['purple']['ref_genome_version'],
     threads: 10
     # singularity:config['singularity']['hmftools']['sif']
-    conda:config['singularity']['hmftools']['conda']
+    conda: flexible_conda_env(config,['conda','hmftools'],env_yaml = 'envs/hmftools.yaml')
     resources:
         mem_mb=lambda wildcards, input: max(0.45 * input.size_files_mb[0], 1000) 
     shell:

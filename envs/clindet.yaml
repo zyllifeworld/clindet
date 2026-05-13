@@ -4,19 +4,19 @@ channels:
   - bioconda
   - defaults
 dependencies:
-  - ascat=3.2.0
-  - bcftools=1.22
+  - ascat>=3.2.0
+  - bcftools>=1.22
   - r-base
   - r-tidyverse
   - cancerit-allelecount
-  - bwa=0.7.18
-  - bwidget=1.9.14
+  - bwa>=0.7.18
+  - bwidget>=1.9.14
   - bzip2
   - htslib
   - python
   - samtools
   - varscan=2.4.6
-  - snakemake=9.9.0
+  - snakemake>=9.9.0
   - vcflib
   - vcftools
   - picard
@@ -28,6 +28,7 @@ dependencies:
   - configparser
   - sra-tools
   - pip
+  - bioconductor-tximport
 
   - pip:
     - snakemake-executor-plugin-cluster-generic

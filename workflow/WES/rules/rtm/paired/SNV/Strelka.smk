@@ -12,7 +12,7 @@ rule call_config_strelka:
     benchmark:
         "{project}/{genome_version}/results/benchmarks/mut/{sample}.Manta.benchmark.txt"
     conda:
-        "strelka"
+        flexible_conda_env(config,['conda','strelka'],env_yaml = 'envs/strelka.yaml')
     shell:
         """
             [ ! -f {input.bed}.gz ] && bgzip -k {input.bed} -o {input.bed}.gz
@@ -29,9 +29,8 @@ rule call_config_strelka:
         """
 
 # for Manta candidate
-rule call_strelka_manta:
+rule call_strelka_manta_germline:
     input:
-        Tum="{project}/{genome_version}/results/recal/paired/{sample}-T.bam",
         NC="{project}/{genome_version}/results/recal/paired/{sample}-NC.bam",
         ref=config['resources'][genome_version]['REFFA'],
         indelcd="{project}/{genome_version}/results/vcf/paired/{sample}/Manta/results/variants/candidateSmallIndels.vcf.gz",
@@ -42,7 +41,7 @@ rule call_strelka_manta:
     params:
     threads:8
     conda:
-        "strelka"
+        flexible_conda_env(config,['conda','strelka'],env_yaml = 'envs/strelka.yaml')
     benchmark:
         "{project}/{genome_version}/results/benchmarks/mut/{sample}.StrelkaGermline.benchmark.txt"
     shell:
@@ -50,7 +49,6 @@ rule call_strelka_manta:
         [ ! -f {input.bed}.gz ] && bgzip -k {input.bed} -o {input.bed}.gz
         [ ! -f {input.bed}.gz.tbi ] && tabix {input.bed}.gz
         configureStrelkaGermlineWorkflow.py \
-        --bam {input.Tum} \
         --bam {input.NC} \
         --referenceFasta {input.ref} \
         --indelCandidates {input.indelcd} \
@@ -76,7 +74,7 @@ rule call_strelka_somatic_manta:
     benchmark:
         "{project}/{genome_version}/results/benchmarks/mut/{sample}.StrelkaSomatic.benchmark.txt"
     conda:
-        "strelka"
+        flexible_conda_env(config,['conda','strelka'],env_yaml = 'envs/strelka.yaml')
     shell:
         """
         [ ! -f {input.bed}.gz ] && bgzip -k {input.bed} -o {input.bed}.gz
@@ -100,11 +98,13 @@ rule merge_strelka_manta:
     params:
         snp="{project}/{genome_version}/results/vcf/paired/{sample}/StrelkaManta/results/variants/variants.vcf.gz"
     conda:
-        "strelka"
+        flexible_conda_env(config,['conda','clindet_main'],env_yaml = 'envs/clindet.yaml')
     shell:
         """
-        zcat {params.snp} | grep '#' > {output}
-        zcat {params.snp} | grep -v '#' | {{ grep 'PASS' || true;}} >> {output}
+        bcftools concat -a -Ou {params.snp} {params.indel} \
+        | bcftools sort -Ov -o {output}
+        sed -i "s;TUMOR;{wildcards.sample}_T;"  {output}
+        sed -i "s;NORMAL;{wildcards.sample}_NC;"  {output}
         """
     # or the uppon line can be rewrite as :zcat {params.snp} | grep -v '#' | grep 'PASS'| cat >> {output}
 
@@ -117,12 +117,11 @@ rule merge_strelka_somatic_manta:
         snp="{project}/{genome_version}/results/vcf/paired/{sample}/StrelkaSomaticManta/results/variants/somatic.snvs.vcf.gz",
         indel="{project}/{genome_version}/results/vcf/paired/{sample}/StrelkaSomaticManta/results/variants/somatic.indels.vcf.gz",
     conda:
-        "strelka"
+        flexible_conda_env(config,['conda','clindet_main'],env_yaml = 'envs/clindet.yaml')
     shell:
         """
-        zcat {params.snp} | grep '#' > {output}
-        zcat {params.snp} | grep -v '#' | {{ grep 'PASS' || true; }} >>  {output}
-        zcat {params.indel} | grep -v '#' | {{ grep 'PASS' || true; }} >>  {output}
+        bcftools concat -a -Ou {params.snp} {params.indel} \
+        | bcftools sort -Ov -o {output}
         sed -i "s;TUMOR;{wildcards.sample}_T;"  {output}
         sed -i "s;NORMAL;{wildcards.sample}_NC;"  {output}
         """
@@ -138,7 +137,7 @@ rule call_strelka:
         tamp="{project}/{genome_version}/results/logs/strelka/paired/{sample}/{sample}-Strelka.log"
     params:
     conda:
-        "strelka"
+        flexible_conda_env(config,['conda','strelka'],env_yaml = 'envs/strelka.yaml')
     shell:
         """
         [ ! -f {input.bed}.gz ] && bgzip -k {input.bed} -o {input.bed}.gz
@@ -165,7 +164,7 @@ rule call_strelka_somatic:
         tamp="{project}/{genome_version}/results/logs/strelka/paired/{sample}-StrelkaSomatice.log"
     params:
     conda:
-        "strelka"
+        flexible_conda_env(config,['conda','strelka'],env_yaml = 'envs/strelka.yaml')
     shell:
         """
         [ ! -f {input.bed}.gz ] && bgzip -k {input.bed} -o {input.bed}.gz
@@ -202,11 +201,12 @@ rule merge_strelka_somatic:
     params:
         snp="{project}/{genome_version}/results/vcf/paired/{sample}/StrelkaSomatic/results/variants/somatic.snvs.vcf.gz",
         indel="{project}/{genome_version}/results/vcf/paired/{sample}/StrelkaSomatic/results/variants/somatic.indels.vcf.gz",
+    conda:
+        flexible_conda_env(config,['conda','clindet_main'],env_yaml = 'envs/clindet.yaml')
     shell:
         """
-        zcat {params.snp} | grep '#' > {output}
-        zcat {params.snp} | grep -v '#' | {{ grep 'PASS' || true; }} >>  {output}
-        zcat {params.indel} | grep -v '#' | {{ grep 'PASS' || true; }} >>  {output}
+        bcftools concat -a -Ou {params.snp} {params.indel} \
+        | bcftools sort -Ov -o {output}
         sed -i "s;TUMOR;{wildcards.sample}_T;"  {output}
         sed -i "s;NORMAL;{wildcards.sample}_NC;"  {output}
         """

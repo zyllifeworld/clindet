@@ -12,7 +12,10 @@ rule unpaired_freebayes:
         normalize=False,  # optional flag to use bcftools norm to normalize indels (Valid params are -a, -f, -m, -D or -d)
         AF_THR=0.01
     threads: 10
-    conda:'snake'
+    benchmark:
+        "{project}/{genome_version}/results/benchmarks/mut/{sample}.freebayes.benchmark.txt"
+    singularity:
+        flexible_container_img(config,['singularity','freebayes','sif'],image_url = config['singularity']['freebayes']['repo'])
     shell:
         """
         freebayes -f {input.ref} -t {input.regions} --min-coverage 10 -C 3 --pooled-continuous {input.bam} > {output.vcf}

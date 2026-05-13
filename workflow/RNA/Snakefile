@@ -36,13 +36,13 @@ def get_vcf_file(wildcards):
 include: "rules/qc.smk"
 include: "rules/mapping.smk"
 # include: "rules/isofox.smk"
-# include: "rules/calling_paired.smk"
-# include: "rules/calling_paired_strelka.smk"
-# include: "rules/calling_unpaired.smk"
+
 ### call mutation module
 include: "rules/call_mut_sentieon.smk"
 #include: "rules/merge.smk"
 include: "rules/merge_loop.smk"
 include: "rules/SNV.smk"
 include: "rules/findvirus.smk"
-include: "rules/fusion.smk"
+if genome_version in ['b37','hg38']:
+    include: "rules/fusion.smk"
+    include: "rules/isofox.smk"

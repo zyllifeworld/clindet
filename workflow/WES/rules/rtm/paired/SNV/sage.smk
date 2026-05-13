@@ -6,16 +6,17 @@ rule paired_sage:
     output:
         vcf="{project}/{genome_version}/results/vcf/paired/{sample}/sage/{sample}.sage.vcf.gz",
     params:
-        high_confidence_bed=config['singularity']['hmftools'][genome_version]['sage']['high_confidence_bed'],
-        ensembl_data_dir=config['singularity']['hmftools'][genome_version]['sage']['ensembl_data_dir'],
-        coverage_bed=config['singularity']['hmftools'][genome_version]['sage']['coverage_bed'],
-        hotspots=config['singularity']['hmftools'][genome_version]['sage']['hotspots'],
-        panel_bed=config['singularity']['hmftools'][genome_version]['sage']['panel_bed'],
-        ref_genome_version=config['singularity']['hmftools'][genome_version]['sage']['ref_genome_version'],
+        high_confidence_bed=config['softwares_params'][genome_version]['hmftools']['sage']['high_confidence_bed'],
+        ensembl_data_dir=config['softwares_params'][genome_version]['hmftools']['sage']['ensembl_data_dir'],
+        coverage_bed=config['softwares_params'][genome_version]['hmftools']['sage']['coverage_bed'],
+        hotspots=config['softwares_params'][genome_version]['hmftools']['sage']['hotspots'],
+        panel_bed=config['softwares_params'][genome_version]['hmftools']['sage']['panel_bed'],
+        ref_genome_version=config['softwares_params'][genome_version]['hmftools']['sage']['ref_genome_version'],
         xms=2000,
         xmx=2000
     threads: 30
-    conda:config['singularity']['hmftools']['conda']
+    conda:
+        flexible_conda_env(config,['conda','hmftools'],env_yaml = 'envs/hmftools.yaml')
     benchmark:
         "{project}/{genome_version}/results/benchmarks/mut/{sample}.sage.benchmark.txt"
     shell:
@@ -42,17 +43,18 @@ rule pave_anno_sage:
     output:
         vcf="{project}/{genome_version}/results/vcf/paired/{sample}/sage/{sample}.sage.pave.vcf.gz",
         # dir="{project}/{genome_version}/results/vcf/paired/{sample}/deepvariant,
-    conda:config['singularity']['hmftools']['conda']
+    conda:
+        flexible_conda_env(config,['conda','hmftools'],env_yaml = 'envs/hmftools.yaml')
     # singularity:"https://depot.galaxyproject.org/singularity/hmftools-pave:1.7.1--hdfd78af_0" # snakemake not work well for conda & singularity
     params:
         wd="{project}/{genome_version}/results/vcf/paired/{sample}/sage",
-        driver_gene_panel=config['singularity']['hmftools'][genome_version]['purple']['driver_gene_panel'],
-        high_confidence_bed=config['singularity']['hmftools'][genome_version]['sage']['high_confidence_bed'],
-        ensembl_data_dir=config['singularity']['hmftools'][genome_version]['sage']['ensembl_data_dir'],
-        coverage_bed=config['singularity']['hmftools'][genome_version]['sage']['coverage_bed'],
-        hotspots=config['singularity']['hmftools'][genome_version]['sage']['hotspots'],
-        panel_bed=config['singularity']['hmftools'][genome_version]['sage']['panel_bed'],
-        ref_genome_version=config['singularity']['hmftools'][genome_version]['sage']['ref_genome_version'],
+        driver_gene_panel=config['softwares_params'][genome_version]['hmftools']['purple']['driver_gene_panel'],
+        high_confidence_bed=config['softwares_params'][genome_version]['hmftools']['sage']['high_confidence_bed'],
+        ensembl_data_dir=config['softwares_params'][genome_version]['hmftools']['sage']['ensembl_data_dir'],
+        coverage_bed=config['softwares_params'][genome_version]['hmftools']['sage']['coverage_bed'],
+        hotspots=config['softwares_params'][genome_version]['hmftools']['sage']['hotspots'],
+        panel_bed=config['softwares_params'][genome_version]['hmftools']['sage']['panel_bed'],
+        ref_genome_version=config['softwares_params'][genome_version]['hmftools']['sage']['ref_genome_version'],
     threads: 8
     benchmark:
         "{project}/{genome_version}/results/benchmarks/mut/{sample}.pave.benchmark.txt"
@@ -93,7 +95,8 @@ rule paired_pave_filter_pass:
     params:
         ref=config['resources'][genome_version]['REFFA']
     threads: 1
-    conda: config['conda']['clindet_main']
+    conda: 
+        flexible_conda_env(config,['conda','clindet_main'],env_yaml = 'envs/clindet.yaml')
     shell:
         """
         bcftools filter -i 'FILTER="PASS"'  {input.vcf} > {output.vcf} 
@@ -106,25 +109,26 @@ rule paired_sage_germline:
         NC="{project}/{genome_version}/results/recal/paired/{sample}-NC.bam",
         ref_genome=config['resources'][genome_version]['REFFA']
     output:
-        vcf="{project}/{genome_version}/results/vcf_germ/paired/{sample}/sage/{sample}.sage.vcf.gz",
+        vcf="{project}/{genome_version}/results/vcf_germline/paired/{sample}/sage/{sample}.sage.vcf.gz",
     params:
-        high_confidence_bed=config['singularity']['hmftools'][genome_version]['sage']['high_confidence_bed'],
-        ensembl_data_dir=config['singularity']['hmftools'][genome_version]['sage']['ensembl_data_dir'],
-        coverage_bed=config['singularity']['hmftools'][genome_version]['sage']['coverage_bed'],
-        hotspots=config['singularity']['hmftools'][genome_version]['sage']['hotspots'],
-        panel_bed=config['singularity']['hmftools'][genome_version]['sage']['panel_bed'],
-        ref_genome_version=config['singularity']['hmftools'][genome_version]['sage']['ref_genome_version'],
+        high_confidence_bed=config['softwares_params'][genome_version]['hmftools']['sage']['high_confidence_bed'],
+        ensembl_data_dir=config['softwares_params'][genome_version]['hmftools']['sage']['ensembl_data_dir'],
+        coverage_bed=config['softwares_params'][genome_version]['hmftools']['sage']['coverage_bed'],
+        hotspots=config['softwares_params'][genome_version]['hmftools']['sage']['hotspots'],
+        panel_bed=config['softwares_params'][genome_version]['hmftools']['sage']['panel_bed'],
+        ref_genome_version=config['softwares_params'][genome_version]['hmftools']['sage']['ref_genome_version'],
         xms=2000,
         xmx=2000
     threads: 30
-    conda:config['singularity']['hmftools']['conda']
+    conda:
+        flexible_conda_env(config,['conda','hmftools'],env_yaml = 'envs/hmftools.yaml')
     benchmark:
         "{project}/{genome_version}/results/benchmarks/mut/{sample}.sage.benchmark.txt"
     shell:
         """
         sage \
-        -tumor {wildcards.sample} -tumor_bam {input.Tum} \
-        -reference {wildcards.sample}_NC -reference_bam {input.NC} \
+        -tumor {wildcards.sample} -tumor_bam {input.NC} \
+        -reference {wildcards.sample}_T -reference_bam {input.Tum} \
         -ref_genome_version {params.ref_genome_version} \
         -ref_genome {input.ref_genome} \
         -ensembl_data_dir {params.ensembl_data_dir} \
@@ -135,4 +139,19 @@ rule paired_sage_germline:
         -panel_bed {params.panel_bed} \
         -high_confidence_bed {params.high_confidence_bed} \
         -output_vcf {output.vcf} -write_bqr_plot
+        """
+
+rule sage_germline_filter_pass:
+    input:
+        vcf="{project}/{genome_version}/results/vcf_germline/paired/{sample}/sage/{sample}.sage.vcf.gz",
+    output:
+        vcf="{project}/{genome_version}/results/vcf_germline/paired/{sample}/sage.vcf"
+    params:
+        ref=config['resources'][genome_version]['REFFA']
+    threads: 1
+    conda: 
+        flexible_conda_env(config,['conda','clindet_main'],env_yaml = 'envs/clindet.yaml')
+    shell:
+        """
+        bcftools filter -i 'FILTER="PASS"'  {input.vcf} > {output.vcf} 
         """

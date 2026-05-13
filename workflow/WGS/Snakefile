@@ -1,18 +1,20 @@
 ##### Modules #####
-include: "rules/qc.smk"
-include: "rules/mapping.smk"
+include: "../common/rules/qc.smk"
+include: "../common/rules/mapping.smk"
 include: "rules/calling_unpaired.smk"
 
 ## cgp pipeline caller
-include: "rules/cgp/cgppindel.smk"
-include: "rules/cgp/cgpCaVEMan.smk"
-include: "rules/rtm/paired/SNV.smk"
-# ## rtm
+include: "../common/rules/cgp/cgppindel.smk"
+include: "../common/rules/cgp/cgpCaVEMan.smk"
 
+## rtm
+include: "rules/rtm/paired/SNV.smk"
 include: "rules/rtm/paired/CNV.smk"
 
-include: "rules/merge_loop.smk"
-include: "rules/merge_loop_germline.smk"
+# post process steps
+include: "../common/rules/merge_loop.smk"
+include: "../common/rules/merge_loop_germline.smk"
+include: "../common/rules/case_report.smk"
 
 ## SV call rules
 BRASS_CNV = config['singularity']['brass'].get("CNV", 'ASCAT')     

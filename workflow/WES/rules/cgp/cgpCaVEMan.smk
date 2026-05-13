@@ -12,7 +12,8 @@ if genome_version in ['hg19','b37','hg38','hg38_EBV']:
             # gender=,
             sample_index=lambda wildcards: wildcards.sample,
             genome_version=lambda wildcards: wildcards.genome_version
-        conda: config['conda']['clindet_main']
+        conda: 
+            flexible_conda_env(config,['conda','clindet_main'],env_yaml = 'envs/clindet.yaml')
         threads: 1
         script:
             "../../scripts/caveman/cnv_bed.R"
@@ -43,7 +44,7 @@ if genome_version in ['hg19','b37','hg38','hg38_EBV']:
                 default=""
             ),
         singularity:
-            config['singularity']['caveman']['sif']
+            flexible_container_img(config,['singularity','caveman','sif'],image_url = config['singularity']['caveman']['repo'])
         benchmark:
             "{project}/{genome_version}/results/benchmarks/snv/{sample}.caveman.benchmark.txt"
         shell:
@@ -85,7 +86,8 @@ else:
         output:
             out_dir=directory('{project}/{genome_version}/results/vcf/paired/{sample}/caveman'),
             log='{project}/{genome_version}/logs/paired/caveman/caveman_{sample}.log',
-            vcf="{project}/{genome_version}/results/vcf/paired/{sample}/caveman/{sample}_T_vs_{sample}_NC.muts.ids.vcf.gz"
+            vcf="{project}/{genome_version}/results/vcf/paired/{sample}/caveman/{sample}_T_vs_{sample}_NC.muts.ids.vcf.gz",
+            snp="{project}/{genome_version}/results/vcf/paired/{sample}/caveman/{sample}_T_vs_{sample}_NC.snps.ids.vcf.gz"
         threads: 20
         params:
             ref=config['resources'][genome_version]['REFFA'],
@@ -96,7 +98,7 @@ else:
                 ),
             out_dir='{project}/{genome_version}/results/vcf/paired/{sample}/caveman',
         singularity:
-            config['singularity']['caveman']['sif']
+            flexible_container_img(config,['singularity','caveman','sif'],image_url = config['singularity']['caveman']['repo'])
         shell:
             """
             caveman.pl \
@@ -184,7 +186,8 @@ rule CM_germ_flag:
     input:
         Tum="{project}/{genome_version}/results/recal/paired/{sample}-T.bam",
         NC="{project}/{genome_version}/results/recal/paired/{sample}-NC.bam",
-        log='{project}/{genome_version}/logs/paired/caveman/caveman_{sample}.log'
+        log='{project}/{genome_version}/logs/paired/caveman/caveman_{sample}.log',
+        snp="{project}/{genome_version}/results/vcf/paired/{sample}/caveman/{sample}_T_vs_{sample}_NC.snps.ids.vcf.gz"
     output:
         vcf="{project}/{genome_version}/results/vcf_germline/paired/{sample}/caveman.vcf"
     threads: 20
@@ -226,20 +229,11 @@ rule CM_germ_flag:
                 default=""
             ),
         vcf="{project}/{genome_version}/results/vcf/paired/{sample}/caveman/{sample}_T_vs_{sample}_NC.snps.ids.vcf.gz",
-    singularity:
-        config['singularity']['caveman']['sif']
     shell:
         """
-        cgpFlagCaVEMan.pl \
-        -i {params.vcf} \
-        -o {output} \
-        -m {input.Tum} -n {input.NC} \
-        -s {params.s}  -t genome \
-        -ref {params.ref}.fai \
-        -c  {params.c} \
-        -v  {params.v} \
-        -u  {params.u} \
-        -g  {params.g} \
-        -b  {params.b} \
-        -ab {params.ab}
+        bcftools filter \
+        -e 'DP<=30' \
+        -s LowDP \
+        --mode x \
+        {input.snp} -Ov -o  {output.vcf}
         """

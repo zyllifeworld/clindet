@@ -4,9 +4,9 @@ rule run_cancer_report:
         # rmd_file="workflow/WES/rules/report/cancer_report.Rmd",
         # af_keygenes="workflow/WES/rules/report/somatic_panel.tsv",
         af_keygenes=Path(str(workflow.current_basedir) + '/./somatic_panel.tsv'),
-        rmd_file=Path(str(workflow.current_basedir) + "/./cancer_report.Rmd"),
-        ## SNVs results
-        merge_maf="{project}/{genome_version}/results/maf/paired/{sample}/merge/{sample}.maf",
+        rmd_file=Path(str(workflow.current_basedir) + "/./main.Rmd"),
+        ## somatic mut MAF ########
+        somatic_mut_maf = "{project}/{genome_version}/results/maf/paired/{sample}/merge/{sample}.maf" if 'call_mut' in stages else [],
         ## CNV results
         ascat_rdata="{project}/{genome_version}/results/cnv/paired/ascat/{sample}/{sample}_ASCAT.rdata",
         purple_res_dir='{project}/{genome_version}/results/cnv/paired/purple/{sample}/purple',
@@ -30,12 +30,14 @@ rule run_cancer_report:
         purple_segment_png   = '{project}/{genome_version}/results/cnv/paired/purple/{sample}/purple/plot/{sample}.segment.png',
         purple_clonality_png = '{project}/{genome_version}/results/cnv/paired/purple/{sample}/purple/plot/{sample}.somatic.clonality.png',
         purple_ploidy_png    = '{project}/{genome_version}/results/cnv/paired/purple/{sample}/purple/plot/{sample}.somatic.png',
-        # wait_for_integration_sites = get_integration_sites_tsv_fn
-        #      if 'oncoviruses' in stages else [],
-        # oncoviral_present_viruses = 'work/{batch}/oncoviruses/present_viruses.txt'
-        #      if 'oncoviruses' in stages else [],
-
-        # conda_list           = rules.conda_list.output.txt,
+        ## patient and sample info
+        # patient_csv: '~/Documents/Project/project_clindet/source/clindet_report/report/test_data/patient_info.csv'
+        ## Assay QC
+        ngs_bit_sample_geneder = "{project}/{genome_version}/results/qc/conpair/qc/ngs_bit/{sample}-gender.tsv",
+        conpair_contamination = "{project}/{genome_version}/results/qc/conpair/paired/{sample}/{sample}-T_contamination.txt",
+        conpair_concordance = "{project}/{genome_version}/results/qc/conpair/paired/{sample}/{sample}-T_concordance.txt",
+        ngs_bit_mapqc_tumor = "{project}/{genome_version}/results/qc/conpair/paired/{sample}/{sample}_T_mapqc.txt",
+        ngs_bit_mapqc_normal = "{project}/{genome_version}/results/qc/conpair/paired/{sample}/{sample}_NC_mapqc.txt"
     params:
         tumor_name = lambda wc: wc.sample,
         genome_version = lambda wc: wc.genome_version,
@@ -43,6 +45,18 @@ rule run_cancer_report:
         report_rmd  = lambda wc, input: abspath(input.rmd_file),
         af_keygenes  = lambda wc, input: abspath(input.af_keygenes),
         output_file         = lambda wc, output: join(os.getcwd(), output['report_html']),
+        ## Assay QC
+        ngs_bit_sample_geneder = lambda wc, input: os.path.basename(abspath(input.ngs_bit_sample_geneder)),
+        conpair_contamination =  lambda wc, input: os.path.basename(abspath(input.conpair_contamination)),
+        conpair_concordance = lambda wc, input: os.path.basename(abspath(input.conpair_concordance)),
+        ngs_bit_mapqc_tumor = lambda wc, input: os.path.basename(abspath(input.ngs_bit_mapqc_tumor)),
+        ngs_bit_mapqc_normal = lambda wc, input: os.path.basename(abspath(input.ngs_bit_mapqc_normal)),
+        ## somatic mut MAF ########
+        somatic_mut_maf = lambda wc, input: (
+            os.path.basename(abspath(input.somatic_mut_maf))
+            if getattr(input, "somatic_mut_maf", None)
+            else None
+        ),
         ### CNV results dir
         ascat_res_dir=lambda wc, input: os.path.basename(abspath(input.ascat_rdata)),
         purple_res_dir=lambda wc, input: abspath(input.purple_res_dir),
@@ -61,6 +75,11 @@ rule run_cancer_report:
         # img_dir = directory('{project}/{genome_version}/results/reprot/{sample}/img'),
     resources:
         mem_mb=lambda wildcards, attempt: attempt * 10000
+    message:
+        lambda wildcards, params: (
+            f"Parameters for {wildcards.sample}\n"
+            + format_params(params)
+        )
     conda:'cancer_report'
     script:
         '../../scripts/rmd.R'

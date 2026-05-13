@@ -13,7 +13,7 @@ rule fastp_normal_sample:
     benchmark:
         "{project}/{genome_version}/results/benchmarks/mapping/{sample}_NC.fastp.benchmark.txt"
     conda:
-        config['softwares']['fastp']['conda']
+        flexible_conda_env(config,['conda','clindet_main'],env_yaml = 'envs/clindet.yaml')
     shell:
         """fastp --thread {threads} \
             -i {input.R1} -I {input.R2} \
@@ -37,7 +37,7 @@ rule fastp_tumor_sample:
     benchmark:
         "{project}/{genome_version}/results/benchmarks/mapping/{sample}_T.fastp.benchmark.txt"
     conda:
-        config['softwares']['fastp']['conda']
+        flexible_conda_env(config,['conda','clindet_main'],env_yaml = 'envs/clindet.yaml')
     shell:
         """fastp --thread {threads} \
             -i {input.R1} -I {input.R2} \
@@ -62,7 +62,8 @@ if conpair_config:
         params:
             ref=config['resources'][genome_version]['REFFA'],
             marker = '' if isinstance(conpair_marker_defalut, bool) and conpair_marker_defalut is True else '-M ' + config['singularity']['conpair'][genome_version]['marker']
-        singularity: config['singularity']['conpair']['sif']
+        singularity: 
+            flexible_container_img(config,['singularity','conpair','sif'],image_url = config['singularity']['conpair']['repo'])
         benchmark:
             "{project}/{genome_version}/results/benchmarks/conpair/{sample}.pileup.benchmark.txt"
         shell:
@@ -77,7 +78,8 @@ if conpair_config:
             NC_pileup="{project}/{genome_version}/results/qc/conpair/paired/{sample}/{sample}-NC.pileup",
         output:
             txt="{project}/{genome_version}/results/qc/conpair/paired/{sample}/{sample}-T_concordance.txt",
-        singularity: config['singularity']['conpair']['sif']
+        singularity:
+            flexible_container_img(config,['singularity','conpair','sif'],image_url = config['singularity']['conpair']['repo'])
         params:
             marker = '' if isinstance(conpair_marker_defalut, bool) and conpair_marker_defalut is True else '-M ' + config['singularity']['conpair'][genome_version]['marker']
         benchmark:
@@ -95,7 +97,8 @@ if conpair_config:
             txt="{project}/{genome_version}/results/qc/conpair/paired/{sample}/{sample}-T_contamination.txt",
         params:
             marker = '' if isinstance(conpair_marker_defalut, bool) and conpair_marker_defalut is True else '-M ' + config['singularity']['conpair'][genome_version]['marker']
-        singularity: config['singularity']['conpair']['sif']
+        singularity: 
+            flexible_container_img(config,['singularity','conpair','sif'],image_url = config['singularity']['conpair']['repo'])
         benchmark:
             "{project}/{genome_version}/results/benchmarks/conpair/{sample}.contamination.benchmark.txt"
         shell:
@@ -117,7 +120,7 @@ rule bam_flagstat:
     output:
         stat="{project}/{genome_version}/results/stats/{sample_type}/wgs_metrics/{sample}-{group}.bam.flagstat",
     conda:
-        config['softwares']['samtools']['conda']
+        flexible_conda_env(config,['conda','clindet_main'],env_yaml = 'envs/clindet.yaml')
     threads:10
     benchmark:
         "{project}/{genome_version}/results/benchmarks/mapping/{sample_type}/{sample}-{group}.flagstat.benchmark.txt"
@@ -125,3 +128,62 @@ rule bam_flagstat:
         """
         samtools flagstat -@ {threads} {input.bam} > {output.stat}
         """
+
+##ngs
+rule ngs_bit_sample_gender:
+    input:
+        Tum="{project}/{genome_version}/results/recal/paired/{sample}-T.bam",
+        NC="{project}/{genome_version}/results/recal/paired/{sample}-NC.bam",
+    output:
+        tsv="{project}/{genome_version}/results/qc/conpair/qc/ngs_bit/{sample}-gender.tsv",
+    params:
+        build_version = get_ngsbit_build
+    singularity: 
+        flexible_container_img(config,['singularity','ngs_bit','sif'],image_url = config['singularity']['ngs_bit']['repo'])
+    benchmark:
+        "{project}/{genome_version}/results/benchmarks/ngs-bit/{sample}.ngsbit_gender.benchmark.txt"
+    shell:
+        """
+        SampleGender -in {input.NC} -method xy  -out {output.tsv}
+        """
+
+rule ngs_bit_mapping:
+    input:
+        bam="{project}/{genome_version}/results/recal/paired/{sample}-{sample_group}.bam",
+        ref=config['resources'][genome_version]['REFFA'],
+        bed=get_sample_bed
+    output:
+        txt="{project}/{genome_version}/results/qc/conpair/paired/{sample}/{sample}_{sample_group}_mapqc.txt",
+    singularity: 
+        flexible_container_img(config,['singularity','ngs_bit','sif'],image_url = config['singularity']['ngs_bit']['repo'])
+    benchmark:
+        "{project}/{genome_version}/results/benchmarks/ngs-bit/{sample}.ngsbit_mappingqc_{sample_group}.benchmark.txt"
+    shell:
+        """
+        MappingQC -in {input.bam} \
+        -roi {input.bed} \
+        -txt \
+        -ref {input.ref} \
+        -out {output.txt}
+        """
+
+# rule discvrseq_variant_qc:
+#     input:
+#         Tum="{project}/{genome_version}/results/recal/paired/{sample}-T.bam",
+#         NC="{project}/{genome_version}/results/recal/paired/{sample}-NC.bam",
+#     output:
+#         txt="{project}/{genome_version}/results/qc/conpair/paired/{sample}/{sample}-T_contamination.txt",
+#     params:
+#         build_version = '' if isinstance(conpair_marker_defalut, bool) and conpair_marker_defalut is True else '-M ' + config['singularity']['conpair'][genome_version]['marker']
+#     singularity: 
+#         flexible_container_img(config,['singularity','discvrseq','sif'],image_url = config['singularity']['discvrseq']['repo'])
+#     benchmark:
+#         "{project}/{genome_version}/results/benchmarks/qc/{sample}.discvrseq_variant_qc.benchmark.txt"
+#     shell:
+#         """
+#         java -jar /DISCVRSeq.jar  VariantQC \
+#         -R {input.ref} \
+#         -V {input.vcf} \
+#         -O {output.html} \
+#         -rd {output.json}
+#         """

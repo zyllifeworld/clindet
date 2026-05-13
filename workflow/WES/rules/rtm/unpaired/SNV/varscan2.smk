@@ -1,5 +1,4 @@
 ## varscan2 call #####
-varscan2_conda = 'snake'
 rule varscan2_mpileup_unpaired:
     input:
         ref=config['resources'][genome_version]['REFFA'],
@@ -8,7 +7,9 @@ rule varscan2_mpileup_unpaired:
     output:
         tumor="{project}/{genome_version}/results/recal/unpaired/{sample}-T.mp"
     threads: 2
-    conda:varscan2_conda
+    conda:flexible_conda_env(config,['conda','clindet_main'],env_yaml = 'envs/clindet.yaml')
+    benchmark:
+        "{project}/{genome_version}/results/benchmarks/mut/{sample}.vardict_mpileup.unpaired.benchmark.txt"
     shell:
         """
         samtools mpileup -q 1 -Q 1 -f {input.ref} -l {input.regions} {input.tumor} > {output.tumor}
@@ -21,7 +22,9 @@ rule varscan2_call_unpaired_snp:
         regions=get_sample_bed,
     output:
         snp="{project}/{genome_version}/results/vcf/unpaired/{sample}/varscan/varscan2.snp.vcf"
-    conda:varscan2_conda
+    conda:flexible_conda_env(config,['conda','clindet_main'],env_yaml = 'envs/clindet.yaml')
+    benchmark:
+        "{project}/{genome_version}/results/benchmarks/mut/{sample}.vardict_call.unpaired.benchmark.txt"
     shell:
         """
         varscan mpileup2snp   {input.tumor} --output-vcf 1 > {output.snp}
@@ -35,7 +38,7 @@ rule varscan2_call_unpaired_indel:
         regions=get_sample_bed,
     output:
         indel="{project}/{genome_version}/results/vcf/unpaired/{sample}/varscan/varscan2.indel.vcf"
-    conda:varscan2_conda
+    conda:flexible_conda_env(config,['conda','clindet_main'],env_yaml = 'envs/clindet.yaml')
     shell:
         """
         varscan mpileup2indel {input.tumor} --output-vcf 1 > {output.indel}
@@ -49,6 +52,7 @@ rule varscan2_merge_unpaired:
         vcf="{project}/{genome_version}/results/vcf/unpaired/{sample}/varscan2.vcf",
         name_change="{project}/{genome_version}/results/vcf/unpaired/{sample}/varscan/sample_name.txt"
     threads: 1
+    conda: flexible_conda_env(config,['conda','clindet_main'],env_yaml = 'envs/clindet.yaml')
     params:
         name_change="{project}/{genome_version}/results/vcf/unpaired/{sample}/varscan/sample_name.txt"
     shell:

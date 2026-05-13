@@ -11,6 +11,9 @@ rule CNA_exomedepth:
         wd="{project}/{genome_version}/results/cnv/paired/exomedepth/{sample}",
         sample_index= lambda wildcards: wildcards.sample
     threads: 8
-    conda: config['conda']['clindet_main']
+    benchmark:
+        "{project}/{genome_version}/results/benchmarks/cnv/{sample}.exomedepth.benchmark.txt"
+    conda: 
+        flexible_conda_env(config,['conda','clindet_main'],env_yaml = 'envs/clindet.yaml')
     script:
         "../../../../scripts/ExomeDepth.R"

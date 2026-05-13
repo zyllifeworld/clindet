@@ -5,14 +5,14 @@ rule loop_vcf2maf_rna:
     output:
         maf="{project}/{genome_version}/results/mut/maf/{sample}/{caller}.vcf.maf"
     conda:
-        config['softwares']['vcf2maf']['conda']
+        flexible_conda_env(config,['conda','clindet_vep'],env_yaml = 'envs/clindet_vep.yaml')
     params:
         name=get_vcf_name,
-        # vep_path=config['softwares']['vcf2maf']['vep'][genome_version]['vep_path'],
-        vep_data=config['softwares']['vcf2maf']['vep'][genome_version]['vep_data'],
-        ncbi_build=config['softwares']['vcf2maf']['build_version'][genome_version],
-        cache_version=config['softwares']['vcf2maf']['vep'][genome_version]['cache_version'],
-        species=config['softwares']['vcf2maf']['vep'][genome_version]['species']
+        # vep_path=config['softwares_params'][genome_version]['vcf2maf']['vep'][genome_version]['vep_path'],
+        vep_data=config['softwares_params'][genome_version]['vcf2maf']['vep']['vep_data'],
+        ncbi_build=config['softwares_params'][genome_version]['vcf2maf']['build_version'],
+        cache_version=config['softwares_params'][genome_version]['vcf2maf']['vep']['cache_version'],
+        species=config['softwares_params'][genome_version]['vcf2maf']['vep']['species']
     shell:
         """
        vcf2maf.pl --input-vcf {input.vcf} \
@@ -34,7 +34,6 @@ rule merge_rna_maf:
         ref=config['resources'][genome_version]['REFFA']
     output:
         maf="{project}/{genome_version}/results/mut/maf/{sample}/merge/{sample}.maf",
-        # filter_maf="{project}/{genome_version}/results/maf/unpaired/{sample}/merge/{sample}_filter.maf"
     params:
         dir="{project}/{genome_version}/results/mut/maf/{sample}"
     script:

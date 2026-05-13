@@ -6,13 +6,14 @@ rule M2_ST:
     output:
         table="{project}/{genome_version}/results/recal/{sample}/{sample}-T_pileupsummaries.table"
     params:
-        gatk4=config['softwares']['gatk4']['call'],
         bed=get_sample_bed,
         temp_directory=config['params']['java']['temp_directory']
     threads: 10
+    singularity:
+        flexible_container_img(config,['singularity','gatk4','sif'],image_url = config['singularity']['gatk4']['repo'])
     shell:
         """
-        export _JAVA_OPTIONS=-Djava.io.tmpdir={params.temp_directory} && {params.gatk4} \
+        export _JAVA_OPTIONS=-Djava.io.tmpdir={params.temp_directory} && gatk \
         GetPileupSummaries -R {input.ref}  \
         -I {input.Tum} \
         -V  {input.vcf} \
@@ -28,13 +29,14 @@ rule M2_SNC:
     output:
         table="{project}/{genome_version}/results/recal/{sample}/{sample}-NC_pileupsummaries.table"
     params:
-        gatk4=config['softwares']['gatk4']['call'],
         temp_directory=config['params']['java']['temp_directory'],
         bed=get_sample_bed
     threads: 10
+    singularity:
+        flexible_container_img(config,['singularity','gatk4','sif'],image_url = config['singularity']['gatk4']['repo'])
     shell:
         """
-        export _JAVA_OPTIONS=-Djava.io.tmpdir={params.temp_directory} && {params.gatk4} \
+        export _JAVA_OPTIONS=-Djava.io.tmpdir={params.temp_directory} && gatk \
         GetPileupSummaries -R {input.ref}  \
         -I {input.NC} \
         -V {input.vcf} \
@@ -52,13 +54,14 @@ rule M2_contam:
         seg="{project}/{genome_version}/results/recal/contam/{sample}/{sample}_segments.table",
         ctam="{project}/{genome_version}/results/recal/contam/{sample}/{sample}_calculatecontamination.table"
     params:
-        gatk4=config['softwares']['gatk4']['call'],
         temp_directory=config['params']['java']['temp_directory'],
         bed=get_sample_bed
     threads: 10
+    singularity:
+        flexible_container_img(config,['singularity','gatk4','sif'],image_url = config['singularity']['gatk4']['repo'])
     shell:
         """
-        export _JAVA_OPTIONS=-Djava.io.tmpdir={params.temp_directory} && {params.gatk4} \
+        export _JAVA_OPTIONS=-Djava.io.tmpdir={params.temp_directory} && gatk \
         CalculateContamination \
         -I {input.T} \
         -matched {input.NC} \
@@ -77,14 +80,15 @@ rule mutect2:
     output:
         vcf="{project}/{genome_version}/results/vcf/paired/{sample}/Mutect2_raw.vcf"
     params:
-        gatk4=config['softwares']['gatk4']['call'],
         temp_directory=config['params']['java']['temp_directory'],
         # pon=config['resources'][genome_version]['WES_PON'],
         pon=lambda wildcards: get_config_value(config,['resources', wildcards.genome_version, 'WES_PON'], params='-pon', default=""),
     threads: 10
+    singularity:
+        flexible_container_img(config,['singularity','gatk4','sif'],image_url = config['singularity']['gatk4']['repo'])
     shell:
         """
-        export _JAVA_OPTIONS=-Djava.io.tmpdir={params.temp_directory} && {params.gatk4} \
+        export _JAVA_OPTIONS=-Djava.io.tmpdir={params.temp_directory} && gatk \
         Mutect2 -R {input.ref} \
         --native-pair-hmm-threads {threads} \
         -I {input.Tum} \
@@ -109,12 +113,13 @@ rule M2_filter:
     output:
         vcf="{project}/{genome_version}/results/vcf/paired/{sample}/Mutect2.vcf"
     params:
-        gatk4=config['softwares']['gatk4']['call'],
-        temp_directory=config['params']['java']['temp_directory'],
+        temp_directory=config['params']['java']['temp_directory']
     threads: 10
+    singularity:
+        flexible_container_img(config,['singularity','gatk4','sif'],image_url = config['singularity']['gatk4']['repo'])
     shell:
         """
-        export _JAVA_OPTIONS=-Djava.io.tmpdir={params.temp_directory} && {params.gatk4} \
+        export _JAVA_OPTIONS=-Djava.io.tmpdir={params.temp_directory} && gatk \
         FilterMutectCalls \
         -R {input.ref} \
         -V {input.vcf} \

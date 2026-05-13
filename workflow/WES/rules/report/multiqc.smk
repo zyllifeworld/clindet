@@ -83,7 +83,8 @@ rule combined_multiqc:
     output:
         html_file           = '{project}/{genome_version}/results/multiqc_report.html'
     group: 'combined_multiqc'
-    conda:'multiqc'
+    conda:
+        flexible_conda_env(config,['conda','multiqc'],env_yaml = 'envs/multiqc.yaml')
     shell:
         """
         multiqc -f -o . -l {input.filelist} --filename {output.html_file}

@@ -12,12 +12,13 @@ rule paired_amber:
         output_dir=directory("{project}/{genome_version}/results/cnv/paired/purple/{sample}/amber")
     params:
         output_dir="{project}/{genome_version}/results/cnv/paired/purple/{sample}/amber",
-        loci=config['singularity']['hmftools'][genome_version]['amber']['loci'],
+        loci=config['softwares_params'][genome_version]['hmftools']['amber']['loci'],
         extra="",  # optional parameters
         chunksize=100000,  # reference genome chunk size for parallelization (default: 100000)
         normalize=False,  # optional flag to use bcftools norm to normalize indels (Valid params are -a, -f, -m, -D or -d)
     threads: 10
-    conda:config['singularity']['hmftools']['conda']
+    conda:
+        flexible_conda_env(config,['conda','hmftools'],env_yaml = 'envs/hmftools.yaml')
     benchmark:
         "{project}/{genome_version}/results/benchmarks/cnv/{sample}.amber.benchmark.txt"
     shell:
@@ -40,14 +41,15 @@ rule paired_cobalt:
         output_dir=directory("{project}/{genome_version}/results/cnv/paired/purple/{sample}/cobalt")
     params:
         output_dir="{project}/{genome_version}/results/cnv/paired/purple/{sample}/cobalt",
-        tumor_only_diploid_bed=config['singularity']['hmftools'][genome_version]['cobalt']['tumor_only_diploid_bed'],
-        gc_profile=config['singularity']['hmftools'][genome_version]['cobalt']['gc_profile'],
+        tumor_only_diploid_bed=config['softwares_params'][genome_version]['hmftools']['cobalt']['tumor_only_diploid_bed'],
+        gc_profile=config['softwares_params'][genome_version]['hmftools']['cobalt']['gc_profile'],
     threads: 10
     # singularity:config['singularity']['hmftools']['sif']
     resources:
         mem_mb=lambda wildcards, input: max(0.4 * input.size_files_mb[0], 1000) 
     # singularity:config['singularity']['hmftools']['sif']
-    conda:config['singularity']['hmftools']['conda']
+    conda:
+        flexible_conda_env(config,['conda','hmftools'],env_yaml = 'envs/hmftools.yaml')
     benchmark:
         "{project}/{genome_version}/results/benchmarks/cnv/{sample}.cobalt.benchmark.txt"
     shell:
@@ -88,15 +90,16 @@ rule paired_purple:
         output_dir=directory("{project}/{genome_version}/results/cnv/paired/purple/{sample}/purple")
     params:
         output_dir="{project}/{genome_version}/results/cnv/paired/purple/{sample}/purple",
-        tumor_only_diploid_bed=config['singularity']['hmftools'][genome_version]['purple']['tumor_only_diploid_bed'],
-        gc_profile=config['singularity']['hmftools'][genome_version]['purple']['gc_profile'],
-        ensembl_data_dir=config['singularity']['hmftools'][genome_version]['purple']['ensembl_data_dir'],
-        somatic_hotspots=config['singularity']['hmftools'][genome_version]['purple']['somatic_hotspots'],
-        driver_gene_panel=config['singularity']['hmftools'][genome_version]['purple']['driver_gene_panel'],
-        ref_genome_version=config['singularity']['hmftools'][genome_version]['purple']['ref_genome_version'],
+        tumor_only_diploid_bed=config['softwares_params'][genome_version]['hmftools']['purple']['tumor_only_diploid_bed'],
+        gc_profile=config['softwares_params'][genome_version]['hmftools']['purple']['gc_profile'],
+        ensembl_data_dir=config['softwares_params'][genome_version]['hmftools']['purple']['ensembl_data_dir'],
+        somatic_hotspots=config['softwares_params'][genome_version]['hmftools']['purple']['somatic_hotspots'],
+        driver_gene_panel=config['softwares_params'][genome_version]['hmftools']['purple']['driver_gene_panel'],
+        ref_genome_version=config['softwares_params'][genome_version]['hmftools']['purple']['ref_genome_version'],
     threads: 10
     # singularity:config['singularity']['hmftools']['sif']
-    conda:config['singularity']['hmftools']['conda']
+    conda:
+        flexible_conda_env(config,['conda','hmftools'],env_yaml = 'envs/hmftools.yaml')
     benchmark:
         "{project}/{genome_version}/results/benchmarks/cnv/{sample}.purple.benchmark.txt"
     resources:

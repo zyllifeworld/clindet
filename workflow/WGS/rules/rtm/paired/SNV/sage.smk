@@ -8,12 +8,12 @@ rule paired_sage:
     output:
         vcf="{project}/{genome_version}/results/vcf/paired/{sample}/sage/{sample}.sage.vcf.gz",
     params:
-        high_confidence_bed=config['singularity']['hmftools'][genome_version]['sage']['high_confidence_bed'],
-        ensembl_data_dir=config['singularity']['hmftools'][genome_version]['sage']['ensembl_data_dir'],
-        coverage_bed=config['singularity']['hmftools'][genome_version]['sage']['coverage_bed'],
-        hotspots=config['singularity']['hmftools'][genome_version]['sage']['hotspots'],
-        panel_bed=config['singularity']['hmftools'][genome_version]['sage']['panel_bed'],
-        ref_genome_version=config['singularity']['hmftools'][genome_version]['sage']['ref_genome_version'],
+        high_confidence_bed=config['softwares_params'][genome_version]['hmftools']['sage']['high_confidence_bed'],
+        ensembl_data_dir=config['softwares_params'][genome_version]['hmftools']['sage']['ensembl_data_dir'],
+        coverage_bed=config['softwares_params'][genome_version]['hmftools']['sage']['coverage_bed'],
+        hotspots=config['softwares_params'][genome_version]['hmftools']['sage']['hotspots'],
+        panel_bed=config['softwares_params'][genome_version]['hmftools']['sage']['panel_bed'],
+        ref_genome_version=config['softwares_params'][genome_version]['hmftools']['sage']['ref_genome_version'],
     threads: 30
     benchmark:
         "{project}/{genome_version}/results/benchmarks/mut/{sample}.sage.benchmark.txt"
@@ -47,13 +47,13 @@ rule pave_anno_sage:
     # singularity:"https://depot.galaxyproject.org/singularity/hmftools-pave:1.7.1--hdfd78af_0"
     params:
         wd="{project}/{genome_version}/results/vcf/paired/{sample}/sage",
-        driver_gene_panel=config['singularity']['hmftools'][genome_version]['purple']['driver_gene_panel'],
-        high_confidence_bed=config['singularity']['hmftools'][genome_version]['sage']['high_confidence_bed'],
-        ensembl_data_dir=config['singularity']['hmftools'][genome_version]['sage']['ensembl_data_dir'],
-        coverage_bed=config['singularity']['hmftools'][genome_version]['sage']['coverage_bed'],
-        hotspots=config['singularity']['hmftools'][genome_version]['sage']['hotspots'],
-        panel_bed=config['singularity']['hmftools'][genome_version]['sage']['panel_bed'],
-        ref_genome_version=config['singularity']['hmftools'][genome_version]['sage']['ref_genome_version'],
+        driver_gene_panel=config['softwares_params'][genome_version]['hmftools']['purple']['driver_gene_panel'],
+        high_confidence_bed=config['softwares_params'][genome_version]['hmftools']['sage']['high_confidence_bed'],
+        ensembl_data_dir=config['softwares_params'][genome_version]['hmftools']['sage']['ensembl_data_dir'],
+        coverage_bed=config['softwares_params'][genome_version]['hmftools']['sage']['coverage_bed'],
+        hotspots=config['softwares_params'][genome_version]['hmftools']['sage']['hotspots'],
+        panel_bed=config['softwares_params'][genome_version]['hmftools']['sage']['panel_bed'],
+        ref_genome_version=config['softwares_params'][genome_version]['hmftools']['sage']['ref_genome_version'],
     threads: 8
     benchmark:
         "{project}/{genome_version}/results/benchmarks/mut/{sample}.pave.benchmark.txt"
@@ -97,12 +97,12 @@ rule paired_sage_germline:
     output:
         vcf="{project}/{genome_version}/results/vcf_germ/paired/{sample}/sage/{sample}.sage.germline.vcf.gz",
     params:
-        high_confidence_bed=config['singularity']['hmftools'][genome_version]['sage']['high_confidence_bed'],
-        ensembl_data_dir=config['singularity']['hmftools'][genome_version]['sage']['ensembl_data_dir'],
-        coverage_bed=config['singularity']['hmftools'][genome_version]['sage']['coverage_bed'],
-        hotspots=config['singularity']['hmftools'][genome_version]['sage']['hotspots'],
-        panel_bed=config['singularity']['hmftools'][genome_version]['sage']['panel_bed'],
-        ref_genome_version=config['singularity']['hmftools'][genome_version]['sage']['ref_genome_version'],
+        high_confidence_bed=config['softwares_params'][genome_version]['hmftools']['sage']['high_confidence_bed'],
+        ensembl_data_dir=config['softwares_params'][genome_version]['hmftools']['sage']['ensembl_data_dir'],
+        coverage_bed=config['softwares_params'][genome_version]['hmftools']['sage']['coverage_bed'],
+        hotspots=config['softwares_params'][genome_version]['hmftools']['sage']['hotspots'],
+        panel_bed=config['softwares_params'][genome_version]['hmftools']['sage']['panel_bed'],
+        ref_genome_version=config['softwares_params'][genome_version]['hmftools']['sage']['ref_genome_version'],
         xms=2000,
         xmx=2000
     threads: 30
@@ -141,13 +141,13 @@ rule pave_anno_sage_germline:
     # singularity:"https://depot.galaxyproject.org/singularity/hmftools-pave:1.7.1--hdfd78af_0"
     params:
         wd="{project}/{genome_version}/results/vcf_germ/paired/{sample}/sage",
-        driver_gene_panel=config['singularity']['hmftools'][genome_version]['purple']['driver_gene_panel'],
-        high_confidence_bed=config['singularity']['hmftools'][genome_version]['sage']['high_confidence_bed'],
-        ensembl_data_dir=config['singularity']['hmftools'][genome_version]['sage']['ensembl_data_dir'],
-        coverage_bed=config['singularity']['hmftools'][genome_version]['sage']['coverage_bed'],
-        hotspots=config['singularity']['hmftools'][genome_version]['sage']['hotspots'],
-        panel_bed=config['singularity']['hmftools'][genome_version]['sage']['panel_bed'],
-        ref_genome_version=config['singularity']['hmftools'][genome_version]['sage']['ref_genome_version'],
+        driver_gene_panel=config['softwares_params'][genome_version]['hmftools']['purple']['driver_gene_panel'],
+        high_confidence_bed=config['softwares_params'][genome_version]['hmftools']['sage']['high_confidence_bed'],
+        ensembl_data_dir=config['softwares_params'][genome_version]['hmftools']['sage']['ensembl_data_dir'],
+        coverage_bed=config['softwares_params'][genome_version]['hmftools']['sage']['coverage_bed'],
+        hotspots=config['softwares_params'][genome_version]['hmftools']['sage']['hotspots'],
+        panel_bed=config['softwares_params'][genome_version]['hmftools']['sage']['panel_bed'],
+        ref_genome_version=config['softwares_params'][genome_version]['hmftools']['sage']['ref_genome_version'],
     threads: 8
     benchmark:
         "{project}/{genome_version}/results/benchmarks/mut/{sample}.pave_germline.benchmark.txt"

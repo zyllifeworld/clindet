@@ -4,7 +4,7 @@ rule build_unpaired_fake_bam:
         ref=config['resources'][genome_version]['REFFA'],
     output:
         bam="{project}/{genome_version}/results/vcf/unpaired/{sample}/pindel/{sample}-fake-NC.bam",
-    conda:'clindet'# use samtools from clindet env
+    conda:flexible_conda_env(config,['conda','clindet_main'],env_yaml = 'envs/clindet.yaml')
     shell:
         """
         (samtools dict {input.ref} | cut -f 1-4 && echo -e '@RG\tID:1\tSM:{wildcards.sample}_NC') | samtools view -S -bo {output.bam} -

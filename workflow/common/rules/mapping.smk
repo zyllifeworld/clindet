@@ -9,11 +9,12 @@ rule map_reads:
         rg=r"@RG\tID:{sample}_{group}\tPL:Illumia\tSM:{sample}_{group}\tLB:DNA-Seq"
     threads: 30 
     conda:
-        config['softwares']['samtools']['conda']
+        flexible_conda_env(config,['conda','clindet_main'],env_yaml = 'envs/clindet.yaml')
     benchmark:
         "{project}/{genome_version}/results/benchmarks/mapping/{sample_type}/{sample}-{group}.mapping.benchmark.txt"
     shell:
-        """ {config[softwares][bwa][mem][call]} -t {threads} -MR '{params.rg}' \
+        """ 
+        bwa mem -t {threads} -MR '{params.rg}' \
         {params.ref} \
         {input.R1} {input.R2} | samtools fixmate -O bam - - | \
         samtools sort -@ {threads} -O bam -o {output}
@@ -28,11 +29,13 @@ rule mark_duplicates:
         bai="{project}/{genome_version}/results/dedup/{sample_type}/{sample}-{group}.sorted.bai"
     params:
         temp_directory=config['params']['java']['temp_directory']
+    singularity:
+        flexible_container_img(config,['singularity','gatk4','sif'],image_url = config['singularity']['gatk4']['repo'])
     benchmark:
         "{project}/{genome_version}/results/benchmarks/mapping/{sample_type}/{sample}-{group}.markdup.benchmark.txt"
     shell:
         """
-        {config[softwares][gatk4][MarkDuplicates][call]} --CREATE_INDEX true --VALIDATION_STRINGENCY SILENT \
+        gatk MarkDuplicates --CREATE_INDEX true --VALIDATION_STRINGENCY SILENT \
         -I {input} \
         -O {output.bam} \
         -M {output.metrics}
@@ -55,11 +58,13 @@ if recal:
             recal_table="{project}/{genome_version}/results/recal/{sample_type}/{sample}-{group}.grp",
         params:
             temp_directory=config['params']['java']['temp_directory']
+        singularity:
+            flexible_container_img(config,['singularity','gatk4','sif'],image_url = config['singularity']['gatk4']['repo'])
         benchmark:
             "{project}/{genome_version}/results/benchmarks/mapping/{sample_type}/{sample}-{group}.recal.benchmark.txt"
         shell:
             """ 
-                {config[softwares][gatk4][BaseRecalibrator][call]} --use-original-qualities -R {input.ref} \
+                gatk BaseRecalibrator --use-original-qualities -R {input.ref} \
                 -I {input.bam} \
                 -O {output.recal_table} \
                 --known-sites {input.known_1} \
@@ -77,10 +82,12 @@ if recal:
             bai="{project}/{genome_version}/results/recal/{sample_type}/{sample}-{group}.bam.bai",
         params:
             temp_directory=config['params']['java']['temp_directory']
+        singularity:
+            flexible_container_img(config,['singularity','gatk4','sif'],image_url = config['singularity']['gatk4']['repo'])
         benchmark:
             "{project}/{genome_version}/results/benchmarks/mapping/{sample_type}/{sample}-{group}.applybqsr.benchmark.txt"
         shell:
-            """{config[softwares][gatk4][ApplyBQSR][call]} --add-output-sam-program-record -use-original-qualities \
+            """gatk ApplyBQSR --add-output-sam-program-record -use-original-qualities \
                 --bqsr-recal-file {input.recal_table} \
                 -R {input.ref} \
                 -I {input.bam} \
@@ -112,12 +119,13 @@ rule bed_to_interval_list:
         it="{project}/{genome_version}/picard/{sample}.interval_list"
     params:
         extra="--SORT true",  # sort output interval list before writing
-        picard=config['softwares']['picard']['call'],
         temp_directory=config['params']['java']['temp_directory']
+    singularity:
+        flexible_container_img(config,['singularity','gatk4','sif'],image_url = config['singularity']['gatk4']['repo'])
     shell:
         """
             export _JAVA_OPTIONS=-Djava.io.tmpdir={params.temp_directory} && \
-            {config[softwares][gatk4][call]}  BedToIntervalList --INPUT {input.bed} \
+            gatk  BedToIntervalList --INPUT {input.bed} \
             --SEQUENCE_DICTIONARY {input.dict} {params.extra} \
             --OUTPUT {output.it}
         """
@@ -135,13 +143,13 @@ rule picard_collect_wes:
     resources:
         mem_mb=1024
     params:
-        gatk4=config['softwares']['gatk4']['call'],
-        picard=config['softwares']['picard']['call'],
         temp_directory=config['params']['java']['temp_directory']
+    singularity:
+        flexible_container_img(config,['singularity','gatk4','sif'],image_url = config['singularity']['gatk4']['repo'])
     shell:
         """
         export _JAVA_OPTIONS=-Djava.io.tmpdir={params.temp_directory} && \
-        {config[softwares][gatk4][call]} CollectHsMetrics \
+        gatk CollectHsMetrics \
         --INPUT {input.bam} \
         --OUTPUT {output.hs} \
         --REFERENCE_SEQUENCE {input.reference} \

@@ -11,6 +11,10 @@ rule unpaired_freebayes:
         chunksize=100000,  # reference genome chunk size for parallelization (default: 100000)
         normalize=False,  # optional flag to use bcftools norm to normalize indels (Valid params are -a, -f, -m, -D or -d)
     threads: 10
+    benchmark:
+        "{project}/{genome_version}/results/benchmarks/mut/{sample}.freebayes.benchmark.txt"
+    singularity:
+        flexible_container_img(config,['singularity','freebayes','sif'],image_url = config['singularity']['freebayes']['repo'])
     shell:
         """
         freebayes -f {input.ref} -t {input.regions} --min-coverage 10 -C 3 --pooled-continuous {input.bam} > {output.vcf}
@@ -24,7 +28,6 @@ rule norm_filter_freebayes:
     output:
         vcf="{project}/{genome_version}/results/vcf_nf/unpaired/{sample}/freebayes.vcf",
     params:
-        gatk4=config['softwares']['gatk4']['call'],
         temp_directory=config['params']['java']['temp_directory'],
     shell:
         """

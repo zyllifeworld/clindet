@@ -15,6 +15,7 @@ rule unpair_freec_config:
         sambamba=lambda wildcards: get_config_value(config,['singularity', 'freec', wildcards.genome_version, 'sambamba'],default=""),
         ref=config['resources'][genome_version]['REFFA'],
     threads: 10
+    conda:flexible_conda_env(config,['conda','clindet_main'],env_yaml = 'envs/clindet.yaml')
     script:
         "../../../../scripts/freec/config_freec.py"
 

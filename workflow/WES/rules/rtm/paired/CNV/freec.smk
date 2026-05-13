@@ -16,7 +16,8 @@ rule freec_config:
         sambamba=lambda wildcards: get_config_value(config,['singularity', 'freec', wildcards.genome_version, 'sambamba'],default=""),
         ref=config['resources'][genome_version]['REFFA'],
     threads: 10
-    conda: config['conda']['clindet_main']
+    conda: 
+        flexible_conda_env(config,['conda','clindet_main'],env_yaml = 'envs/clindet.yaml')
     script:
         "../../../../scripts/freec/config_freec.py"
 
@@ -31,7 +32,8 @@ rule freec_call_paired:
     threads: 30
     benchmark:
         "{project}/{genome_version}/results/benchmarks/cnv/{sample}.freec.benchmark.txt"
-    singularity:config['singularity']['freec']['sif']
+    singularity:
+        flexible_container_img(config,['singularity','facets','sif'],image_url = config['singularity']['facets']['repo'])
     shell:
         """
         freec -conf {input.config}

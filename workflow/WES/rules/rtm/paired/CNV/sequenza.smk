@@ -7,8 +7,8 @@ rule sequenza_bam2seqz:
     output:
         seqz="{project}/{genome_version}/results/cnv/paired/sequenza/{sample}/{sample}.seqz.gz",
     threads: 8
-    conda:
-        config['softwares']['sequenza']['conda']
+    singularity:
+        flexible_container_img(config,['singularity','sequenza','sif'],image_url = config['singularity']['sequenza']['repo'])
     benchmark:
         "{project}/{genome_version}/results/benchmarks/cnv/{sample}.sequenza_bam2seqz.benchmark.txt"
     shell:
@@ -25,8 +25,8 @@ rule sequenza_seqz_binning:
         seqz="{project}/{genome_version}/results/cnv/paired/sequenza/{sample}/{sample}.seqz.gz"
     output:
         bin_seqz="{project}/{genome_version}/results/cnv/paired/sequenza/{sample}/{sample}_bin50.seqz.gz",
-    conda:
-        config['softwares']['sequenza']['conda']
+    singularity:
+        flexible_container_img(config,['singularity','sequenza','sif'],image_url = config['singularity']['sequenza']['repo'])
     benchmark:
         "{project}/{genome_version}/results/benchmarks/cnv/{sample}.sequenza_seqz_binning.benchmark.txt"
     shell:
@@ -42,7 +42,8 @@ rule sequenza_call:
         segment="{project}/{genome_version}/results/cnv/paired/sequenza/{sample}/{sample}_segments.txt",
     params:
         wd="{project}/{genome_version}/results/cnv/paired/sequenza/{sample}",
-    conda: config['conda']['clindet_main']
+    conda: 
+        flexible_conda_env(config,['conda','clindet_main'],env_yaml = 'envs/clindet.yaml')
     benchmark:
         "{project}/{genome_version}/results/benchmarks/cnv/{sample}.sequenza_call.benchmark.txt"
     script:

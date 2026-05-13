@@ -1,11 +1,21 @@
 softwares_params:
   b37:
+    annotate_beds:
+      GIAB_DIFFICULT: "resources/ref_genome/b37/bed/giab/GRCh37_alldifficultregions.bed.gz"
+      GIAB_LOWMAP_SEGDUP: "resources/ref_genome/b37/bed/giab/GRCh37_alllowmapandsegdupregions.bed.gz"
+      GIAB_BadPromoters: "resources/ref_genome/b37/bed/giab/GRCh37_BadPromoters.bed.gz"
+      GIAB_X_PAR: "resources/ref_genome/b37/bed/giab/GRCh37_chrX_PAR.bed.gz"
+      GIAB_Y_PAR: "resources/ref_genome/b37/bed/giab/GRCh37_chrX_PAR.bed.gz"
+      GIAB_X_XTR: "resources/ref_genome/b37/bed/giab/GRCh37_chrX_XTR.bed.gz"
+      GIAB_Y_XTR: "resources/ref_genome/b37/bed/giab/GRCh37_chrX_XTR.bed.gz"
+      GIAB_KIR: "resources/ref_genome/b37/bed/giab/GRCh37_chrX_XTR.bed.gz"
+      GIAB_MHC: "resources/ref_genome/b37/bed/giab/GRCh37_chrX_XTR.bed.gz"
     vcf2maf:
       build_version: "GRCh37"
       vep:
         vep_data: "/public/ClinicalExam/lj_sih/projects/project_clindet/resources/ref_genome/b37/vep"
         vep_path: "/public/home/lijf/env/miniconda3/envs/vep105/bin"
-        cache_version: "110"
+        cache_version: "113"
         species: "homo_sapiens"
     maf2vcf:
       build_version: "GRCh37"
@@ -16,7 +26,8 @@ softwares_params:
       index: "/public/ClinicalExam/lj_sih/projects/project_clindet/resources/ref_genome/b37/STAR/b37"
     salmon:
       index: "/public/ClinicalExam/lj_sih/projects/project_clindet/resources/ref_genome/b37/salmon/b37"
-    kallisto: "/public/ClinicalExam/lj_sih/projects/project_clindet/resources/ref_genome/b37/kallisto/b37"
+    kallisto: 
+      index: "/public/ClinicalExam/lj_sih/projects/project_clindet/resources/ref_genome/b37/kallisto/b37"
     rsem:
       index: "/public/ClinicalExam/lj_sih/projects/project_clindet/resources/ref_genome/b37/RSEM/b37"
     trust4:
@@ -210,7 +221,8 @@ softwares_params:
       index: "/public/ClinicalExam/lj_sih/projects/project_clindet/resources/ref_genome/hg38/STAR/hg38"
     salmon:
       index: "/public/ClinicalExam/lj_sih/projects/project_clindet/resources/ref_genome/hg38/salmon/hg38"
-    kallisto: "/public/ClinicalExam/lj_sih/projects/project_clindet/resources/ref_genome/hg38/kallisto/hg38"
+    kallisto: 
+      index: "/public/ClinicalExam/lj_sih/projects/project_clindet/resources/ref_genome/hg38/kallisto/hg38"
     rsem:
       index: "/public/ClinicalExam/lj_sih/projects/project_clindet/resources/ref_genome/hg38/RSEM/hg38"
     trust4:
@@ -387,3 +399,51 @@ softwares_params:
         known_fusion_bed: "/public/ClinicalExam/lj_sih/projects/project_clindet/resources/ref_genome/hg38/hmf_pipeline_resources/dna/sv/known_fusions.38.bedpe"
         blacklist: "/public/ClinicalExam/lj_sih/projects/project_clindet/resources/ref_genome/hg38/hmf_pipeline_resources/dna/sv/gridss_blacklist.38.bed.gz"
       orange:
+  mm10:
+    vcf2maf:
+      build_version: "GRCh38"
+      vep:
+        vep_data: "/public/ClinicalExam/lj_sih/projects/project_clindet/resources/ref_genome/hg38/vep"
+        vep_path: "/public/home/lijf/env/miniconda3/envs/vep105/bin"
+        cache_version: "110"
+        species: "homo_sapiens"
+    maf2vcf:
+      build_version: "GRCh38"
+    star:
+      index: ""
+    salmon:
+      index: "/public/ClinicalExam/lj_sih/projects/project_clindet/resources/ref_genome/mm10/salmon/mm10"
+    kallisto: 
+      index: "/public/ClinicalExam/lj_sih/projects/project_clindet/resources/ref_genome/mm10/kallisto/mm10"
+    rsem:
+      index: "/public/ClinicalExam/lj_sih/projects/project_clindet/resources/ref_genome/mm10/RSEM/mm10"
+    cgppindel:
+      species: "HUMAN"
+      genes: "/public/ClinicalExam/lj_sih/projects/project_clindet/resources/ref_genome/hg38/Sanger/VAGrENT_ref_GRCh38_hla_decoy_ebv_ensembl_91/vagrent/codingexon_regions.indel.bed.gz"
+      softfil: "/public/ClinicalExam/lj_sih/projects/project_clindet/resources/ref_genome/mm10/Sanger/SNV_INDEL_mm10/pindel/softRules.lst"
+      simrep: "/public/ClinicalExam/lj_sih/projects/project_clindet/resources/ref_genome/mm10/Sanger/SNV_INDEL_mm10/pindel/simpleRepeats.bed.gz"
+      normal_panel: "/public/ClinicalExam/lj_sih/projects/project_clindet/resources/ref_genome/mm10/Sanger/SNV_INDEL_mm10/pindel/pindel_np.gff3.gz"
+      WES:
+        filter: "/public/ClinicalExam/lj_sih/projects/project_clindet/resources/ref_genome/mm10/Sanger/SNV_INDEL_mm10/pindel/WXS_Rules.lst"
+        normal_panel: "/public/ClinicalExam/lj_sih/projects/project_clindet/resources/ref_genome/mm10/Sanger/SNV_INDEL_mm10/pindel/pindel_np.gff3.gz"
+      WGS:
+        filter: "/public/ClinicalExam/lj_sih/projects/project_clindet/resources/ref_genome/mm10/Sanger/SNV_INDEL_mm10/pindel/WGS_Rules.lst"
+        normal_panel: "/public/ClinicalExam/lj_sih/projects/project_clindet/resources/ref_genome/mm10/Sanger/SNV_INDEL_mm10/pindel/pindel_np.gff3.gz"
+    caveman:
+      ignorebed: "/public/ClinicalExam/lj_sih/projects/project_clindet/resources/ref_genome/mm10/Sanger/SNV_INDEL_mm10/pindel/HiDepth.bed.gz"
+      flag:
+        c: "/public/ClinicalExam/lj_sih/projects/project_clindet/resources/ref_genome/mm10/Sanger/SNV_INDEL_mm10/caveman/flagging/flag.vcf.config.ini"
+        v: "/public/ClinicalExam/lj_sih/projects/project_clindet/resources/ref_genome/mm10/Sanger/SNV_INDEL_mm10/caveman/flagging/flag.to.vcf.convert.ini"
+        u: "/public/ClinicalExam/lj_sih/projects/project_clindet/resources/ref_genome/mm10/Sanger/SNV_INDEL_mm10/caveman/flagging"
+        g: "/public/ClinicalExam/lj_sih/projects/project_clindet/resources/ref_genome/mm10/Sanger/SNV_INDEL_mm10/caveman/unmatchedNormal.bed.gz"
+        b: "/public/ClinicalExam/lj_sih/projects/project_clindet/resources/ref_genome/mm10/Sanger/SNV_INDEL_mm10/caveman/flagging"
+        ab: "/public/ClinicalExam/lj_sih/projects/project_clindet/resources/ref_genome/mm10/Sanger/SNV_INDEL_mm10/caveman/flagging"
+        s: "HUMAN"
+    brass:
+      gc: "/public/ClinicalExam/lj_sih/projects/project_clindet/resources/ref_genome/mm10/Sanger/VAGRENT_mm10_ensembl_84/vagrent/vagrent.cache.gz"
+      b: "/public/ClinicalExam/lj_sih/projects/project_clindet/resources/ref_genome/mm10/Sanger/CNV_SV_ref_mm10_brass6+/brass/500bp_windows.gc.bed.gz"
+      d: "/public/ClinicalExam/lj_sih/projects/project_clindet/resources/ref_genome/mm10/Sanger/CNV_SV_ref_mm10_brass6+/brass/HiDepth.bed.gz"
+      cb: "/public/ClinicalExam/lj_sih/projects/project_clindet/resources/ref_genome/mm10/Sanger/CNV_SV_ref_mm10_brass6+/brass/cytoband.txt"
+      ct: "/public/ClinicalExam/lj_sih/projects/project_clindet/resources/ref_genome/mm10/Sanger/CNV_SV_ref_mm10_brass6+/brass/CentTelo.tsv"
+      vi: "/public/ClinicalExam/lj_sih/projects/project_clindet/resources/ref_genome/mm10/Sanger/CNV_SV_ref_mm10_brass6+/brass/viral.genomic.fa.2bit"
+      mi: "/public/ClinicalExam/lj_sih/projects/project_clindet/resources/ref_genome/mm10/Sanger/CNV_SV_ref_mm10_brass6+/brass/all_ncbi_bacteria"

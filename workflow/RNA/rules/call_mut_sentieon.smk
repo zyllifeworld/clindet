@@ -1,36 +1,55 @@
-rule mark_duplicates_score:
-    input:
-       bam="{project}/{genome_version}/results/mut/STAR/{sample}/{sample}.sorted.bam"
-    #    bai="{project}/{genome_version}/results/dedup/{sample}.addRG.bam.bai"
-    output:
-        score="{project}/{genome_version}/results/mut/dedup/{sample}.score.gz",
-    params:
-        temp_directory=config['params']['java']['temp_directory'],
-        metrics="{project}/{genome_version}/results/qc/dedup/{sample}.metrics.txt"
-    threads:10
-    shell:
-        """
-        {config[softwares][sentieon][call]}  driver -t {threads} \
-        -i {input.bam} --algo LocusCollector --fun score_info {output.score}
-        """
+redup = False
+if redup:
+    rule mark_duplicates_score:
+        input:
+            bam="{project}/{genome_version}/results/mut/STAR/{sample}/{sample}.sorted.bam"
+        output:
+            score="{project}/{genome_version}/results/mut/dedup/{sample}.score.gz",
+        params:
+            temp_directory=config['params']['java']['temp_directory'],
+            metrics="{project}/{genome_version}/results/qc/dedup/{sample}.metrics.txt"
+        threads:10
+        benchmark:
+            "{project}/{genome_version}/results/benchmarks/mapping/{sample}.dedup_scores.benchmark.txt"
+        shell:
+            """
+            {config[softwares][sentieon][call]}  driver -t {threads} \
+            -i {input.bam} --algo LocusCollector --fun score_info {output.score}
+            """
 
-rule mark_duplicates:
-    input:
-        bam="{project}/{genome_version}/results/mut/STAR/{sample}/{sample}.sorted.bam",
-        score="{project}/{genome_version}/results/mut/dedup/{sample}.score.gz",
-    output:
-        bam=temp("{project}/{genome_version}/results/mut/dedup/{sample}.rmdep.bam"),
-        # bai=temp("{project}/{genome_version}/results/dedup/{sample}.rmdep.bam.bai"),
-        txt=temp("{project}/{genome_version}/results/mut/dedup/{sample}_metric.txt"),
-    params:
-        temp_directory=config['params']['java']['temp_directory'],
-    threads:10
-    shell:
-        """
-        {config[softwares][sentieon][call]}  driver -t {threads} \
-        -i {input.bam} --algo Dedup --score_info {input.score} \
-        --metrics {output.txt} {output.bam}
-        """
+    rule mark_duplicates:
+        input:
+            bam="{project}/{genome_version}/results/mut/STAR/{sample}/{sample}.sorted.bam",
+            score="{project}/{genome_version}/results/mut/dedup/{sample}.score.gz",
+        output:
+            bam=temp("{project}/{genome_version}/results/mut/dedup/{sample}.rmdep.bam"),
+            # bai=temp("{project}/{genome_version}/results/dedup/{sample}.rmdep.bam.bai"),
+            txt=temp("{project}/{genome_version}/results/mut/dedup/{sample}_metric.txt"),
+        params:
+            temp_directory=config['params']['java']['temp_directory'],
+        threads:10
+        benchmark:
+            "{project}/{genome_version}/results/benchmarks/mapping/{sample}.dedup.benchmark.txt"
+        shell:
+            """
+            {config[softwares][sentieon][call]}  driver -t {threads} \
+            -i {input.bam} --algo Dedup --score_info {input.score} \
+            --metrics {output.txt} {output.bam}
+            """
+else:
+    rule link_bam:
+        input:
+            bam="{project}/{genome_version}/results/mut/STAR/{sample}/{sample}.sorted.bam",
+            bai="{project}/{genome_version}/results/mut/STAR/{sample}/{sample}.sorted.bam.bai"
+        output:
+            bam="{project}/{genome_version}/results/mut/dedup/{sample}.rmdep.bam",
+            bai="{project}/{genome_version}/results/mut/dedup/{sample}.rmdep.bai",
+        threads:1
+        shell:
+            """
+            ln -s $(realpath {input.bam}) {output.bam}
+            ln -s $(realpath {input.bai}) {output.bai}
+            """
 
 rule SplitNCigarReads:
     input:
@@ -43,6 +62,8 @@ rule SplitNCigarReads:
     params:
         temp_directory=config['params']['java']['temp_directory']
     threads:10
+    benchmark:
+        "{project}/{genome_version}/results/benchmarks/mapping/{sample}.SplitNCigar.benchmark.txt"
     shell:
         """ 
         {config[softwares][sentieon][call]}  driver -t {threads} -r {input.rsem_ref} \

@@ -62,7 +62,7 @@ rule download_b37_reference:
 
 rule download_b37_hmftools:
     output:
-        touch(f"{BUILD_LOG}/download_b37_hmftools.log")
+        touch(f"{BUILD_LOG}/download_b37_hmftools.log"),
     log:
         f"{BUILD_LOG}/download_b37_hmftools.run.log"
     conda:
@@ -386,7 +386,7 @@ rule build_kallisto_salmon_index:
 
 rule install_clindet_extras:
     input:
-        gatk_dir=directory(f"{SOFT_DIR}/gatk"),
+        gatk_dir=f"{SOFT_DIR}/gatk",
         dbsnp_vcf=f"{REF_B37}/Homo_sapiens_assembly19.dbsnp138.vcf",
     output:
         touch(f"{BUILD_LOG}/mass_config.log"),
@@ -415,10 +415,24 @@ rule install_clindet_extras:
         touch {output}
         """
 
-# rule download_pgcr_config:
-#     output: expand("resources/ref_genome/{genome_version}/pcgr_ref_data.20250314.grch37.tgz",genome_version = config['project']['genome_version'])
-#     shell:
-#         """
-#         wget -P resources/ref_genome/{config[project][genome_version]} -c https://insilico.hpc.uio.no/pcgr/pcgr_ref_data.20250314.grch37.tgz
-#         tar -xzvf {output} --strip-components 1 -C resources/ref_genome/{config[project][genome_version]}
-#         """
+rule download_mutation_anno_bed_b37:
+    output:
+        output=f"{BUILD_LOG}/download_bed_files.log"
+    conda:
+        flexible_conda_env(config,['conda','clindet_main'],env_yaml = 'envs/clindet.yaml')
+    shell:
+        r"""
+        mkdir -p {REF_B37}/bed/giab
+        wget -P {REF_B37}/bed/giab -c https://ftp-trace.ncbi.nlm.nih.gov/ReferenceSamples/giab/release/genome-stratifications/v3.6/GRCh37@all/Union/GRCh37_alldifficultregions.bed.gz
+        wget -P {REF_B37}/bed/giab -c https://ftp-trace.ncbi.nlm.nih.gov/ReferenceSamples/giab/release/genome-stratifications/v3.6/GRCh37@all/Union/GRCh37_alllowmapandsegdupregions.bed.gz
+        wget -P {REF_B37}/bed/giab -c https://ftp-trace.ncbi.nlm.nih.gov/ReferenceSamples/giab/release/genome-stratifications/v3.5/GRCh37@all/FunctionalTechnicallyDifficult/GRCh37_BadPromoters.bed.gz
+        wget -P {REF_B37}/bed/giab -c https://ftp-trace.ncbi.nlm.nih.gov/ReferenceSamples/giab/release/genome-stratifications/v3.5/GRCh37@all/XY/GRCh37_chrX_PAR.bed.gz
+        wget -P {REF_B37}/bed/giab -c https://ftp-trace.ncbi.nlm.nih.gov/ReferenceSamples/giab/release/genome-stratifications/v3.5/GRCh37@all/XY/GRCh37_chrX_XTR.bed.gz
+        wget -P {REF_B37}/bed/giab -c https://ftp-trace.ncbi.nlm.nih.gov/ReferenceSamples/giab/release/genome-stratifications/v3.5/GRCh37@all/XY/GRCh37_chrY_PAR.bed.gz
+        wget -P {REF_B37}/bed/giab -c https://ftp-trace.ncbi.nlm.nih.gov/ReferenceSamples/giab/release/genome-stratifications/v3.5/GRCh37@all/XY/GRCh37_chrY_XTR.bed.gz
+        wget -P {REF_B37}/bed/giab -c https://ftp-trace.ncbi.nlm.nih.gov/ReferenceSamples/giab/release/genome-stratifications/v3.5/GRCh37@all/OtherDifficult/GRCh37_KIR.bed.gz
+        wget -P {REF_B37}/bed/giab -c https://ftp-trace.ncbi.nlm.nih.gov/ReferenceSamples/giab/release/genome-stratifications/v3.5/GRCh37@all/OtherDifficult/GRCh37_MHC.bed.gz
+        wget -P {REF_B37}/bed/giab -c https://ftp-trace.ncbi.nlm.nih.gov/ReferenceSamples/giab/release/genome-stratifications/v3.5/GRCh37@all/OtherDifficult/GRCh37_KIR.bed.gz
+        wget -P {REF_B37}/bed/giab -c https://github.com/Boyle-Lab/Blacklist/blob/master/lists/hg19-blacklist.v2.bed.gz
+        touch {output}
+        """

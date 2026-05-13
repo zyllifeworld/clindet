@@ -9,13 +9,28 @@ rule STAR_1_pass:
     params:
         out_dir="{project}/{genome_version}/results/mapped/STAR/{sample}/_STARpass1/", # "/"" must in the config string
         ref=config['resources'][genome_version]['REFFA'],
-        star_index=config['softwares']['star']['index'][genome_version],
+        star_index=config['softwares_params'][genome_version]['star']['index'],
         rg=r"ID:{sample} PL:ILLUMINA.NovaSeq LB:RNA-Seq SM:{sample}"
     threads: 10
+    benchmark:
+        "{project}/{genome_version}/results/benchmarks/fusion/{sample}.star_arriba_map_1.benchmark.txt"
     conda:
         flexible_conda_env(config,['conda','rna'],env_yaml = 'envs/resm.yaml')
     shell:
         """ 
+        if [ ! -s {params.star_index}/SA ] || \
+        [ ! -s {params.star_index}/Genome ] || \
+        [ ! -s {params.star_index}/SAindex ]; then
+            echo "[STAR index] STAR index not found or incomplete. Building STAR index..."
+            mkdir -p {params.star_index}
+            STAR \
+                --runThreadN {threads} \
+                --runMode genomeGenerate \
+                --genomeDir {params.star_index} \
+                --genomeFastaFiles {params.ref}
+        else
+            echo "[STAR index] Existing STAR index found. Skip building."
+        fi
         STAR --genomeDir {params.star_index} --runThreadN={threads} \
             --outSAMtype None --outFileNamePrefix {params.out_dir} \
             --readFilesIn {input.R1} {input.R2} --readFilesCommand zcat
@@ -38,9 +53,11 @@ rule STAR_arriba_map:
         out_dir="{project}/{genome_version}/results/mapped/STAR/{sample}/", # "/"" must in the config string
         ref=config['resources'][genome_version]['REFFA'],
         gtf=config['resources'][genome_version]['GTF'],
-        star_index=config['softwares']['star']['index'][genome_version],
+        star_index=config['softwares_params'][genome_version]['star']['index'],
         rg=r"ID:{sample} PL:ILLUMINA.NovaSeq LB:RNA-Seq SM:{sample}"
     threads: 10
+    benchmark:
+        "{project}/{genome_version}/results/benchmarks/fusion/{sample}.star_arriba_map.benchmark.txt"
     conda:
         flexible_conda_env(config,['conda','rna'],env_yaml = 'envs/resm.yaml')
     shell:
@@ -78,18 +95,35 @@ rule STAR_mut_map:
     output:
         bam="{project}/{genome_version}/results/mut/STAR/{sample}/{sample}.sorted.bam",
         unsort_bam="{project}/{genome_version}/results/mut/STAR/{sample}/Aligned.out.bam",
+        bai="{project}/{genome_version}/results/mut/STAR/{sample}/{sample}.sorted.bam.bai"
     params:
         out_dir="{project}/{genome_version}/results/mut/STAR/{sample}/", # "/"" must in the config string
         ref=config['resources'][genome_version]['REFFA'],
         gtf=config['resources'][genome_version]['GTF'],
-        star_index=config['softwares']['star']['index'][genome_version],
+        star_index=config['softwares_params'][genome_version]['star']['index'],
         rg="'ID:{sample}' -r 'PL:ILLUMINA.NovaSeq' -r 'LB:RNA-Seq' -r 'SM:{sample}'",
-        sort_mem_per_thread='1G'
+        sort_mem_per_thread='1G',
+        two_pass='--twopassMode Basic'
     threads: 10
+    benchmark:
+        "{project}/{genome_version}/results/benchmarks/mut/{sample}.star_mut_map.benchmark.txt"
     conda:
         flexible_conda_env(config,['conda','rna'],env_yaml = 'envs/resm.yaml')
     shell:
         """ 
+        if [ ! -s {params.star_index}/SA ] || \
+        [ ! -s {params.star_index}/Genome ] || \
+        [ ! -s {params.star_index}/SAindex ]; then
+            echo "[STAR index] STAR index not found or incomplete. Building STAR index..."
+            mkdir -p {params.star_index}
+            STAR \
+                --runThreadN {threads} \
+                --runMode genomeGenerate \
+                --genomeDir {params.star_index} \
+                --genomeFastaFiles {params.ref}
+        else
+            echo "[STAR index] Existing STAR index found. Skip building."
+        fi
         STAR --genomeDir {params.star_index} --runThreadN={threads} \
             --outSAMtype BAM Unsorted --outFileNamePrefix {params.out_dir} \
             --outReadsUnmapped Fastx \
@@ -111,7 +145,6 @@ rule STAR_mut_map:
             --outFilterMismatchNoverLmax 0.1 \
             --outFilterMultimapNmax 20 \
             --outFilterScoreMinOverLread 0.33 \
-            --twopassMode Basic \
             --outSAMmapqUnique 60 \
             --readFilesIn {input.R1} {input.R2} --readFilesCommand gunzip -c
         samtools addreplacerg -@ {threads} -r {params.rg} -o {params.out_dir}/addRG.bam {params.out_dir}/Aligned.out.bam
@@ -126,11 +159,13 @@ rule cal_exp_RSEM:
     input:
         unpack(get_rna_fastq),
     params:
-        rsem_ref=config['softwares']['rsem']['index'][genome_version],
+        rsem_ref=config['softwares_params'][genome_version]['rsem']['index'],
         result_prefix="{project}/{genome_version}/results/summary/RSEM"
     threads: 10
     conda:
         flexible_conda_env(config,['conda','rna'],env_yaml = 'envs/resm.yaml')
+    benchmark:
+        "{project}/{genome_version}/results/benchmarks/exp/{sample}.resm.benchmark.txt"
     output:
         genes="{project}/{genome_version}/results/summary/RSEM/{sample}/{sample}.genes.results",
         isoforms="{project}/{genome_version}/results/summary/RSEM/{sample}/{sample}.isoforms.results",
@@ -178,13 +213,15 @@ rule kallisto:
     input:
         unpack(get_rna_fastq),
     params:
-        index=config['softwares']['kallisto']['index'][genome_version],
+        index=config['softwares_params'][genome_version]['kallisto']['index'],
         result_prefix="{project}/{genome_version}/results/summary/kallisto/{sample}"
     threads: 10
     conda:
         flexible_conda_env(config,['conda','rna'],env_yaml = 'envs/resm.yaml')
     output:
         tsv="{project}/{genome_version}/results/summary/kallisto/{sample}/abundance.tsv",
+    benchmark:
+        "{project}/{genome_version}/results/benchmarks/exp/{sample}.kallisto.benchmark.txt"
     shell:
         """
         kallisto quant -i {params.index} -o {params.result_prefix} {input.R1} {input.R2} -t {threads}
@@ -194,13 +231,15 @@ rule salmon:
     input:
         unpack(get_rna_fastq),
     params:
-        index=config['softwares']['salmon']['index'][genome_version],
+        index=config['softwares_params'][genome_version]['salmon']['index'],
         result_prefix="{project}/{genome_version}/results/summary/salmon/{sample}"
     threads: 10
     conda:
         flexible_conda_env(config,['conda','rna'],env_yaml = 'envs/resm.yaml')
     output:
         tsv="{project}/{genome_version}/results/summary/salmon/{sample}/quant.sf",
+    benchmark:
+        "{project}/{genome_version}/results/benchmarks/exp/{sample}.salomn.benchmark.txt"
     shell:
         """
         salmon quant -i {params.index} -l A -o {params.result_prefix} -1 {input.R1} -2 {input.R2} -p {threads}

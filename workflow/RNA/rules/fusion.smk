@@ -11,9 +11,9 @@ rule arriba_fusion:
         temp_directory=config['params']['java']['temp_directory'],
         ref=config['resources'][genome_version]['REFFA'],
         gtf=config['resources'][genome_version]['GTF'],
-        blacklist=config['singularity']['arriba']['database'][genome_version]['blacklist'],
-        known_fus=config['singularity']['arriba']['database'][genome_version]['known_fusions'],
-        pro_dom=config['singularity']['arriba']['database'][genome_version]['protein_domains']
+        blacklist=config['softwares_params'][genome_version]['arriba']['database']['blacklist'],
+        known_fus=config['softwares_params'][genome_version]['arriba']['database']['known_fusions'],
+        pro_dom=config['softwares_params'][genome_version]['arriba']['database']['protein_domains']
     singularity:
         config['singularity']['arriba']['sif']
     shell:
@@ -33,19 +33,15 @@ rule arriba_draw:
         stamp="{project}/{genome_version}/results/mapped/STAR/{sample}/{sample}_star.log",
         tsv="{project}/{genome_version}/results/fusion/{sample}_arriba_fusion.tsv"
     output:
-        # tsv="{project}/{genome_version}/results/fusion/{sample}_arriba_fusion.tsv",
         pdf="{project}/{genome_version}/results/fusion/{sample}_arriba_fusion.pdf"
-        # dis_tsv="{project}/{genome_version}/results/fusion/{sample}_arriba_fusion_discarded.tsv"
-    # conda:
-    #     config['softwares']['samtools']['conda']
     params:
         temp_directory=config['params']['java']['temp_directory'],
         ref=config['resources'][genome_version]['REFFA'],
         gtf=config['resources'][genome_version]['GTF'],
-        c_band=config['singularity']['arriba']['database'][genome_version]['cytobands'],
-        blacklist=config['singularity']['arriba']['database'][genome_version]['blacklist'],
-        known_fus=config['singularity']['arriba']['database'][genome_version]['known_fusions'],
-        pro_dom=config['singularity']['arriba']['database'][genome_version]['protein_domains']
+        c_band=config['softwares_params'][genome_version]['arriba']['database']['cytobands'],
+        blacklist=config['softwares_params'][genome_version]['arriba']['database']['blacklist'],
+        known_fus=config['softwares_params'][genome_version]['arriba']['database']['known_fusions'],
+        pro_dom=config['softwares_params'][genome_version]['arriba']['database']['protein_domains']
     singularity:
         config['singularity']['arriba']['sif']
     shell:
@@ -70,8 +66,8 @@ rule TRUST4_TBCR:
     threads:10
     params:
         temp_directory=config['params']['java']['temp_directory'],
-        ref=config['softwares']['trust4'][genome_version]['ref'],
-        f=config['softwares']['trust4'][genome_version]['f'],
+        ref=config['softwares_params'][genome_version]['trust4']['ref'],
+        f=config['softwares_params'][genome_version]['trust4']['f'],
         oref="{project}/{genome_version}/results/IG/TRUST4/{sample}"
     shell:
         """

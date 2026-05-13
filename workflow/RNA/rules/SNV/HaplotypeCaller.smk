@@ -1,18 +1,18 @@
 rule call_variants_HaplotypeCaller:
     input:
-        # Tum="{project}/{genome_version}/results/recal/{sample}.bam",
         Tum="{project}/{genome_version}/results/mut/dedup/{sample}.split.bam",
-        ref=config['resources'][genome_version]['REFFA'],
+        ref=config['resources'][genome_version]['REFFA']
     output:
         vcf="{project}/{genome_version}/results/mut/vcf/{sample}/HaplotypeCaller.vcf",
     threads:10
+    singularity:
+        flexible_container_img(config,['singularity','gatk4','sif'],image_url = config['singularity']['gatk4']['repo'])
     params:
-        gatk4=config['softwares']['gatk4']['call'],
         temp_directory=config['params']['java']['temp_directory'],
         bed=config['resources'][genome_version]['WES_BED']
     shell:
         """
-        export _JAVA_OPTIONS=-Djava.io.tmpdir={params.temp_directory} && {params.gatk4} \
+        export _JAVA_OPTIONS=-Djava.io.tmpdir={params.temp_directory} && gatk \
         HaplotypeCaller -R {input.ref} \
         --intervals {params.bed} \
         -I {input.Tum} \
@@ -28,9 +28,6 @@ rule norm_filter_HaplotypeCaller:
         ref=config['resources'][genome_version]['REFFA'],
     output:
         vcf="{project}/{genome_version}/results/vcf_nf/{sample}/HaplotypeCaller.vcf",
-    params:
-        gatk4=config['softwares']['gatk4']['call'],
-        temp_directory=config['params']['java']['temp_directory'],
     shell:
         """
         bcftools norm -f {input.ref} -m +both -Ov {input.vcf} | bcftools filter -e 'QUAL<20 | FORMAT/DP[0] < 10' > {output.vcf}

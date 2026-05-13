@@ -9,6 +9,7 @@ paired_samples = samples_info.loc[~pd.isna(samples_info['Normal_R1_file_path'])]
 configfile: "workflow/config/conf/genomes.yaml"
 configfile: "workflow/config/conf/singularity.yaml"
 configfile: "workflow/config/conf/softwares.yaml"
+configfile: "workflow/config/conf/softwares_params.yaml"
 
 project = config['project']['output_dir']
 genome_version = config['project']['genome_version']
@@ -57,16 +58,10 @@ paired_res_list = [
     # rules.CNA_ASCAT.output.rdata   if 'ASCAT'  in somatic_cnv_list else None, # ASCAT call
     "{project}/{genome_version}/results/cnv/paired/ascat/{sample}/{sample}_ASCAT.rdata"   if 'ASCAT'  in somatic_cnv_list else None, # ASCAT call
 
-    # rules.facets.output.qc         if 'facets' in somatic_cnv_list else None, # facets call
-    # rules.facets.output.qc         if 'facets' in somatic_cnv_list else None, # facets call
+    "{project}/{genome_version}/results/cnv/paired/facets/{sample}/{sample}_purity.png"         if 'facets' in somatic_cnv_list else None, # facets call
     "{project}/{genome_version}/results/cnv/paired/freec/{sample}/{sample}_config_freec.ini" if 'freec' in somatic_cnv_list else None, # Control-FREEC call
-
-
-    # rules.CNA_exomedepth.output.tsv       if 'exomedepth' in somatic_cnv_list else None, # sequenza call
     "{project}/{genome_version}/results/cnv/paired/exomedepth/{sample}/{sample}_exomedepth.tsv"  if 'exomedepth' in somatic_cnv_list else None, # sequenza call
-    # rules.sequenza_call.output.segment       if 'sequenza' in somatic_cnv_list else None, # sequenza call
     # "{project}/{genome_version}/results/cnv/paired/sequenza/{sample}/{sample}_segments.txt"  if 'sequenza' in somatic_cnv_list else None, # sequenza call
-    
     #### Case report #####
     '{project}/{genome_version}/results/report/{sample}/{sample}_cancer_report.html' if 'case_report' in stages else None,
 
@@ -79,8 +74,10 @@ paired_res_list = list(filter(None, paired_res_list))
 
 ## unpaired sample list
 unpaired_res_list = [
+    ##### only mapping #####
+    "{project}/{genome_version}/results/recal/unpaired/{sample}-T.bam",
     ##### for SNV/INDEL calling #####
-    "{project}/{genome_version}/results/maf/unpaired/{sample}/merge/{sample}.maf",
+    "{project}/{genome_version}/results/maf/unpaired/{sample}/merge/{sample}.maf"  if 'call_mut' in stages else None,
     ##### for CNV result ##### There is a bug for snakemake rules namelist when include *smk for 3-4 levels
     # rules.paired_purple.output.qc  if 'purple' in somatic_cnv_list else None, # purple call
     "{project}/{genome_version}/results/cnv/unpaired/purple/{sample}/purple/{sample}.purple.qc"    if 'purple' in tumor_only_cnv_caller else None,

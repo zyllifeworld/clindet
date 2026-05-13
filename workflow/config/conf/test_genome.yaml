@@ -213,6 +213,8 @@ project:
   output_dir: 'mini_test'
   genome_version: 'hg38_chr21'
   sample_sheet: 'mini_test_data/dna/data/test_sample_sheet.csv'
+  recal_BQSR: False
+  vcf2maf: 'raw'
 
 
 run_params:

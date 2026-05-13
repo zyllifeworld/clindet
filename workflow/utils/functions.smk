@@ -44,6 +44,13 @@ def get_gender(wildcards):
     gender = samples_info.loc[wildcards.sample,'gender']
     return(gender)
 
+def get_ngsbit_build(wildcards):
+    if wildcards.genome_version == 'b37' or wildcards.genome_version == 'hg19' or wildcards.genome_version == 'GRCh37':
+        return 'hg19'
+    elif wildcards.genome_version == 'hg38' or wildcards.genome_version == 'GRCh38':
+        return 'hg38'
+    else:
+        return 'no_human'
 
 def get_vcf_name(wildcards):
     if wildcards.sample in paired_samples:
@@ -115,7 +122,7 @@ def get_bcftools_filter_rules(wildcards):
             "exclude": ''
         },
         "caveman": {
-            "include": 'FILTER="PASS"',
+            "include": 'FILTER="PASS" || (FILTER="." && DP>30)',
             "exclude": ''
         },
         "vardict": {
@@ -131,12 +138,12 @@ def get_bcftools_filter_rules(wildcards):
             "exclude": 'FILTER~"Tier5"'
         },
         "sage": {
-            "include": '',
-            "exclude": 'FILTER~"Tier5"'
+            "include": 'FILTER="PASS"',
+            "exclude": ''
         },
         "cgppindel": {
-            "include": '',
-            "exclude": 'FILTER~"FF010"'
+            "include": 'PASS',
+            "exclude": ''
         }
     }
 
@@ -166,15 +173,45 @@ def build_bcftools_filter_cmd(wildcards):
 
     return " ".join(cmd_parts)
 
+from pathlib import Path
 def flexible_conda_env(config_dict, keys, env_yaml=None):
     current = config_dict
     for key in keys:
         if isinstance(current, dict) and key in current:
             current = current[key]
         else:
-            return env_yaml
+            path = Path(workflow.basedir) / env_yaml
+            return str(path.resolve())
 
     if current is None or current == '': #参数为空
-        return env_yaml
+        path = Path(workflow.basedir) / env_yaml
+        return str(path.resolve())
     else:
         return current
+
+
+def flexible_container_img(config_dict, keys, image_url=None):
+    current = config_dict
+    for key in keys:
+        if isinstance(current, dict) and key in current:
+            current = current[key]
+        else:
+            return image_url
+
+    if current is None or current == '': #参数为空
+        return image_url
+    else:
+        return current
+
+def format_params(params):
+    return "\n".join(
+        f"{k}: {v}"
+        for k, v in sorted(params.items())
+    )
+
+def resolve_bed_path(path):
+    p = Path(path)
+    if p.is_absolute():
+        return str(p.resolve())
+    else:
+        return str(Path(workflow.basedir, p).resolve())

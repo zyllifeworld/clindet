@@ -11,7 +11,8 @@ if not pindel_normal_panel:
             ref=config['resources'][genome_version]['REFFA'],
         output:
             bam="{project}/{genome_version}/results/recal/pindel_fake.bam"
-        conda: config['conda']['clindet_main']# use samtools from clindet env
+        conda: 
+            flexible_conda_env(config,['conda','clindet_main'],env_yaml = 'envs/clindet.yaml')
         shell:
             """
             (samtools dict {input.ref} | cut -f 1-4 && echo -e '@RG\tID:1\tSM:FAKE') | samtools view -S -bo {output.bam} -
@@ -40,7 +41,7 @@ if not pindel_normal_panel:
                         default=""
                     ),
         singularity:
-            config['singularity']['cgppindel']['sif']
+            flexible_container_img(config,['singularity','cgppindel','sif'],image_url = config['singularity']['cgppindel']['repo'])
         shell:
             """
             pindel.pl -noflag \
@@ -68,7 +69,7 @@ if not pindel_normal_panel:
             ref=config['resources'][genome_version]['REFFA'],
             gff3='analysis/normalPanel/pindel_{sample}'
         singularity:
-            config['singularity']['cgppindel']['sif']
+            flexible_container_img(config,['singularity','cgppindel','sif'],image_url = config['singularity']['cgppindel']['repo'])
         shell:
             """
             pindel_np_from_vcf.pl -o {params.gff3} -samp_id NORMAL {wildcards.project}/{wildcards.genome_version}/analysis/pindel_normal/*/*.vcf.gz        
@@ -111,7 +112,7 @@ if not pindel_normal_panel:
                         default=""
                     ),
         singularity:
-            config['singularity']['cgppindel']['sif']
+            flexible_container_img(config,['singularity','cgppindel','sif'],image_url = config['singularity']['cgppindel']['repo'])
         benchmark:
             "{project}/{genome_version}/results/benchmarks/snv/{sample}.cgppindel.benchmark.txt"
         shell:
@@ -152,7 +153,7 @@ else:
             softfil=config['singularity']['cgppindel'][genome_version]['softfil'],
             species=config['singularity']['cgppindel'][genome_version]['species']
         singularity:
-            config['singularity']['cgppindel']['sif']
+            flexible_container_img(config,['singularity','cgppindel','sif'],image_url = config['singularity']['cgppindel']['repo'])
         benchmark:
             "{project}/{genome_version}/results/benchmarks/snv/{sample}.cgppindel.benchmark.txt"
         shell:
@@ -182,7 +183,7 @@ rule PI_ggz:
         log='{project}/{genome_version}/logs/paired/germline_bed_{sample}.log'
     threads: 20
     singularity:
-        config['singularity']['cgppindel']['sif']
+        flexible_container_img(config,['singularity','cgppindel','sif'],image_url = config['singularity']['cgppindel']['repo'])
     shell:
         """
         bgzip -c {input.germ_bed} > {input.germ_bed}.gz
@@ -196,7 +197,8 @@ rule cgppindel_filter_somatic:
     output:
         vcf="{project}/{genome_version}/results/vcf/paired/{sample}/cgppindel.vcf"
     threads: 1
-    conda: config['conda']['clindet_main']
+    conda: 
+        flexible_conda_env(config,['conda','clindet_main'],env_yaml = 'envs/clindet.yaml')
     params:
         caller='cgppindel'
     shell:

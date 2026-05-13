@@ -8,8 +8,8 @@ rule esvee_prep:
     params:
         ref=config['resources'][genome_version]['REFFA'],
         wd="{project}/{genome_version}/results/sv/paired/esvee/{sample}",
-        known_fusion_bed=config['singularity']['hmftools'][genome_version]['esvee']['known_fusion_bed'],
-        ref_version=config['singularity']['hmftools'][genome_version]['esvee']['ref_genome_version']
+        known_fusion_bed=config['softwares_params'][genome_version]['hmftools']['esvee']['known_fusion_bed'],
+        ref_version=config['softwares_params'][genome_version]['hmftools']['esvee']['ref_genome_version']
         # if else like  (exprs ? c1 : c2) in C++/javascript is OK too,eg on next line
         # blacklist=("" if config['singularity']['gridss'][genome_version]['blacklist'] == "" else " -b " + config['singularity']['gridss'][genome_version]['blacklist'])
     singularity: config['singularity']['gridss']['sif']

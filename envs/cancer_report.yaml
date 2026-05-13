@@ -10,5 +10,8 @@ dependencies:
   - r-base >=4.4
   - r-tidyverse
   - r-devtools
+  - r-reactable
+  - r-htmltools
+  - r-gpgr
   # umccr pkgs
   # refdata pkgs

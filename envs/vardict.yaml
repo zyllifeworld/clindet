@@ -1,4 +1,4 @@
-name: strelka
+name: clindet_vardict
 channels:
   - bioconda
   - defaults

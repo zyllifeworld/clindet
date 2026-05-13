@@ -7,10 +7,10 @@ rule paired_linx:
         output_dir=directory("{project}/{genome_version}/results/sv/paired/linx/{sample}"),
     params:
         vcf="{project}/{genome_version}/results/cnv/paired/purple/{sample}/purple/{sample}.purple.sv.vcf.gz",
-        ensembl_data_dir=config['singularity']['hmftools'][genome_version]['linx']['ensembl_data_dir'],
-        driver_gene_panel=config['singularity']['hmftools'][genome_version]['linx']['driver_gene_panel'],
-        ref_genome_version=config['singularity']['hmftools'][genome_version]['linx']['ref_genome_version'],
-        known_fusion_file=config['singularity']['hmftools'][genome_version]['linx']['known_fusion_file'],
+        ensembl_data_dir=config['softwares_params'][genome_version]['hmftools']['linx']['ensembl_data_dir'],
+        driver_gene_panel=config['softwares_params'][genome_version]['hmftools']['linx']['driver_gene_panel'],
+        ref_genome_version=config['softwares_params'][genome_version]['hmftools']['linx']['ref_genome_version'],
+        known_fusion_file=config['softwares_params'][genome_version]['hmftools']['linx']['known_fusion_file'],
         sv_vcf=get_purple_sv_vcf
     threads: 10
     singularity:config['singularity']['hmftools']['sif']
@@ -38,10 +38,10 @@ rule report_linx:
         stamp="{project}/{genome_version}/results/sv/paired/linx/{sample}/plot.stamp"
     params:
         output_dir=directory("{project}/{genome_version}/results/sv/paired/linx/{sample}"),
-        ensembl_data_dir=config['singularity']['hmftools'][genome_version]['linx']['ensembl_data_dir'],
-        driver_gene_panel=config['singularity']['hmftools'][genome_version]['linx']['driver_gene_panel'],
-        ref_genome_version=config['singularity']['hmftools'][genome_version]['linx']['ref_genome_version'],
-        known_fusion_file=config['singularity']['hmftools'][genome_version]['linx']['known_fusion_file'],
+        ensembl_data_dir=config['softwares_params'][genome_version]['hmftools']['linx']['ensembl_data_dir'],
+        driver_gene_panel=config['softwares_params'][genome_version]['hmftools']['linx']['driver_gene_panel'],
+        ref_genome_version=config['softwares_params'][genome_version]['hmftools']['linx']['ref_genome_version'],
+        known_fusion_file=config['softwares_params'][genome_version]['hmftools']['linx']['known_fusion_file'],
         sv_vcf=get_purple_sv_vcf
     threads: 10
     singularity:config['singularity']['hmftools']['sif']
