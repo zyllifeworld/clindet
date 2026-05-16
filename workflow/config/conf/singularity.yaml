@@ -1,74 +1,20 @@
 singularity:
   cgppindel:
-    sif: "/public/ClinicalExam/lj_sih/projects/project_clindet/resources/containers/pindel.sif"
+    sif: "resources/containers/pindel.sif"
     repo: "docker://quay.io/wtsicgp/cgppindel:3.11.1"
-    cpu: 30
-    hg19:
-      species: "HUMAN"
-      genes: "/public/ClinicalExam/lj_sih/resource/mutFilter/hg19.exon.bed.gz"
-      softfil: "/public/ClinicalExam/lj_sih/projects/project_clindet/resources/ref_genome/b37/Sanger/SNV_INDEL_ref/pindel/softRules.lst"
-      simrep: "/public/ClinicalExam/lj_sih/resource/mutFilter/simpleRepeats.bed.gz"
-      normal_panel: "/public/ClinicalExam/lj_sih/resource/cgppindel/hg19/WES/normalPanel/cgppindel.gff3.gz"
-      WES:
-        normal_panel: "/public/ClinicalExam/lj_sih/resource/cgppindel/hg19/WES/normalPanel/cgppindel.gff3.gz"
-        filter: "/public/ClinicalExam/lj_sih/projects/project_clindet/resources/ref_genome/b37/Sanger/SNV_INDEL_ref/pindel/WXS_Rules.lst"
-      WGS:
-        filter: "/public/ClinicalExam/lj_sih/projects/project_clindet/resources/ref_genome/b37/Sanger/SNV_INDEL_ref/pindel/WGS_Rules.lst"
-        normal_panel: "/public/ClinicalExam/lj_sih/resource/cgppindel/hg19/WGS/normalPanel/cgppindel.gff3.gz"
-    WBcel235:
-      genes: "/public/ClinicalExam/lj_sih/projects/project_clindet/resources/ref_genome/b37/Sanger/refarea_pindel/codingexon_regions.indel.bed.gz"
-      species: "C_elegans"
-      softfil: "/public/ClinicalExam/lj_sih/projects/project_clindet/resources/ref_genome/b37/Sanger/SNV_INDEL_ref/pindel/WXS_Rules.lst"
-      simrep: "/public/ClinicalExam/lj_sih/projects/project_clindet/resources/ref_genome/b37/Sanger/SNV_INDEL_ref/pindel/simpleRepeats.bed.gz"
-      normal_panel: "/public/ClinicalExam/lj_sih/projects/project_clindet/resources/ref_genome/b37/Sanger/SNV_INDEL_ref/pindel/pindel_np.gff3.gz"
-      WES:
-        filter: "/public/ClinicalExam/lj_sih/projects/project_clindet/resources/ref_genome/b37/Sanger/SNV_INDEL_ref/pindel/WXS_Rules.lst"
-        normal_panel: "/public/ClinicalExam/lj_sih/projects/project_clindet/resources/ref_genome/b37/Sanger/SNV_INDEL_ref/pindel/pindel_np.gff3.gz"
-      WGS:
-        filter: "/public/ClinicalExam/lj_sih/projects/project_clindet/resources/ref_genome/b37/Sanger/SNV_INDEL_ref/pindel/WGS_Rules.lst"
-        normal_panel: "/public/ClinicalExam/lj_sih/projects/project_clindet/resources/ref_genome/b37/Sanger/SNV_INDEL_ref/pindel/pindel_np.gff3.gz"
   cgpwgs:
-    sif: "/public/ClinicalExam/lj_sih/projects/project_clindet/resources/containers/cgpwgs.sif"
+    sif: "resources/containers/cgpwgs.sif"
     repo: "docker://quay.io/wtsicgp/dockstore-cgpwgs:2.1.1"
   caveman:
-    sif: "/public/ClinicalExam/lj_sih/projects/project_clindet/resources/containers/caveman153.sif"
+    sif: "resources/containers/caveman153.sif"
     repo: "docker://quay.io/wtsicgp/cgpcavemanwrapper:1.15.3"
-    cpu: 30
-    hg19:
-      ignorebed: "/public/ClinicalExam/lj_sih/projects/project_pipeline/WES/hg19_ignore-region-exon.bed"
-      flag:
-        c: "/public/ClinicalExam/lj_sih/projects/project_pipeline/WES/analysis/caveman/flag.vcf.config.ini"
-        v: "/public/ClinicalExam/lj_sih/projects/project_pipeline/WES/analysis/caveman/flag.to.vcf.convert.ini"
-        u: "/public/ClinicalExam/lj_sih/projects/project_pipeline/WES/analysis/caveman"
-        g: "/public/ClinicalExam/lj_sih/projects/project_pipeline/WES/analysis/caveman/germline.bed.gz"
-        b: "/public/ClinicalExam/lj_sih/projects/project_pipeline/WES/analysis/caveman"
-        ab: "/public/ClinicalExam/lj_sih/projects/project_pipeline/WES/analysis/caveman"
-        s: 'HUMAN'
-    WBcel235:
-      ignorebed: "/public/ClinicalExam/lj_sih/projects/project_clindet/resources/ref_genome/b37/Sanger/cgpCaVEManWrapper_CPBI_refarea/hi_seq_depth.bed"
-      flag:
-        c: "/public/ClinicalExam/lj_sih/projects/project_clindet/resources/ref_genome/b37/Sanger/SNV_INDEL_ref/caveman/flagging/flag.vcf.config_Celegans.ini"
-        v: "/public/ClinicalExam/lj_sih/projects/project_clindet/resources/ref_genome/b37/Sanger/SNV_INDEL_ref/caveman/flagging/flag.to.vcf.convert.ini"
-        u: "/public/ClinicalExam/lj_sih/projects/project_clindet/resources/ref_genome/b37/Sanger/SNV_INDEL_ref/caveman/flagging"
-        g: "/public/ClinicalExam/lj_sih/projects/project_clindet/resources/ref_genome/b37/Sanger/SNV_INDEL_ref/caveman/unmatchedNormal.bed.gz"
-        b: "/public/ClinicalExam/lj_sih/projects/project_clindet/resources/ref_genome/b37/Sanger/SNV_INDEL_ref/caveman/flagging"
-        ab: "/public/ClinicalExam/lj_sih/projects/project_clindet/resources/ref_genome/b37/Sanger/SNV_INDEL_ref/caveman/flagging"
-        s: "Celegans"
   brass:
-    sif: "/public/ClinicalExam/lj_sih/projects/project_clindet/resources/containers/brass634.sif"
+    sif: "resources/containers/brass634.sif"
     repo: "docker://quay.io/wtsicgp/brass:v6.3.4"
-    WBcel235:
-      gc: "/public/ClinicalExam/lj_sih/projects/project_clindet/resources/ref_genome/WBcel235/VAGRENT/vagrent.worm.WBcel235.caenorhabditis_elegans_core_114_WBcel235.cache.gz"
-      b: "/public/ClinicalExam/lj_sih/resource/BRASS/ucsc.hg19.gcBins_auto.bed.gz"
-      d: "/public/ClinicalExam/lj_sih/resource/BRASS/Hiseq_brass.bed"
-      cb: "/public/ClinicalExam/lj_sih/resource/genome/human/T2T_human/chm13v2.0_cytobands_allchrs.bed"
-      ct: "/public/ClinicalExam/lj_sih/resource/BRASS/Human.GRCh37.CentTelo.tsv"
-      vi: "/public/ClinicalExam/lj_sih/resource/BRASS/2bit/viral.genomic.merged.fa.2bit"
-      mi: "/public/ClinicalExam/lj_sih/resource/BRASS/2bit/all_ncbi_bacteria"
   freec:
-    sif: "/public/ClinicalExam/lj_sih/projects/project_clindet/resources/containers/control-freec-11.6.sif"
+    sif: "resources/containers/control-freec-11.6.sif"
     repo: "docker://quay.io/biocontainers/control-freec:11.6b--h503566f_2"
-    config_wes: "/public/ClinicalExam/lj_sih/projects/project_clindet/workflow/WES/scripts/freec/config_exome.ini"
+    config_wes: "workflow/WES/scripts/freec/config_exome.ini"
   facets:
     sif: "resources/containers/facets-suite-208.sif"
     repo: "docker://asntech/facets-suite:v2.0.8"
@@ -76,35 +22,35 @@ singularity:
     sif: "/public/ClinicalExam/lj_sih/softwares/igcaller-1.2.1.simg"
     repo: "docker://shahcompbio/igcaller:latest"
   delly:
-    sif: "/public/ClinicalExam/lj_sih/projects/project_clindet/resources/containers/delly_v1.7.2.sif"
+    sif: "resources/containers/delly_v1.7.2.sif"
     repo: "https://depot.galaxyproject.org/singularity/delly:1.3.1--h4d20210_1"
   jasmine:
-    sif: "/public/ClinicalExam/lj_sih/projects/project_clindet/resources/containers/jasminesv.sif"
+    sif: "resources/containers/jasminesv.sif"
     repo: "https://depot.galaxyproject.org/singularity/jasminesv:1.1.5--hdfd78af_0"
   svaba:
-    sif: "/public/ClinicalExam/lj_sih/projects/project_clindet/resources/containers/svaba.sif"
+    sif: "resources/containers/svaba.sif"
     repo: "https://depot.galaxyproject.org/singularity/svaba:1.1.0--hf5e1c6e_5"
   cgpbattenberg:
     sif: "/public/ClinicalExam/lj_sih/softwares/cgpbattenberg371.sif"
     repo: "docker://quay.io/ohsu-comp-bio/battenberg:mar-17"
   arriba:
-    sif: "/public/ClinicalExam/lj_sih/projects/project_clindet/resources/containers/arriba240.sif"
-    repo: "https://depot.galaxyproject.org/singularity/arriba:2.3.0--haa8aa89_0"
+    sif: "resources/containers/arriba240.sif"
+    repo: "https://depot.galaxyproject.org/singularity/arriba%3A2.4.0--hdbdd923_4"
     call: "/arriba_v2.4.0/arriba "  
   lofreq:
-    sif: "/public/ClinicalExam/lj_sih/projects/project_clindet/resources/containers/lofreq215.sif"
+    sif: "resources/containers/lofreq215.sif"
     repo: "https://depot.galaxyproject.org/singularity/lofreq:broken---2.5.1--py38h1bd3507_2"
   muse:
-    sif: "/public/ClinicalExam/lj_sih/projects/project_clindet/resources/containers/muse230.sif"
+    sif: "resources/containers/muse230.sif"
     repo: "https://depot.galaxyproject.org/singularity/muse:2.1.2--h3b3e331_3"
   deepvariant_somatic:
-    sif: "/public/ClinicalExam/lj_sih/projects/project_clindet/resources/containers/deepvariant_deepsomatic-1.9.0.sif"
+    sif: "resources/containers/deepvariant_deepsomatic-1.9.0.sif"
     repo: "docker://google/deepsomatic:1.10.0"
   gridss:
-    sif: "/public/ClinicalExam/lj_sih/projects/project_clindet/resources/containers/gridss2_13_2.sif"
+    sif: "resources/containers/gridss2_13_2.sif"
     repo: "https://depot.galaxyproject.org/singularity/gridss:2.13.1--h270b39a_0"
   conpair:
-    sif: "/public/ClinicalExam/lj_sih/projects/project_clindet/resources/containers/conpair_latest.sif"
+    sif: "resources/containers/conpair_latest.sif"
     repo: "docker://quay.io/rsrivas9784/conpair:v3"
 
   lancet2:

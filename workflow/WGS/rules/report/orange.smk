@@ -26,7 +26,7 @@ rule orange:
         purple="{project}/{genome_version}/results/cnv/paired/purple/{sample}/purple",    
     output:
         output_dir=directory("{project}/{genome_version}/results/report/{sample}"),
-    conda:config['singularity']['hmftools']['conda']
+    conda: flexible_conda_env(config,['conda','hmftools'],env_yaml = 'envs/hmftools.yaml')
     singularity:"https://depot.galaxyproject.org/singularity/hmftools-pave:1.7.1--hdfd78af_0"
     params:
         sage="{project}/{genome_version}/results/vcf/paired/{sample}/sage",
