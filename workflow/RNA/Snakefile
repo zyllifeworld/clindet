@@ -43,6 +43,6 @@ include: "rules/call_mut_sentieon.smk"
 include: "rules/merge_loop.smk"
 include: "rules/SNV.smk"
 include: "rules/findvirus.smk"
+include: "rules/fusion.smk"
 if genome_version in ['b37','hg38']:
-    include: "rules/fusion.smk"
     include: "rules/isofox.smk"

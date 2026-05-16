@@ -176,3 +176,14 @@ workflow/WES/rules/report/sections/04_annotation.R
 workflow/WES/rules/report/sections/05_actionability.R
 workflow/WES/rules/report/sections/06_summary.R
 workflow/WES/rules/report/sections/07_appendix.R
+/mini_test_data/rna/STAR-Fusion-Tutorial
+/workflow/WGS/rules/report
+workflow/WES/rules/rtm/paired/CNV/ABSOLUTE.smk
+workflow/WGS/rules/rtm/paired/CNV/hatcet.smk
+workflow/WGS/scripts/rmd.R
+workflow/RNA/rules/easyfuse.smk
+mini_test_data/rna/fusion/run_simulation.sh
+mini_test_data/rna/fusion/make_gene_fusion_by_exon.py
+workflow/config/conf/test_rna.yaml
+workflow/config/project_config.yaml
+workflow/config/project_config.yaml

@@ -11,7 +11,7 @@ configfile: "workflow/config/conf/softwares.yaml"
 configfile: "workflow/config/conf/softwares_params.yaml"
 
 stages = config['run_params']['stages']
-rna_caller_list = config['run_params']['rna_caller_list']
+rna_caller_list = config.get("run_params", {}).get("rna_caller_list", [])
 project = config['project']['output_dir']
 
 genome_version = config['project']['genome_version']

@@ -2,13 +2,13 @@ rule mutect2_call:
     input:
         Tum="{project}/{genome_version}/results/mut/dedup/{sample}.split.bam",
         ref=config['resources'][genome_version]['REFFA'],
-        pon=config['resources'][genome_version]['WES_PON'],
-        germ_vcf=config['resources'][genome_version]['MUTECT2_germline_vcf'],
     output:
         vcf="{project}/{genome_version}/results/mut/vcf/{sample}/Mutect2_raw.vcf"
     params:
         temp_directory=config['params']['java']['temp_directory'],
         bed=config['resources'][genome_version]['WES_BED'],
+        pon=lambda wildcards: get_config_value(config,['resources', wildcards.genome_version, 'WES_PON'], params='-pon', default=""),
+        germ_vcf=lambda wildcards: get_config_value(config,['resources', wildcards.genome_version, 'MUTECT2_germline_vcf'], params='--germline-resource', default=""),
     threads: 10
     benchmark:
         "{project}/{genome_version}/results/benchmarks/mut/{sample}.mutect2_call.benchmark.txt"
@@ -21,8 +21,8 @@ rule mutect2_call:
         --native-pair-hmm-threads {threads} \
         -I {input.Tum} \
         -O {output.vcf} \
-        -pon {input.pon} \
-        --germline-resource {input.germ_vcf} \
+        {params.pon} \
+        {params.germ_vcf} \
         --intervals {params.bed}
         """
 

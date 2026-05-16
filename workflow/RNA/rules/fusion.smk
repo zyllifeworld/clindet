@@ -15,7 +15,7 @@ rule arriba_fusion:
         known_fus=config['softwares_params'][genome_version]['arriba']['database']['known_fusions'],
         pro_dom=config['softwares_params'][genome_version]['arriba']['database']['protein_domains']
     singularity:
-        config['singularity']['arriba']['sif']
+        flexible_container_img(config,['singularity','arriba','sif'],image_url = config['singularity']['arriba']['repo'])
     shell:
         """
             /arriba_v2.4.0/arriba \
@@ -43,7 +43,7 @@ rule arriba_draw:
         known_fus=config['softwares_params'][genome_version]['arriba']['database']['known_fusions'],
         pro_dom=config['softwares_params'][genome_version]['arriba']['database']['protein_domains']
     singularity:
-        config['singularity']['arriba']['sif']
+        flexible_container_img(config,['singularity','arriba','sif'],image_url = config['singularity']['arriba']['repo'])
     shell:
         """   
             /arriba_v2.4.0/draw_fusions.R \

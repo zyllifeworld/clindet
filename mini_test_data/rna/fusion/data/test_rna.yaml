@@ -1,0 +1,57 @@
+resources:
+  hg38_chr21:
+    REFFA: "mini_test_data/dna/data/refs/sequence/Homo_sapiens_assembly38_chr21.fasta"
+    GENOME_BED: 
+    GTF: "mini_test_data/rna/fusion/data/chr21_hg38.gtf"
+    GFF3: 
+    WES_PON: 
+    WES_BED: "mini_test_data/dna/exome_target_hg38_chr21.bed"
+    WGS_PON: 
+    DBSNP: "mini_test_data/dna/data/refs/annotations/dbsnp_146.hg38_chr21.vcf.gz"
+    DBSNP_GZ: "mini_test_data/dna/data/refs/annotations/dbsnp_146.hg38_chr21.vcf.gz"
+    DBSNP_INDEL: "mini_test_data/dna/data/refs/annotations/Mills_and_1000G_gold_standard.indels.hg38_chr21.vcf.gz"
+    MUTECT2_VCF: "mini_test_data/dna/data/refs/annotations/gnomAD.r2.1.1.GRCh38.PASS.AC.AF.only_chr21.vcf.gz"
+    REFFA_DICT: "mini_test_data/dna/data/refs/sequence/Homo_sapiens_assembly38_chr21.dict"
+    MUTECT2_germline_vcf: "mini_test_data/dna/data/refs/annotations/gnomAD.r2.1.1.GRCh38.PASS.AC.AF.only_chr21.vcf.gz"
+    common_vcf: "mini_test_data/dna/data/refs/annotations/gnomAD.r2.1.1.GRCh38.PASS.AC.AF.only_chr21.vcf.gz"
+    RNA_EDIT_VCF: 
+  
+softwares_params:
+  hg38_chr21:
+    vcf2maf:
+      build_version: "GRCh38"
+      vep:
+        vep_data: "resources/ref_genome/hg38/vep"
+        vep_path: "/public/home/lijf/env/miniconda3/envs/vep105/bin"
+        cache_version: "110"
+        species: "homo_sapiens"
+    maf2vcf:
+      build_version: "GRCh38"
+    star:
+      index: "resources/ref_genome/hg38_chr21/STAR/hg38_chr21"
+    salmon:
+      index: 
+    kallisto: 
+      index:
+    rsem:
+      index: 
+    trust4:
+      ref: "resources/softwares/TRUST4/human_IMGT+C.fa"
+      f: "resources/softwares/TRUST4/hg38_bcrtcr.fa"
+    sequenza:
+      gc: project_pipeline/WGS/MMWGSPE300_RJ/hg19/genome/hg19_gc50.wig.gz 
+    arriba:
+      database:
+        blacklist: "mini_test_data/rna/fusion/data/empty_blacklist.tsv.gz"
+        known_fusions: "/arriba_v2.4.0/database/known_fusions_hg38_GRCh38_v2.4.0.tsv.gz"
+        protein_domains: "/arriba_v2.4.0/database/protein_domains_hg38_GRCh38_v2.4.0.gff3"
+        cytobands: "/arriba_v2.4.0/database/cytobands_hg38_GRCh38_v2.4.0.tsv"
+
+project:
+  output_dir: 'mini_test/rna'
+  genome_version: 'hg38_chr21'
+  sample_sheet: 'mini_test_data/rna/fusion/data/test_sample_sheet.csv'
+
+run_params:
+  stages: 
+    - arriba
