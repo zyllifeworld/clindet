@@ -59,6 +59,8 @@ To facilitate user adoption, ClinDet includes a variety of use cases. These exam
 
 ## ClinDet Development Visualized​
 
+> Click the image above to watch the development demo video on Bilibili.
+
 <a href="https://www.bilibili.com/video/BV1eTsUzuEFo" target="_blank" style="display: block; text-align: center;"><img src="images/bilibili.jpg" 
 alt="ClinDet" width="640" border="4" /></a>
 
@@ -98,11 +100,10 @@ ClinDet provides a **Claude Code skill** (https://github.com/zyllifeworld/YULUMI
 
 The LLM then produces all files required to run ClinDet — `project_config.yaml`, `sample_sheet.csv`, local execution commands, and cluster-ready Snakemake commands — thereby automating the setup of omics data analysis workflows.
 
-<p align="center">
-  <video controls width="80%" autoplay loop muted playsinline>
-    <source src="images/clindet_llm_setup.mp4" type="video/mp4">
-  </video>
-</p>
+
+<a href="https://www.bilibili.com/video/BV1S2LN6gE86" target="_blank" style="display: block; text-align: center;"><img src="images/clindet_llm.jpg" 
+alt="ClinDet" width="640" border="4" /></a>
+
 
 ## Future Work
 1. Advanced downstream analysis based on consensus results (e.g. Driver gene identification)
