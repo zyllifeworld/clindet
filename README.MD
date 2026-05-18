@@ -88,6 +88,21 @@ You can cite the `ClinDet` Zenodo record for a specific version using the follow
 >
 > _F1000Research_ 2021. doi: [10.12688/f1000research.29032.3](https://doi.org/10.12688/f1000research.29032.3).
 
+## LLM-Assisted Interactive Deployment (Beta)
+
+ClinDet provides a **Claude Code skill** (https://github.com/zyllifeworld/YULUMINA) that automatically generates pipeline configuration files from natural language descriptions. Users can invoke the skill in VS Code via Claude Code and describe their experiment setup in plain language, for example:
+
+> I have human RNA-seq paired-end data in `/mnt/data/home/tycloud/data/mm/upload_fq/rna`. File names follow the pattern `MM-010_R1.fq.gz` (sample `MM-010`, paired-end reads `R1`/`R2`). Reference genome: human b37. Project directory: `/mnt/data/home/tycloud/project/project_mmrna`, output: `/mnt/data/home/tycloud/project/project_mmrna/rna`. Required analyses: Salmon quantification, RSEM quantification, and fusion gene detection (no mutation calling). Use conda environment `r-4-4-1` for R scripts. Generate both local and Slurm execution scripts.
+>
+> 我现在有人类的RNA-seq数据，双端测序，在 /mnt/data/home/tycloud/data/mm/upload_fq/rna目录。文件名是MM-010_R1这样的格式,MM-010是样本名，R1,R2表示双端测序文件。基因组用人类的b37版本，我准备在/mnt/data/home/tycloud/project/project_mmrna项目中运行程序，结果输出目录为/mnt/data/home/tycloud/project/project_mmrna/rna。我想跑salmon和RSEM定量,以及检测融合基因，不需要call mutation，请帮我生成clindet的运行所需文件，使用conda 环境r-4-4-1下的R运行文件,需要本地和slurm运行两个版本
+
+The LLM then produces all files required to run ClinDet — `project_config.yaml`, `sample_sheet.csv`, local execution commands, and cluster-ready Snakemake commands — thereby automating the setup of omics data analysis workflows.
+
+<p align="center">
+  <video controls width="80%" autoplay loop muted playsinline>
+    <source src="images/clindet_llm_setup.mp4" type="video/mp4">
+  </video>
+</p>
 
 ## Future Work
 1. Advanced downstream analysis based on consensus results (e.g. Driver gene identification)

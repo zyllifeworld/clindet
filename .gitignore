@@ -187,3 +187,6 @@ mini_test_data/rna/fusion/make_gene_fusion_by_exon.py
 workflow/config/conf/test_rna.yaml
 workflow/config/project_config.yaml
 workflow/config/project_config.yaml
+/test
+workflow/common/scripts/test_merge_paired.py
+workflow/common/scripts/test_merge.vcf
