@@ -28,7 +28,7 @@ build_cisx.sh
 build_vep_anno.sh
 test.sh
 /*.R
-/Snakefile
+
 /*.smk
 /*.README
 ### remove all dep_smk file (Deprecated)
