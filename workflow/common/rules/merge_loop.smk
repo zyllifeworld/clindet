@@ -101,7 +101,6 @@ rule merge_paired_maf:
 
 rule paired_maf_report:
     input:
-       # vcf1=expand("{project}/{genome_version}/results/vcf/paired/{{sample}}/{caller}.vcf",caller = caller_list,project = project,genome_version = genome_version),
         maf="{project}/{genome_version}/results/maf/paired/{sample}/merge/{sample}.maf"
     output:
         report(
@@ -124,3 +123,29 @@ rule merge_unpaired_maf:
     params:
         dir="{project}/{genome_version}/results/maf/unpaired/{sample}"
     script: merge_maf_script[config["run_type"]]
+
+
+rule merge_paired_vcf:
+    input:
+        vcfs=expand("{project}/{genome_version}/results/vcf_norm/paired/{{sample}}/{caller}.vcf",caller = caller_list,project = project,genome_version = genome_version),
+        ref=config['resources'][genome_version]['REFFA']
+    output:
+        merged_vcf="{project}/{genome_version}/results/vcf_norm/paired/{sample}/merge/{sample}.vcf"
+    conda: 
+        flexible_conda_env(config,['conda','clindet_main'],env_yaml = 'envs/clindet.yaml')
+    params:
+        dir="{project}/{genome_version}/results/maf/paired/{sample}"
+    script: "../scripts/merge_caller_vcfs.py"
+
+
+rule merge_unpaired_vcf:
+    input:
+        vcfs=expand("{project}/{genome_version}/results/vcf/unpaired/{{sample}}/{caller}.vcf",caller = caller_list,project = project,genome_version = genome_version),
+        ref=config['resources'][genome_version]['REFFA']
+    output:
+        merged_vcf="{project}/{genome_version}/results/vcf/unpaired/{sample}/merge/{sample}.vcf"
+    conda: 
+        flexible_conda_env(config,['conda','clindet_main'],env_yaml = 'envs/clindet.yaml')
+    params:
+        dir="{project}/{genome_version}/results/maf/paired/{sample}"
+    script: "../scripts/merge_caller_vcfs.py"

@@ -42,7 +42,7 @@ resources:
     WGS_PON: ""
     REFFA_DICT: ""
   mm10:
-    REFFA: ""
+    REFFA: []
     GENOME_BED: ""
     GTF: ""
     GFF: ""
@@ -51,7 +51,7 @@ resources:
     WGS_PON: ""
     DBSNP: ""
     DBSNP_GZ: ""
-    DBSNP_INDEL: "/"
+    DBSNP_INDEL: []
     MUTECT2_VCF: ""
     REFFA_DICT: ""
     MUTECT2_germline_vcf: ""

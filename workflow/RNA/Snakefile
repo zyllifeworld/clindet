@@ -42,7 +42,7 @@ include: "rules/call_mut_sentieon.smk"
 #include: "rules/merge.smk"
 include: "rules/merge_loop.smk"
 include: "rules/SNV.smk"
-include: "rules/findvirus.smk"
-include: "rules/fusion.smk"
-if genome_version in ['b37','hg38']:
+
+if genome_version in ['b37','hg38','hg38_chr21']: ## only OK for human
+    include: "rules/fusion.smk"
     include: "rules/isofox.smk"
