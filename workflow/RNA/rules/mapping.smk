@@ -48,7 +48,7 @@ rule STAR_arriba_map:
         bam=temp("{project}/{genome_version}/results/mapped/STAR/{sample}/{sample}.sorted.bam"),
         stamp="{project}/{genome_version}/results/mapped/STAR/{sample}/{sample}_star.log",
         um_fq1="{project}/{genome_version}/results/mapped/STAR/{sample}/{sample}_unmapped_R1.fq",
-        um_fq2="{project}/{genome_version}/results/mapped/STAR/{sample}/{sample}_unmapped_R2.fq"
+        um_fq2="{project}/{genome_version}/results/mapped/STAR/{sample}/{sample}_unmapped_R2.fq",
     params:
         out_dir="{project}/{genome_version}/results/mapped/STAR/{sample}/", # "/"" must in the config string
         ref=config['resources'][genome_version]['REFFA'],
@@ -81,7 +81,7 @@ rule STAR_arriba_map:
             --chimMultimapNmax 50 \
             --readFilesIn {input.R1} {input.R2} --readFilesCommand gunzip -c
 
-        samtools sort -@ {threads} -m 1G -o {output.bam} {params.out_dir}/Aligned.out.bam
+        samtools sort -@ {threads} -m 1G -o {output.bam} {params.out_dir}Aligned.out.bam
         samtools index {output.bam}
         mv {params.out_dir}/Unmapped.out.mate1 {output.um_fq1}
         mv {params.out_dir}/Unmapped.out.mate2 {output.um_fq2}

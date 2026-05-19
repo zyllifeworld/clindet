@@ -16,19 +16,6 @@ def moalmanac_extract_pp(wildcards, **kwargs):
         raise WorkflowError("Pandas is required to extract checksum from file.")
 
 
-
-rule merge_vcf_paired:
-    input:
-        vcf_inputs=expand("{project}/{genome_version}/results/vcf_norm/paired/{{sample}}/{caller}.vcf",caller = caller_list,project = project,genome_version = genome_version)
-    output:
-        vcf="{project}/{genome_version}/results/vcf_norm/paired/{sample}/merge/{sample}.vcf"
-    conda:
-        flexible_conda_env(config,['conda','clindet_main'],env_yaml = 'envs/clindet.yaml')
-    params:
-        out_dir="{project}/{genome_version}/results/maf/paired/{sample}/merge"
-    script:
-        "../scripts/merge_caller_vcfs.py"
-
 # rule pcgr_anno:
 #     input:
 #         vcf="{project}/{genome_version}/results/vcf_norm/paired/{sample}/merge/{sample}.vcf",

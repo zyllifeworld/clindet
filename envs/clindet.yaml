@@ -27,6 +27,7 @@ dependencies:
   - r-r.utils
   - configparser
   - sra-tools
+  - pysam
   - pip
   - bioconductor-tximport
 

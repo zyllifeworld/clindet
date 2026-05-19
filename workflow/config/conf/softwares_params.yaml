@@ -14,7 +14,6 @@ softwares_params:
       build_version: "GRCh37"
       vep:
         vep_data: "resources/ref_genome/b37/vep"
-        vep_path: "/public/home/lijf/env/miniconda3/envs/vep105/bin"
         cache_version: "113"
         species: "homo_sapiens"
     maf2vcf:
@@ -227,7 +226,6 @@ softwares_params:
       build_version: "GRCh38"
       vep:
         vep_data: "resources/ref_genome/hg38/vep"
-        vep_path: "/public/home/lijf/env/miniconda3/envs/vep105/bin"
         cache_version: "110"
         species: "homo_sapiens"
     maf2vcf:
@@ -419,12 +417,11 @@ softwares_params:
       orange:
   mm10:
     vcf2maf:
-      build_version: "GRCh38"
+      build_version: ""
       vep:
-        vep_data: "resources/ref_genome/hg38/vep"
-        vep_path: "/public/home/lijf/env/miniconda3/envs/vep105/bin"
-        cache_version: "110"
-        species: "homo_sapiens"
+        vep_data: "resources/ref_genome/mm10/vep"
+        cache_version: ""
+        species: ""
     maf2vcf:
       build_version: "GRCh38"
     star:
@@ -436,7 +433,7 @@ softwares_params:
     rsem:
       index: "resources/ref_genome/mm10/RSEM/mm10"
     cgppindel:
-      species: "HUMAN"
+      species: "MOUSE"
       genes: "resources/ref_genome/hg38/Sanger/VAGrENT_ref_GRCh38_hla_decoy_ebv_ensembl_91/vagrent/codingexon_regions.indel.bed.gz"
       softfil: "resources/ref_genome/mm10/Sanger/SNV_INDEL_mm10/pindel/softRules.lst"
       simrep: "resources/ref_genome/mm10/Sanger/SNV_INDEL_mm10/pindel/simpleRepeats.bed.gz"

@@ -1,6 +1,11 @@
 include: 'workflow/utils/functions.smk'
 include: 'workflow/setup/setup.smk'
 
+import os
+JAVA_TEMP_DIR = config.get("params", {}).get("java", {}).get("temp_directory", "tmp/java")
+
+os.makedirs(JAVA_TEMP_DIR, exist_ok=True)
+
 if config['run_type'] == 'wes':
     include: 'wrapper/wes.smk'
     rule all:

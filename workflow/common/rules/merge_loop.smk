@@ -5,7 +5,7 @@ rule vcf_norm:
     output:
         vcf='{project}/{genome_version}/results/vcf_norm/paired/{sample}/{caller}.vcf',
     conda:
-        flexible_conda_env(config,['conda','clindet_vep'],env_yaml = 'envs/clindet_vep.yaml')
+        flexible_conda_env(config,['conda','clindet_main'],env_yaml = 'envs/clindet.yaml')
     params:
         gff3=lambda wildcards: get_config_value(
             config,
@@ -15,9 +15,53 @@ rule vcf_norm:
         ),
         filter_cmd=lambda wildcards: build_bcftools_filter_cmd(wildcards)
     shell:
-        r"""
-        bcftools norm -f {input.ref} {params.gff3} {input.vcf} -Ou | \
-        bcftools view {params.filter_cmd} -Ov -o {output.vcf}
+        """
+        if [ "{wildcards.caller}" = "vardict" ] || [ "{wildcards.caller}" = "VarDict" ]; then
+
+            # Ensure fasta index exists
+            if [ ! -s {input.ref}.fai ]; then
+                samtools faidx {input.ref}
+            fi
+
+            contig_header="{output.vcf}.contigs.header"
+            tmp_vcf="{output.vcf}.with_contig.tmp.vcf"
+
+            # Generate contig header from reference fasta index
+            awk 'BEGIN{{OFS=""}}{{print "##contig=<ID="$1",length="$2">"}}' \
+                {input.ref}.fai > "$contig_header"
+
+            # Only add contig header for VarDict VCF
+            bcftools annotate \
+                --header-lines "$contig_header" \
+                {input.vcf} \
+                -Ov \
+                -o "$tmp_vcf"
+
+            bcftools norm \
+                -f {input.ref} \
+                {params.gff3} \
+                "$tmp_vcf" \
+                -Ou | \
+            bcftools view \
+                {params.filter_cmd} \
+                -Ov \
+                -o {output.vcf}
+
+            rm -f "$contig_header" "$tmp_vcf"
+
+        else
+
+            bcftools norm \
+                -f {input.ref} \
+                {params.gff3} \
+                {input.vcf} \
+                -Ou | \
+            bcftools view \
+                {params.filter_cmd} \
+                -Ov \
+                -o {output.vcf}
+
+        fi
         """
 
 merge_maf_script = {

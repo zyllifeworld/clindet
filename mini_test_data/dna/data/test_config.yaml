@@ -22,7 +22,6 @@ softwares_params:
       build_version: "GRCh38"
       vep:
         vep_data: "resources/ref_genome/hg38/vep"
-        vep_path: "/public/home/lijf/env/miniconda3/envs/vep105/bin"
         cache_version: "110"
         species: "homo_sapiens"
     maf2vcf:
@@ -223,7 +222,7 @@ run_params:
     - varscan2
     - muse
     - Mutect2
-  stages: [call_mut]
+  stages: [call_mut_vcf]
   germ_caller_list:
     - strelkamanta
     - caveman

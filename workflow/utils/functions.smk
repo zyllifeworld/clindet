@@ -130,7 +130,7 @@ def get_bcftools_filter_rules(wildcards):
             "exclude": ''
         },
         "haplotypecaller": {
-            "include": 'FILTER="PASS" && QUAL >= 30',
+            "include": 'QUAL >= 30',
             "exclude": ''
         },
         "muse": {
@@ -190,18 +190,24 @@ def flexible_conda_env(config_dict, keys, env_yaml=None):
         return current
 
 
+
 def flexible_container_img(config_dict, keys, image_url=None):
     current = config_dict
+
     for key in keys:
         if isinstance(current, dict) and key in current:
             current = current[key]
         else:
             return image_url
 
-    if current is None or current == '': #参数为空
+    if current is None or current == "":
         return image_url
-    else:
-        return current
+
+    # 如果 current 是文件路径，但文件不存在，则返回默认 image_url
+    if isinstance(current, str) and not os.path.exists(current):
+        return image_url
+
+    return current
 
 def format_params(params):
     return "\n".join(

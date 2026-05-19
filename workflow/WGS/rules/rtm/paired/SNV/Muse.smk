@@ -12,7 +12,16 @@ rule muse_call:
     singularity: config['singularity']['muse']['sif']
     shell:
         """
-        /MuSE/bin/MuSE call -f {params.ref} -O {params.out_prefix} -n {threads} {input.Tum} {input.NC}
+        if [ -x /MuSE/bin/MuSE ]; then
+            MUSE_BIN=/MuSE/bin/MuSE
+        elif command -v MuSE >/dev/null 2>&1; then
+            MUSE_BIN=MuSE
+        else
+            echo "ERROR: Cannot find MuSE executable. Tried /MuSE/bin/MuSE and MuSE in PATH." >&2
+            exit 1
+        fi
+
+        $MUSE_BIN call -f {params.ref} -O {params.out_prefix} -n {threads} {input.Tum} {input.NC}
         """
 
 rule muse_sump:
@@ -26,5 +35,14 @@ rule muse_sump:
     singularity: config['singularity']['muse']['sif']
     shell:
         """
-        /MuSE/bin/MuSE sump -I {input.txt} -O {output.vcf} -G -n {threads} -D {params.dbsnp}
+        if [ -x /MuSE/bin/MuSE ]; then
+            MUSE_BIN=/MuSE/bin/MuSE
+        elif command -v MuSE >/dev/null 2>&1; then
+            MUSE_BIN=MuSE
+        else
+            echo "ERROR: Cannot find MuSE executable. Tried /MuSE/bin/MuSE and MuSE in PATH." >&2
+            exit 1
+        fi
+
+        $MUSE_BIN sump -I {input.txt} -O {output.vcf} -G -n {threads} -D {params.dbsnp}
         """

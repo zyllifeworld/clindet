@@ -50,6 +50,8 @@ paired_res_list = [
 
     ##### for SNV/INDEL calling #####
     "{project}/{genome_version}/results/maf/paired/{sample}/merge/{sample}.maf" if 'call_mut' in stages else None,
+    ## MAF need download VEP cache
+    "{project}/{genome_version}/results/vcf_norm/paired/{sample}/merge/{sample}.vcf" if 'call_mut_vcf' in stages else None,
 
     # somatic_cnv_list = ['purple','ASCAT','facets','sequenza','freec','dryclean']
     ##### for CNV result ##### There is a bug for snakemake rules namelist when include *smk for 3-4 levels
@@ -78,6 +80,7 @@ unpaired_res_list = [
     "{project}/{genome_version}/results/recal/unpaired/{sample}-T.bam",
     ##### for SNV/INDEL calling #####
     "{project}/{genome_version}/results/maf/unpaired/{sample}/merge/{sample}.maf"  if 'call_mut' in stages else None,
+    "{project}/{genome_version}/results/vcf/unpaired/{sample}/merge/{sample}.vcf" if 'call_mut_vcf' in stages else None,
     ##### for CNV result ##### There is a bug for snakemake rules namelist when include *smk for 3-4 levels
     # rules.paired_purple.output.qc  if 'purple' in somatic_cnv_list else None, # purple call
     "{project}/{genome_version}/results/cnv/unpaired/purple/{sample}/purple/{sample}.purple.qc"    if 'purple' in tumor_only_cnv_caller else None,

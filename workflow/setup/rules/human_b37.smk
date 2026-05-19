@@ -36,6 +36,7 @@ rule build_b37_ref:
         f"{REF_B37}/Homo_sapiens_assembly19.dbsnp138.indel.vcf.gz",
         f"{REF_B37}/Homo_sapiens_assembly19.dbsnp138.indel.vcf.gz.tbi",
         f"{REF_B37}/Homo_sapiens.GRCh37.87.gtf",
+        f"{REF_B37}/Homo_sapiens.GRCh37.87.gff3",
         f"{REF_B37}/Homo_sapiens.GRCh37.cdna.all.fa",
         f"{REF_B37}/Homo_sapiens.GRCh37.cdna.all.fa.gz"
 
@@ -252,6 +253,18 @@ rule download_grch37_gtf:
         echo "GTF ready" > {log}
         """
 
+rule download_grch37_gff3:
+    output:
+        f"{REF_B37}/Homo_sapiens.GRCh37.87.gff3",
+    log:
+        f"{BUILD_LOG}/download_grch37_gff.run.log"
+    shell:
+        r"""
+        mkdir -p {REF_B37}
+        wget -P {REF_B37} -c https://ftp.ensembl.org/pub/grch37/release-114/gtf/homo_sapiens/Homo_sapiens.GRCh37.87.gff3.gz
+        gunzip -c {REF_B37}/Homo_sapiens.GRCh37.87.gtf.gz > {output}
+        echo "GTF ready" > {log}
+        """
 
 rule download_cdna_fasta:
     output:

@@ -192,3 +192,10 @@ workflow/common/scripts/test_merge_paired.py
 workflow/common/scripts/test_merge.vcf
 images/clindet_llm_setup.mp4
 *.gif
+workflow/config/conf/test_genome.yaml
+workflow/config/project_config.yaml
+workflow/config/conf/test_genome.yaml
+workflow/WES/rules/report/sections/04_annotation.Rmd
+workflow/WES/rules/report/sections/05_actionability.Rmd
+workflow/WES/rules/report/sections/06_summary.Rmd
+workflow/config/conf/temp.yaml
