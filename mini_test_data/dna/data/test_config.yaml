@@ -213,37 +213,22 @@ project:
   output_dir: 'mini_test'
   genome_version: 'hg38_chr21'
   sample_sheet: 'mini_test_data/dna/data/test_sample_sheet.csv'
-  reacl_BQSR: False
+  recal_BQSR: False
 
 
 run_params:
   somatic_caller_list:
     - HaplotypeCaller
-    # - strelkasomaticmanta
-    # - lofreq
     - vardict
     - varscan2
-    # - cgppindel
-    # - caveman
     - muse
-    # - deepvariant
     - Mutect2
   stages: ''
   germ_caller_list:
-    # - strelkamanta
-    # - caveman
-  somatic_cnv_list:
-    - notrun
-  somatic_sv_list:
-    - BRASS
-    - delly
-    - gridss
-    - igcaller
-    - linx
-    - svaba
-    - Manta
-  tumor_only_caller:
-    - sage
-  tumor_only_cnv_caller:
-    - freec
+    - strelkamanta
+    - caveman
+  somatic_cnv_list: []
+  somatic_sv_list: []
+  tumor_only_caller: []
+  tumor_only_cnv_caller: []
   purple_sv: "gridss"

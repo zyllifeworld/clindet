@@ -191,3 +191,4 @@ workflow/config/project_config.yaml
 workflow/common/scripts/test_merge_paired.py
 workflow/common/scripts/test_merge.vcf
 images/clindet_llm_setup.mp4
+*.gif
