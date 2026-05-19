@@ -223,7 +223,7 @@ run_params:
     - varscan2
     - muse
     - Mutect2
-  stages: ''
+  stages: [call_mut]
   germ_caller_list:
     - strelkamanta
     - caveman
