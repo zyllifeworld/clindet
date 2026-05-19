@@ -9,7 +9,7 @@ rule STAR_isofox_map:
         out_dir="{project}/{genome_version}/results/summary/isofox/{sample}/", 
         ref=config['resources'][genome_version]['REFFA'],
         gtf=config['resources'][genome_version]['GTF'],
-        star_index=config['softwares']['star']['index'][genome_version],
+        star_index=config['softwares_params'][genome_version]['star']['index'],
         rg="'ID:{sample}' -r 'PL:ILLUMINA.NovaSeq' -r 'LB:RNA-Seq' -r 'SM:{sample}'",
         sort_mem_per_thread='1G'
     threads: 10
@@ -48,8 +48,8 @@ rule isofox_call:
         gene="{project}/{genome_version}/results/summary/isofox/{sample}/{sample}.isf.gene_data.csv"
     params:
         out_dir="{project}/{genome_version}/results/summary/isofox/{sample}/",
-        ensembl_data_dir=config['singularity']['hmftools'][genome_version]['purple']['ensembl_data_dir'],
-        ref_genome_version=config['singularity']['hmftools'][genome_version]['sage']['ref_genome_version'],
+        ensembl_data_dir=config['softwares_params'][genome_version]['hmftools']['purple']['ensembl_data_dir'],
+        ref_genome_version=config['softwares_params'][genome_version]['hmftools']['sage']['ref_genome_version'],
         # xms=lambda wildcards, input: max(1.5 * input.size_mb, 300),
         # xmx=lambda wildcards, input: max(1.5 * input.size_mb, 300),
     threads: 10
