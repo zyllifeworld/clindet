@@ -184,7 +184,7 @@ rule merge_paired_vcf:
 
 rule merge_unpaired_vcf:
     input:
-        vcfs=expand("{project}/{genome_version}/results/vcf/unpaired/{{sample}}/{caller}.vcf",caller = caller_list,project = project,genome_version = genome_version),
+        vcfs=expand("{project}/{genome_version}/results/vcf/unpaired/{{sample}}/{caller}.vcf",caller = tumor_only_caller,project = project,genome_version = genome_version),
         ref=config['resources'][genome_version]['REFFA']
     output:
         merged_vcf="{project}/{genome_version}/results/vcf/unpaired/{sample}/merge/{sample}.vcf"

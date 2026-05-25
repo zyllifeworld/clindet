@@ -68,7 +68,7 @@ if not pindel_normal_panel:
         threads: 20
         params:
             ref=config['resources'][genome_version]['REFFA'],
-            gff3='analysis/normalPanel/pindel_{sample}'
+            gff3='{project}/{genome_version}/analysis/normalPanel/pindel_{sample}'
         singularity:
             flexible_container_img(config,['singularity','cgppindel','sif'],image_url = config['singularity']['cgppindel']['repo'])
         shell:

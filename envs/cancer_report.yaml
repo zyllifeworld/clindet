@@ -12,6 +12,5 @@ dependencies:
   - r-devtools
   - r-reactable
   - r-htmltools
-  - r-gpgr
   # umccr pkgs
   # refdata pkgs

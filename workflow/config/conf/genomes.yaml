@@ -19,7 +19,7 @@ resources:
     REFFA: "resources/ref_genome/hg38/GRCh38_masked_exclusions_alts_hlas.fasta"
     GENOME_BED: ""
     GFF: "resources/ref_genome/hg38/Homo_sapiens.GRCh38.115.chr_prefix.gff3"
-    GTF: "resources/ref_genome/b37/Homo_sapiens.GRCh37.87.gtf"
+    GTF: "resources/ref_genome/hg38/gencode.v49.annotation.gtf"
     WES_PON: "resources/ref_genome/hg38/1000g_pon.hg38.vcf.gz"
     WES_BED: "/public/ClinicalExam/lj_sih/resource/genome/human/hg38/hg38.bed"
     WGS_PON: "resources/ref_genome/hg38/1000g_pon.hg38.vcf.gz"

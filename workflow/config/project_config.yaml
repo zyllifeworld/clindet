@@ -1,7 +1,6 @@
 project:
   output_dir: 'test'
   genome_version: 'b37'
-  # sample_sheet: '/public/ClinicalExam/lj_sih/projects/project_clindet/resources/test_pipeline/test_fq/wes_test.csv'
   sample_sheet: '/public/ClinicalExam/lj_sih/projects/project_clindet/test/cgga_sample_sheet.csv'
 run_params:
   somatic_caller_list:

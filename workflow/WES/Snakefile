@@ -2,8 +2,8 @@ include: "../common/rules/qc.smk"
 include: "../common/rules/mapping.smk"
 
 ## cgp pipeline caller
-include: "rules/cgp/cgppindel.smk"
-include: "rules/cgp/cgpCaVEMan.smk"
+include: "../common/rules/cgp/cgppindel.smk"
+include: "../common/rules/cgp/cgpCaVEMan.smk"
 
 
 # rtm pipeline caller

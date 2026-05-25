@@ -1,5 +1,5 @@
 try:
-    pindel_normal_panel = config['singularity']['cgppindel'][genome_version]['WES'].get("normal_panel", False)
+    pindel_normal_panel = config['softwares_params'][genome_version]['cgppindel']['WES'].get("normal_panel", False)
 except KeyError:
     # 如果任何一级键不存在，返回默认值
     pindel_normal_panel = False
@@ -32,12 +32,12 @@ if not pindel_normal_panel:
             out_dir='{project}/{genome_version}/analysis/pindel_normal/{sample}',
             simrep= lambda wildcards: get_config_value(
                         config,
-                        ['singularity', 'cgppindel', wildcards.genome_version, 'simrep'],
+                        ['softwares_params', wildcards.genome_version, 'cgppindel', 'simrep'],
                         default=""
                     ),
             genes=lambda wildcards: get_config_value(
                         config,
-                        ['singularity', 'cgppindel', wildcards.genome_version, 'genes'],
+                        ['softwares_params', wildcards.genome_version, 'cgppindel', 'genes'],
                         default=""
                     ),
         singularity:
@@ -88,27 +88,27 @@ if not pindel_normal_panel:
             ref=config['resources'][genome_version]['REFFA'],
             simrep=lambda wildcards: get_config_value(
                         config,
-                        ['singularity', 'cgppindel', wildcards.genome_version, 'simrep'],
+                        ['softwares_params', wildcards.genome_version, 'cgppindel', 'simrep'],
                         default=""
                     ),
             genes=lambda wildcards: get_config_value(
                         config,
-                        ['singularity', 'cgppindel', wildcards.genome_version, 'genes'],
+                        ['softwares_params', wildcards.genome_version, 'cgppindel', 'genes'],
                         default=""
                     ),
             filter=lambda wildcards: get_config_value(
                         config,
-                        ['singularity', 'cgppindel', wildcards.genome_version, 'WES', 'filter'],
+                        ['softwares_params', wildcards.genome_version, 'cgppindel', 'WES', 'filter'],
                         default=""
                     ),
             softfil=lambda wildcards: get_config_value(
                         config,
-                        ['singularity', 'cgppindel', wildcards.genome_version, 'softfil'],
+                        ['softwares_params', wildcards.genome_version, 'cgppindel', 'softfil'],
                         default=""
                     ),
             species=lambda wildcards: get_config_value(
                         config,
-                        ['singularity', 'cgppindel', wildcards.genome_version, 'species'],
+                        ['softwares_params', wildcards.genome_version, 'cgppindel', 'species'],
                         default=""
                     ),
         singularity:
@@ -139,7 +139,7 @@ else:
         input:
             Tum="{project}/{genome_version}/results/recal/paired/{sample}-T.bam",
             NC="{project}/{genome_version}/results/recal/paired/{sample}-NC.bam",
-            NP_gff3=config['singularity']['cgppindel'][genome_version]['WES']['normal_panel']
+            NP_gff3=config['softwares_params'][genome_version]['cgppindel']['WES']['normal_panel']
         output:
             out_dir=directory('{project}/{genome_version}/results/vcf/paired/{sample}/cgppindel'),
             log='{project}/{genome_version}/results/logs/paired/cgppindel_{sample}.log',
@@ -147,11 +147,11 @@ else:
         threads: 20
         params:
             ref=config['resources'][genome_version]['REFFA'],
-            simrep=config['singularity']['cgppindel'][genome_version]['simrep'],
-            genes=config['singularity']['cgppindel'][genome_version]['genes'],
-            filter=config['singularity']['cgppindel'][genome_version]['WES']['filter'],
-            softfil=config['singularity']['cgppindel'][genome_version]['softfil'],
-            species=config['singularity']['cgppindel'][genome_version]['species']
+            simrep=config['softwares_params'][genome_version]['cgppindel']['simrep'],
+            genes=config['softwares_params'][genome_version]['cgppindel']['genes'],
+            filter=config['softwares_params'][genome_version]['cgppindel']['WES']['filter'],
+            softfil=config['softwares_params'][genome_version]['cgppindel']['softfil'],
+            species=config['softwares_params'][genome_version]['cgppindel']['species']
         singularity:
             flexible_container_img(config,['singularity','cgppindel','sif'],image_url = config['singularity']['cgppindel']['repo'])
         benchmark:

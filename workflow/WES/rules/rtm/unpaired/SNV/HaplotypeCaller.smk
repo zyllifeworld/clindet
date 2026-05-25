@@ -14,7 +14,7 @@ rule unpaired_call_variants_HaplotypeCaller:
         "{project}/{genome_version}/results/benchmarks/mut/{sample}.HaplotypeCaller.unpaired.benchmark.txt"
     shell:
         """
-        export _JAVA_OPTIONS=-Djava.io.tmpdir={params.temp_directory} && {params.gatk4} \
+        export _JAVA_OPTIONS=-Djava.io.tmpdir={params.temp_directory} && gatk \
         HaplotypeCaller -R {input.ref} \
         -I {input.Tum} \
         -O {output.vcf} \
