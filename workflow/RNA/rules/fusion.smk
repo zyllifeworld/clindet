@@ -58,7 +58,7 @@ rule arriba_draw:
 rule TRUST4_TBCR:
     input:
         bam="{project}/{genome_version}/results/mapped/STAR/{sample}/{sample}.sorted.bam",
-        stamp="{project}/{genome_version}/results/mapped/STAR/{sample}/{sample}_star.log"
+        stamp="{project}/{genome_version}/results/mapped/STAR/{sample}/{sample}_star.log",
     output:
         "{project}/{genome_version}/results/IG/TRUST4/{sample}_report.tsv"
     conda:
@@ -66,12 +66,40 @@ rule TRUST4_TBCR:
     threads:10
     params:
         temp_directory=config['params']['java']['temp_directory'],
-        ref=config['softwares_params'][genome_version]['trust4']['ref'],
         f=config['softwares_params'][genome_version]['trust4']['f'],
+        ref=config['resources'][genome_version]['REFFA'],
         oref="{project}/{genome_version}/results/IG/TRUST4/{sample}"
+        trust4_dir="resources/softwares/TRUST4"
     shell:
-        """
-        {config[softwares][trust4][call]} \
-            -b {input.bam}  -f {params.f} \
-            -o {params.oref} --ref {params.ref}  -t {threads}
+        r"""
+        set -euo pipefail
+
+        if [ ! -f "{params.f}" ]; then
+            echo "[TRUST4] Reference file not found: {params.f}"
+            echo "[TRUST4] Cloning TRUST4 repository to {params.trust4_dir}"
+
+            mkdir -p "$(dirname {params.trust4_dir})"
+
+            if [ ! -d "{params.trust4_dir}/.git" ]; then
+                git clone https://github.com/liulab-dfci/TRUST4.git "{params.trust4_dir}"
+            else
+                echo "[TRUST4] TRUST4 repository already exists. Skipping clone."
+            fi
+
+            if [ ! -f "{params.f}" ]; then
+                echo "[ERROR] TRUST4 reference file still not found after cloning:"
+                echo "        {params.f}"
+                echo "Please check config['softwares_params'][genome_version]['trust4']['f']."
+                exit 1
+            fi
+        fi
+
+        mkdir -p "$(dirname {output})"
+
+        run-trust4 \
+            -b {input.bam} \
+            -f {params.f} \
+            -o {params.oref} \
+            --ref {params.ref} \
+            -t {threads}
         """

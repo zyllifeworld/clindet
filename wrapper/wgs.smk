@@ -13,7 +13,7 @@ configfile: "workflow/config/conf/softwares_params.yaml"
 
 project = config['project']['output_dir']
 genome_version = config['project']['genome_version']
-recal = config['project']['recal_BQSR']
+recal = config.get("run_params", {}).get("stages", False)
 recal_config = config['resources']['varanno'].get(genome_version, False)
 if recal_config:
     recal = False
@@ -22,27 +22,24 @@ else:
 
 groups = ['NC','T']
 # stages you want run. conpair check  sample swap, case_report generate HTML case report, multiqc for QC report 
-stages = config['run_params']['stages']
+stages = config.get("run_params", {}).get("stages", [])
 
-## germline mutation calling softwares
-germ_caller_list = config['run_params']['germ_caller_list']
-## somatic mutation calling softwares
-caller_list = config['run_params']['somatic_caller_list']
-## somatic CNV calling softwares
-somatic_cnv_list = config['run_params']['somatic_cnv_list']
+# germline mutation calling softwares
+germ_caller_list = config.get("run_params", {}).get("germ_caller_list", [])
+# somatic CNV calling softwares
+somatic_cnv_list = config.get("run_params", {}).get("somatic_cnv_list", [])
 # somatic SV calling softwares
-somatic_sv_list = config['run_params']['somatic_sv_list']
+somatic_sv_list = config.get("run_params", {}).get("somatic_sv_list", [])
 
-
-# tumor only mode
-tumor_only_caller = config['run_params']['tumor_only_caller']
-tumor_only_cnv_caller = config['run_params']['tumor_only_cnv_caller']
+### tumor only call
+tumor_only_caller = config.get("run_params", {}).get("tumor_only_caller", [])
+tumor_only_cnv_caller = config.get("run_params", {}).get("tumor_only_cnv_caller", [])
 
 recall_pon =  False
 custome_pon_db = True
 pre_pon_db = True
 recall_pon_pindel =  False
-purple_sv = config['run_params']['purple_sv']
+purple_sv = config.get("run_params", {}).get("purple_sv", 'gridss')
 
 paired_res_list = [
     ##### for QC report ######
@@ -51,7 +48,7 @@ paired_res_list = [
 
     ##### for SNV/INDEL calling #####
     "{project}/{genome_version}/results/maf/paired/{sample}/merge/{sample}.maf" if 'call_mut'  in stages else None,
-
+    "{project}/{genome_version}/results/vcf_norm/paired/{sample}/merge/{sample}.vcf" if 'call_mut_vcf' in stages else None,
     ##### for CNV result ##### There is a bug for snakemake rules namelist when include *smk for 3-4 levels
     # rules.paired_purple.output.qc  if 'purple' in somatic_cnv_list else None, # purple call
     "{project}/{genome_version}/results/cnv/paired/purple/{sample}/purple/{sample}.purple.qc"  if 'purple' in somatic_cnv_list else None, # purple call
@@ -94,7 +91,7 @@ paired_res_list = list(filter(None, paired_res_list))
 ## unpaired sample list
 unpaired_res_list = [
     ##### for SNV/INDEL calling #####
-    "{project}/{genome_version}/results/maf/unpaired/{sample}/merge/{sample}.maf",
+    "{project}/{genome_version}/results/maf/unpaired/{sample}/merge/{sample}.maf" if 'call_mut'  in stages else None,
     ##### for CNV result ##### There is a bug for snakemake rules namelist when include *smk for 3-4 levels
     # rules.paired_purple.output.qc  if 'purple' in somatic_cnv_list else None, # purple call
     "{project}/{genome_version}/results/cnv/unpaired/purple/{sample}/purple/{sample}.purple.qc"    if 'purple' in tumor_only_cnv_caller else None,

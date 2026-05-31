@@ -72,20 +72,18 @@ rule moalmanac_annotation:
         pp=moalmanac_extract_pp,
     shell:
         """
-        python moalmanac.py \
+        python /moalmanac/moalmanac.py \
             --patient_id "{wildcards.sample}" \
             --tumor_type "SKCM" \
             --stage "Metastatic" \
             --description "Example profile for interpretation with the Molecular Oncology Almanac" \
             --snv_handle {input.snp} \
             --indel_handle {input.indel} \
-            --bases_covered_handle "../example_data/example_patient.capture.somatic.coverage.txt" \
-            --called_cn_handle "../example_data/example_patient.capture.somatic.called.cna.txt" \
-            --fusion_handle "../example_data/example_patient.rna.star.fusions.txt" \
+            --called_cn_handle {input.cna} \
             --purity {params.purity} \
             --ploidy {params.ploidy} \
-            --config config.ini \
-            --dbs annotation-databases.ini \
+            --config /moalmanac/config.ini \
+            --dbs /moalmanac/annotation-databases.ini \
             --output_directory {output.dir} \
-            --preclinical-dbs preclinical-databases.ini
+            --preclinical-dbs /moalmanac/preclinical-databases.ini
         """

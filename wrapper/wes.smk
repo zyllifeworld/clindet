@@ -22,18 +22,18 @@ else:
 
 groups = ['NC','T']
 ## somatic mutation calling softwares
-caller_list = config['run_params']['somatic_caller_list']
-stages = config['run_params']['stages']
+caller_list = config.get("run_params", {}).get("somatic_caller_list", [])
+stages = config.get("run_params", {}).get("stages", [])
 # germline mutation calling softwares
-germ_caller_list = config['run_params']['germ_caller_list']
+germ_caller_list = config.get("run_params", {}).get("germ_caller_list", [])
 # somatic CNV calling softwares
-somatic_cnv_list = config['run_params']['somatic_cnv_list']
+somatic_cnv_list = config.get("run_params", {}).get("somatic_cnv_list", [])
 # somatic SV calling softwares
-somatic_sv_list = config['run_params']['somatic_sv_list']
+somatic_sv_list = config.get("run_params", {}).get("somatic_sv_list", [])
 
 ### tumor only call
-tumor_only_caller = config['run_params']['tumor_only_caller']
-tumor_only_cnv_caller = config['run_params']['tumor_only_cnv_caller']
+tumor_only_caller = config.get("run_params", {}).get("tumor_only_caller", [])
+tumor_only_cnv_caller = config.get("run_params", {}).get("tumor_only_cnv_caller", [])
 
 recall_pon =  False
 custome_pon_db = True
