@@ -9,7 +9,7 @@ rule unpair_freec_config:
         chrFiles=lambda wildcards: get_config_value(config,['singularity', 'freec', wildcards.genome_version, 'chrFiles'],default=""),
         chrLenFile=lambda wildcards: get_config_value(config,['singularity', 'freec', wildcards.genome_version, 'chrLenFile'],default=""),
         snp_file=lambda wildcards: get_config_value(config,['singularity', 'freec', wildcards.genome_version, 'snp_file'],default=""),
-        forceGCcontentNormalization=1,#for WES
+        forceGCcontentNormalization=0,# 1 for WES,0 for WGS
         maxThreads='30',
         outputDir="{project}/{genome_version}/results/cnv/unpaired/freec/{sample}",
         sambamba=lambda wildcards: get_config_value(config,['singularity', 'freec', wildcards.genome_version, 'sambamba'],default=""),
@@ -29,7 +29,7 @@ rule freec_call_unpaired:
     params:
     threads: 30
     singularity:
-        flexible_container_img(config,['singularity','freec','sif'],image_url = config['singularity']['freec']['repo'])
+        flexible_container_img(config,['singularity','freec','sif'],image_url = config['singularity']['svaba']['repo'])
     shell:
         """
         freec -conf {input.config}

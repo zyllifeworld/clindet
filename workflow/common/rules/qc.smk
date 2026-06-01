@@ -49,9 +49,9 @@ rule fastp_tumor_sample:
 ### check paired Sample Swap with conpair
 ## GATK3 likely not work with genome sequence file with fasta suffix
 ## unable while not human data
-conpair_config = config['softwares_params'][genome_version].get(['conpair'], False)
+conpair_config = config['softwares_params'][genome_version].get('conpair', False)
 if conpair_config:
-    conpair_marker_defalut=config['software_params'][genome_version]['conpair']['marker']
+    conpair_marker_defalut=config['softwares_params'][genome_version]['conpair']['marker']
     rule conpair_pileup:
         input:
             Tum="{project}/{genome_version}/results/recal/paired/{sample}-T.bam",
@@ -61,7 +61,7 @@ if conpair_config:
             NC_pileup="{project}/{genome_version}/results/qc/conpair/paired/{sample}/{sample}-NC.pileup",
         params:
             ref=config['resources'][genome_version]['REFFA'],
-            marker = '' if isinstance(conpair_marker_defalut, bool) and conpair_marker_defalut is True else '-M ' + config['software_params'][genome_version]['conpair']['marker']
+            marker = '' if isinstance(conpair_marker_defalut, bool) and conpair_marker_defalut is True else '-M ' + config['softwares_params'][genome_version]['conpair']['marker']
         singularity: 
             flexible_container_img(config,['singularity','conpair','sif'],image_url = config['singularity']['conpair']['repo'])
         benchmark:
@@ -81,7 +81,7 @@ if conpair_config:
         singularity:
             flexible_container_img(config,['singularity','conpair','sif'],image_url = config['singularity']['conpair']['repo'])
         params:
-            marker = '' if isinstance(conpair_marker_defalut, bool) and conpair_marker_defalut is True else '-M ' + config['software_params'][genome_version]['conpair']['marker']
+            marker = '' if isinstance(conpair_marker_defalut, bool) and conpair_marker_defalut is True else '-M ' + config['softwares_params'][genome_version]['conpair']['marker']
         benchmark:
             "{project}/{genome_version}/results/benchmarks/conpair/{sample}.concordance.benchmark.txt"
         shell:
@@ -96,7 +96,7 @@ if conpair_config:
         output:
             txt="{project}/{genome_version}/results/qc/conpair/paired/{sample}/{sample}-T_contamination.txt",
         params:
-            marker = '' if isinstance(conpair_marker_defalut, bool) and conpair_marker_defalut is True else '-M ' + config['software_params'][genome_version]['conpair']['marker']
+            marker = '' if isinstance(conpair_marker_defalut, bool) and conpair_marker_defalut is True else '-M ' + config['softwares_params'][genome_version]['conpair']['marker']
         singularity: 
             flexible_container_img(config,['singularity','conpair','sif'],image_url = config['singularity']['conpair']['repo'])
         benchmark:
@@ -174,7 +174,7 @@ rule ngs_bit_mapping:
 #     output:
 #         txt="{project}/{genome_version}/results/qc/conpair/paired/{sample}/{sample}-T_contamination.txt",
 #     params:
-#         build_version = '' if isinstance(conpair_marker_defalut, bool) and conpair_marker_defalut is True else '-M ' + config['software_params'][genome_version]['conpair']['marker']
+#         build_version = '' if isinstance(conpair_marker_defalut, bool) and conpair_marker_defalut is True else '-M ' + config['softwares_params'][genome_version]['conpair']['marker']
 #     singularity: 
 #         flexible_container_img(config,['singularity','discvrseq','sif'],image_url = config['singularity']['discvrseq']['repo'])
 #     benchmark:

@@ -16,7 +16,7 @@ if genome_version in ['hg19','b37','hg38','hg38_EBV']:
             flexible_conda_env(config,['conda','clindet_main'],env_yaml = 'envs/clindet.yaml')
         threads: 1
         script:
-            "../../scripts/caveman/cnv_bed.R"
+            "../../../WES/scripts/caveman/cnv_bed.R"
 
     ### caveman_normal_panel
     rule CM_call: 
@@ -162,7 +162,7 @@ rule CM_flag:
                 default=""
             )
     singularity:
-        config['singularity']['caveman']['sif']
+        flexible_container_img(config,['singularity','caveman','sif'],image_url = config['singularity']['caveman']['repo'])
     benchmark:
         "{project}/{genome_version}/results/benchmarks/snv/{sample}.cavemanflag.benchmark.txt"
     shell:

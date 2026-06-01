@@ -4,14 +4,15 @@ rule M2_ST:
     output:
         table="{project}/{genome_version}/results/recal/{sample}/{sample}-T_pileupsummaries.table"
     params:
-        gatk4=config['softwares']['gatk4']['call'],
         ref=config['resources'][genome_version]['REFFA'],
         temp_directory=config['params']['java']['temp_directory'],
         af_vcf=config['resources'][genome_version]['MUTECT2_VCF']
     threads: 10
+    singularity:
+        flexible_container_img(config,['singularity','gatk4','sif'],image_url = config['singularity']['gatk4']['repo'])
     shell:
         """
-        export _JAVA_OPTIONS=-Djava.io.tmpdir={params.temp_directory} && {params.gatk4} \
+        export _JAVA_OPTIONS=-Djava.io.tmpdir={params.temp_directory} && gatk \
         GetPileupSummaries -R {params.ref}  \
         -I {input.Tum} \
         -V {params.af_vcf} \
@@ -24,14 +25,15 @@ rule M2_SNC:
     output:
         table="{project}/{genome_version}/results/recal/{sample}/{sample}-NC_pileupsummaries.table"
     params:
-        gatk4=config['softwares']['gatk4']['call'],
         ref=config['resources'][genome_version]['REFFA'],
         temp_directory=config['params']['java']['temp_directory'],
         af_vcf=config['resources'][genome_version]['MUTECT2_VCF']
     threads: 10
+    singularity:
+        flexible_container_img(config,['singularity','gatk4','sif'],image_url = config['singularity']['gatk4']['repo'])
     shell:
         """
-        export _JAVA_OPTIONS=-Djava.io.tmpdir={params.temp_directory} && {params.gatk4} \
+        export _JAVA_OPTIONS=-Djava.io.tmpdir={params.temp_directory} && gatk \
         GetPileupSummaries -R {params.ref}  \
         -I {input.NC} \
         -V {params.af_vcf} \
@@ -46,13 +48,14 @@ rule M2_contam:
         seg="{project}/{genome_version}/results/recal/{sample}/{sample}_segments.table",
         ctam="{project}/{genome_version}/results/recal/{sample}/{sample}_calculatecontamination.table"
     params:
-        gatk4=config['softwares']['gatk4']['call'],
         ref=config['resources'][genome_version]['REFFA'],
         temp_directory=config['params']['java']['temp_directory']
     threads: 10
+    singularity:
+        flexible_container_img(config,['singularity','gatk4','sif'],image_url = config['singularity']['gatk4']['repo'])
     shell:
         """
-        export _JAVA_OPTIONS=-Djava.io.tmpdir={params.temp_directory} && {params.gatk4} \
+        export _JAVA_OPTIONS=-Djava.io.tmpdir={params.temp_directory} && gatk \
         CalculateContamination \
         -I {input.T} \
         -matched {input.NC} \
@@ -70,13 +73,14 @@ rule mutect2:
     output:
         vcf="{project}/{genome_version}/results/vcf/paired/{sample}/Mutect2_raw.vcf"
     params:
-        gatk4=config['softwares']['gatk4']['call'],
         temp_directory=config['params']['java']['temp_directory'],
         germ_vcf=config['resources'][genome_version]['MUTECT2_VCF'],
     threads: 10
+    singularity:
+        flexible_container_img(config,['singularity','gatk4','sif'],image_url = config['singularity']['gatk4']['repo'])
     shell:
         """
-        export _JAVA_OPTIONS=-Djava.io.tmpdir={params.temp_directory} && {params.gatk4} \
+        export _JAVA_OPTIONS=-Djava.io.tmpdir={params.temp_directory} && gatk \
         Mutect2 -R {input.ref} \
         --native-pair-hmm-threads {threads} \
         -I {input.Tum} \
@@ -99,13 +103,14 @@ rule M2_filter:
     output:
         vcf="{project}/{genome_version}/results/vcf/paired/{sample}/Mutect2.vcf"
     params:
-        gatk4=config['softwares']['gatk4']['call'],
         temp_directory=config['params']['java']['temp_directory'],
         af_vcf=config['resources'][genome_version]['MUTECT2_VCF']
     threads: 10
+    singularity:
+        flexible_container_img(config,['singularity','gatk4','sif'],image_url = config['singularity']['gatk4']['repo'])
     shell:
         """
-        export _JAVA_OPTIONS=-Djava.io.tmpdir={params.temp_directory} && {params.gatk4} \
+        export _JAVA_OPTIONS=-Djava.io.tmpdir={params.temp_directory} && gatk \
         FilterMutectCalls \
         -R {input.ref} \
         -V {input.vcf} \

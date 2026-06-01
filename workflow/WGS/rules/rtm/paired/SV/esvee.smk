@@ -12,7 +12,8 @@ rule esvee_prep:
         ref_version=config['softwares_params'][genome_version]['hmftools']['esvee']['ref_genome_version']
         # if else like  (exprs ? c1 : c2) in C++/javascript is OK too,eg on next line
         # blacklist=("" if config['singularity']['gridss'][genome_version]['blacklist'] == "" else " -b " + config['singularity']['gridss'][genome_version]['blacklist'])
-    singularity: config['singularity']['gridss']['sif']
+    singularity:
+        flexible_container_img(config,['singularity','gridss','sif'],image_url = config['singularity']['gridss']['repo'])
     threads:16
     shell:
         """

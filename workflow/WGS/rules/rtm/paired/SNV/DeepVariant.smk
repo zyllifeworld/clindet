@@ -8,7 +8,8 @@ rule deepvariant_somatic_call:
         ref=config['resources'][genome_version]['REFFA'],
         out_prefix="{project}/{genome_version}/results/vcf/paired/{sample}/deepvariant_somatic",
     threads: 10
-    singularity: config['singularity']['deepvariant_somatic']['sif']
+    singularity:
+        flexible_container_img(config,['singularity','deepvariant_somatic','sif'],image_url = config['singularity']['deepvariant_somatic']['repo'])
     benchmark:
         "{project}/{genome_version}/results/benchmarks/mut/{sample}.deepvariant_somatic_call.benchmark.txt"
     shell:

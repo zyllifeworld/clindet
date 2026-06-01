@@ -9,7 +9,8 @@ rule muse_call:
         ref=config['resources'][genome_version]['REFFA'],
         out_prefix="{project}/{genome_version}/results/vcf/paired/{sample}/{sample}",
     threads: 10
-    singularity: config['singularity']['muse']['sif']
+    singularity:
+        flexible_container_img(config,['singularity','muse','sif'],image_url = config['singularity']['muse']['repo'])
     shell:
         """
         if [ -x /MuSE/bin/MuSE ]; then
@@ -32,7 +33,8 @@ rule muse_sump:
     params:
         dbsnp=config['resources'][genome_version]['DBSNP_GZ']
     threads: 10
-    singularity: config['singularity']['muse']['sif']
+    singularity: 
+        flexible_container_img(config,['singularity','muse','sif'],image_url = config['singularity']['muse']['repo'])
     shell:
         """
         if [ -x /MuSE/bin/MuSE ]; then

@@ -12,7 +12,8 @@ rule SV_svaba:
         ref=config['resources'][genome_version]['REFFA'],
         wd="{project}/{genome_version}/results/sv/paired/svaba/{sample}"
     threads:20
-    singularity: config['singularity']['svaba']['sif']
+    singularity:
+        flexible_container_img(config,['singularity','svaba','sif'],image_url = config['singularity']['svaba']['repo'])
     benchmark:
         "{project}/{genome_version}/results/benchmarks/sv/{sample}.svaba.benchmark.txt"
     shell:
@@ -49,9 +50,11 @@ rule svanno_svaba:
         ref=config['resources'][genome_version]['REFFA'],
         # gtf=config['resources'][genome_version]['GTF'],
         gtf=config['resources'][genome_version]['GTF']
+    singularity:
+        flexible_container_img(config,['singularity','gatk4','sif'],image_url = config['singularity']['gatk4']['repo'])
     shell:
         """
-        {config[softwares][gatk4][call]} SVAnnotate \
+        gatk SVAnnotate \
         -V {input.vcf} \
         --protein-coding-gtf {params.gtf} \
         -O {output.vcf}
@@ -66,5 +69,6 @@ rule svaba_rename_tumor:
     # singularity: config['singularity']['gridss']['sif']
     params:
         vcf="{project}/{genome_version}/results/sv/paired/svaba/{sample}/{sample}.svaba.somatic.rename.sv.vcf"
+    conda: flexible_conda_env(config,['conda','clindet_main'],env_yaml = 'envs/clindet.yaml')
     script:
         "../../../../scripts/gridss/scripts/change_vcf_sample_name.R"

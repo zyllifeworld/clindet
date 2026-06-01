@@ -1,19 +1,19 @@
 #### gridss workflow
 # param check section
 def get_gridss_blacklist(wildcards):
-    blacklist = config.get('singularity', {}).get('gridss', {}).get(genome_version, {}).get('blacklist', '')
+    blacklist = config.get('softwares_params', {}).get(genome_version, {}).get('gridss', {}).get('blacklist', '')
     if not blacklist:
         r_b = ""
     else:
-        r_b = " -b " + config['singularity']['gridss'][genome_version]['blacklist']
+        r_b = " -b " + config['softwares_params'][genome_version]['gridss']['blacklist']
     return r_b
 
 def get_gridss_pondir(wildcards):
-    pondir = config.get('singularity', {}).get('gridss', {}).get(genome_version, {}).get('pondir', '')
+    pondir = config.get('softwares_params', {}).get(genome_version, {}).get('gridss', {}).get('pondir', '')
     if not pondir:
         r_pon = ""
     else:
-        r_pon = " --pondir " + config['singularity']['gridss'][genome_version]['pondir']
+        r_pon = " --pondir " + config['softwares_params'][genome_version]['gridss']['pondir']
     return r_pon
 
 rule SV_gridss:
@@ -27,9 +27,8 @@ rule SV_gridss:
         ref=config['resources'][genome_version]['REFFA'],
         wd="{project}/{genome_version}/results/sv/paired/gridss/{sample}",
         blacklist=get_gridss_blacklist
-        # if else like  (exprs ? c1 : c2) in C++/javascript is OK too,eg on next line
-        # blacklist=("" if config['singularity']['gridss'][genome_version]['blacklist'] == "" else " -b " + config['singularity']['gridss'][genome_version]['blacklist'])
-    singularity: config['singularity']['gridss']['sif']
+    singularity:
+        flexible_container_img(config,['singularity','gridss','sif'],image_url = config['singularity']['gridss']['repo'])
     benchmark:
         "{project}/{genome_version}/results/benchmarks/sv/{sample}.gridss.benchmark.txt"
     shell:
@@ -59,7 +58,8 @@ rule SV_gridss_filter:
         # gridss will auto bgzip file,so will add bgz suffix,use params
         hvcf="{project}/{genome_version}/results/sv/paired/gridss/{sample}/high_confidence_somatic.vcf",
         fullvcf="{project}/{genome_version}/results/sv/paired/gridss/{sample}/high_and_low_confidence_somatic.vcf"
-    singularity: config['singularity']['gridss']['sif']
+    singularity:
+        flexible_container_img(config,['singularity','gridss','sif'],image_url = config['singularity']['gridss']['repo'])
     shell:
         """
         /usr/local/share/gridss-2.13.2-2/gridss_somatic_filter \
@@ -79,7 +79,8 @@ rule gridss_rename_tumor:
         vcf="{project}/{genome_version}/results/sv/paired/gridss/{sample}/high_confidence_somatic.vcf.bgz",
     output:
         vcf="{project}/{genome_version}/results/sv/paired/gridss/{sample}/high_confidence_somatic_rename.vcf.bgz",
-    singularity: config['singularity']['gridss']['sif']
+    singularity:
+        flexible_container_img(config,['singularity','gridss','sif'],image_url = config['singularity']['gridss']['repo'])
     params:
         vcf="{project}/{genome_version}/results/sv/paired/gridss/{sample}/high_confidence_somatic_rename.vcf",
     script:

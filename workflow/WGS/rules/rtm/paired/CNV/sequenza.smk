@@ -4,8 +4,8 @@ rule sequenza_gc_bins:
     output:
         gc="{project}/{genome_version}/results/cnv/paired/sequenza/{genome_version}.gc50.wig.gz"
     threads: 8
-    conda:
-        config['softwares']['sequenza']['conda']
+    singularity:
+        flexible_container_img(config,['singularity','sequenza','sif'],image_url = config['singularity']['sequenza']['repo'])
     shell:
         """
         sequenza-utils gc_wiggle -w 50 \
@@ -24,8 +24,8 @@ rule sequenza_bam2seqz:
     threads: 8
     params:
         gc="{project}/{genome_version}/results/cnv/paired/sequenza/{genome_version}.gc50.wig.gz"
-    conda:
-        config['softwares']['sequenza']['conda']
+    singularity:
+        flexible_container_img(config,['singularity','sequenza','sif'],image_url = config['singularity']['sequenza']['repo'])
     shell:
         """
         sequenza-utils bam2seqz \
@@ -40,8 +40,8 @@ rule sequenza_seqz_binning:
         seqz="{project}/{genome_version}/results/cnv/paired/sequenza/{sample}/{sample}.seqz.gz"
     output:
         bin_seqz="{project}/{genome_version}/results/cnv/paired/sequenza/{sample}/{sample}.bin50_seqz.gz",
-    conda:
-        config['softwares']['sequenza']['conda']
+    singularity:
+        flexible_container_img(config,['singularity','sequenza','sif'],image_url = config['singularity']['sequenza']['repo'])
     shell:
         """
         sequenza-utils seqz_binning -w 50 --seqz {input.seqz} -o {output.bin_seqz}
@@ -54,6 +54,8 @@ rule sequenza_call:
     output:
         segment="{project}/{genome_version}/results/cnv/paired/sequenza/{sample}/{sample}_segments.txt",
     params:
-        wd="{project}/{genome_version}/results/cnv/paired/sequenza/{sample}",
+        wd="{project}/{genome_version}/results/cnv/paired/sequenza/{sample}"
+    singularity:
+        flexible_container_img(config,['singularity','sequenza','sif'],image_url = config['singularity']['sequenza']['repo'])
     script:
         "../../../../scripts/sequenza.R"

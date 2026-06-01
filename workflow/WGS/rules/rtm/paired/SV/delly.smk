@@ -9,7 +9,8 @@ rule SV_delly:
         ref=config['resources'][genome_version]['REFFA'],
     benchmark:
         "{project}/{genome_version}/results/benchmarks/sv/{sample}.delly.benchmark.txt"
-    singularity: config['singularity']['delly']['sif']
+    singularity:
+        flexible_container_img(config,['singularity','delly','sif'],image_url = config['singularity']['delly']['repo'])
     shell:
         """
         delly call -g {params.ref}  {input.Tum} {input.NC} > {output}
@@ -25,7 +26,8 @@ rule SV_delly_germ:
         ref=config['resources'][genome_version]['REFFA']
     benchmark:
         "{project}/{genome_version}/results/benchmarks/sv/{sample}.dellygerm.benchmark.txt"
-    singularity: config['singularity']['delly']['sif']
+    singularity:
+        flexible_container_img(config,['singularity','delly','sif'],image_url = config['singularity']['delly']['repo'])
     shell:
         """
         {config[softwares][delly][call]} call -g {params.ref} {input.NC} -q 10 -s 15 -n > {output}

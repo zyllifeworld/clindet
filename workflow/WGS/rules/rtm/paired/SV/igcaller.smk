@@ -31,7 +31,8 @@ if genome_version in ['hg19','b37','hg38','hg38_EBV']:
             genome_version= config['softwares_params'][genome_version]['igcaller']['genome'],
             chromosomeAnnotation = config['softwares_params'][genome_version]['igcaller']['chromosomeAnnotation']
         threads:10
-        singularity: config['singularity']['igcaller']['sif']
+        singularity:
+            flexible_container_img(config,['singularity','igcaller','sif'],image_url = config['singularity']['igcaller']['repo'])
         benchmark:
             "{project}/{genome_version}/results/benchmarks/sv/{sample}.igcaller.benchmark.txt"
         shell:

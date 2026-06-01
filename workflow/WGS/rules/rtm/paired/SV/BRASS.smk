@@ -6,7 +6,8 @@ rule SV_brass_bamstat:
     output:
         Tum="{project}/{genome_version}/results/recal/paired/{sample}-T.bam.bas",
         NC="{project}/{genome_version}/results/recal/paired/{sample}-NC.bam.bas"
-    singularity: config['singularity']['brass']['sif']
+    singularity:
+        flexible_container_img(config,['singularity','brass','sif'],image_url = config['singularity']['brass']['repo'])
     threads:10
     benchmark:
         "{project}/{genome_version}/results/benchmarks/sv/{sample}.bamstat.benchmark.txt"
@@ -23,6 +24,8 @@ rule brass_cnv:
         ascat="{project}/{genome_version}/results/cnv/paired/BRASS/{sample}/{sample}.ascat"
     params:
         brass_cnv='purple' if 'purple' in somatic_cnv_list else 'ascat'
+    conda: 
+        flexible_conda_env(config,['conda','clindet_main'],env_yaml = 'envs/clindet.yaml')
     script:
         "../../../../scripts/stats_ascat.R"
 
@@ -38,15 +41,16 @@ rule SV_brass:
         log="{project}/{genome_version}/results/sv/paired/BRASS/{sample}/{sample}_brass.log"
     params:
         ref=config['resources'][genome_version]['REFFA'],
-        gc=config['singularity']['brass'][genome_version]['gc'],
-        b=config['singularity']['brass'][genome_version]['b'],
-        d=config['singularity']['brass'][genome_version]['d'],
-        cb=config['singularity']['brass'][genome_version]['cb'],
-        ct=config['singularity']['brass'][genome_version]['ct'],
-        vi=config['singularity']['brass'][genome_version]['vi'],
-        mi=config['singularity']['brass'][genome_version]['mi'],
+        gc=config['softwares_params'][genome_version]['brass']['gc'],
+        b=config['softwares_params'][genome_version]['brass']['b'],
+        d=config['softwares_params'][genome_version]['brass']['d'],
+        cb=config['softwares_params'][genome_version]['brass']['cb'],
+        ct=config['softwares_params'][genome_version]['brass']['ct'],
+        vi=config['softwares_params'][genome_version]['brass']['vi'],
+        mi=config['softwares_params'][genome_version]['brass']['mi'],
         out_dir="{project}/{genome_version}/results/sv/paired/BRASS/{sample}"
-    singularity: config['singularity']['brass']['sif']
+    singularity:
+        flexible_container_img(config,['singularity','brass','sif'],image_url = config['singularity']['brass']['repo'])
     threads:20
     benchmark:
         "{project}/{genome_version}/results/benchmarks/sv/{sample}.brass.benchmark.txt"

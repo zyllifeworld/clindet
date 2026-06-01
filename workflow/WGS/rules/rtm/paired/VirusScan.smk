@@ -8,7 +8,8 @@ rule virusbreakend:
       db="/public/ClinicalExam/lj_sih/resource/genome/human/virusbreakenddb_20210401",
       wd="{project}/{genome_version}/results/virus/virusbreaked/{sample}"
     threads: 10
-    singularity: config['singularity']['gridss']['sif']
+    singularity:
+        flexible_container_img(config,['singularity','gridss','sif'],image_url = config['singularity']['gridss']['repo'])
     shell:
       """
         virusbreakend \

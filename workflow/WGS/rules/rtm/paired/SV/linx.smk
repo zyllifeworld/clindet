@@ -13,7 +13,8 @@ rule paired_linx:
         known_fusion_file=config['softwares_params'][genome_version]['hmftools']['linx']['known_fusion_file'],
         sv_vcf=get_purple_sv_vcf
     threads: 10
-    singularity:config['singularity']['hmftools']['sif']
+    conda: 
+        flexible_conda_env(config,['conda','hmftools'],env_yaml = 'envs/clindet.yaml')
     shell:
         """
         linx \
@@ -44,7 +45,8 @@ rule report_linx:
         known_fusion_file=config['softwares_params'][genome_version]['hmftools']['linx']['known_fusion_file'],
         sv_vcf=get_purple_sv_vcf
     threads: 10
-    singularity:config['singularity']['hmftools']['sif']
+    conda: 
+        flexible_conda_env(config,['conda','hmftools'],env_yaml = 'envs/clindet.yaml')
     shell:
         """
         java -cp /usr/bin/linx_v1.25.jar com.hartwig.hmftools.linx.visualiser.SvVisualiser \

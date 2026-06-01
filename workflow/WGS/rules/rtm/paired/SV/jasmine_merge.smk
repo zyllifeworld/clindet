@@ -9,7 +9,7 @@ rule brass_pre_merge:
         log="{project}/{genome_version}/results/sv/paired/DELLY/{sample}/{sample}_brass.log"
     output:
         vcf="{project}/{genome_version}/results/sv/paired/merge/{sample}/brass.vcf"
-    conda: config['conda']['clindet_main']
+    conda: flexible_conda_env(config,['conda','clindet_main'],env_yaml = 'envs/clindet.yaml')
     params:
         ref=config['resources'][genome_version]['REFFA'],
         vcf="{project}/{genome_version}/results/sv/paired/BRASS/{sample}/{sample}_T_vs_{sample}_NC.annot.vcf.gz"
@@ -38,7 +38,7 @@ rule svaba_pre_merge:
         vcf="{project}/{genome_version}/results/sv/paired/svaba/{sample}/{sample}.svaba.somatic.sv.vcf"
     output:
         vcf="{project}/{genome_version}/results/sv/paired/merge/{sample}/svaba.vcf"
-    conda: config['conda']['clindet_main']
+    conda: flexible_conda_env(config,['conda','clindet_main'],env_yaml = 'envs/clindet.yaml')
     params:
         ref=config['resources'][genome_version]['REFFA']
     shell:
@@ -52,7 +52,7 @@ rule gridss_pre_merge:
         vcf="{project}/{genome_version}/results/sv/paired/gridss/{sample}/high_confidence_somatic.vcf.bgz"
     output:
         vcf="{project}/{genome_version}/results/sv/paired/merge/{sample}/gridss.vcf"
-    conda: config['conda']['clindet_main']
+    conda: flexible_conda_env(config,['conda','clindet_main'],env_yaml = 'envs/clindet.yaml')
     params:
         ref=config['resources'][genome_version]['REFFA']
     shell:
@@ -69,7 +69,7 @@ rule manta_pre_merge:
     params:
         ref=config['resources'][genome_version]['REFFA'],
         vcf="{project}/{genome_version}/results/vcf/paired/{sample}/Manta/results/variants/somaticSV.vcf.gz"
-    conda: config['conda']['clindet_main']
+    conda: flexible_conda_env(config,['conda','clindet_main'],env_yaml = 'envs/clindet.yaml')
     shell:
         """
         bcftools view -i 'SVTYPE="BND" & FILTER="PASS"' {input.vcf} -o {output.vcf} -O v
@@ -85,7 +85,8 @@ rule jasmine_merge:
     params:
         ref=config['resources'][genome_version]['REFFA'],
         wd="{project}/{genome_version}/results/sv/paired/merge/{sample}"
-    singularity: config['singularity']['jasmine']['sif']
+    singularity:
+        flexible_container_img(config,['singularity','jasmine','sif'],image_url = config['singularity']['jasmine']['repo'])
     shell:
         """
         for f in $(echo "{input}")

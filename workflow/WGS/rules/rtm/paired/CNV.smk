@@ -1,4 +1,4 @@
-ascat_config = config['softwares']['ascat_wgs'].get(genome_version, False)
+ascat_config = config['softwares_params'][genome_version].get('ascat_wgs', False)
 if ascat_config:
     include:"CNV/ASCAT.smk"
 ### PoN of factesCH
@@ -7,7 +7,7 @@ include:"CNV/facets_suite.smk"
 if genome_version in ['b37','hg38']:
     include:"CNV/purple.smk"
 
-battenberg_config = config['softwares']['ascat_wgs'].get(genome_version, False)
+battenberg_config = config['softwares_params'][genome_version].get('ascat_wgs', False)
 if battenberg_config:
     include:"CNV/Battenberg.smk"
 ##### sequenza section

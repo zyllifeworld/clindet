@@ -9,7 +9,6 @@ rule call_variants_sentieon:
         ori_data="{project}/{genome_version}/results/vcf/paired/{sample}/sentieon.ori_data"
         # contam_data="{project}/{genome_version}/results/vcf/paired/{sample}/sentieon.contam_data"
     params:
-        gatk4=config['softwares']['gatk4']['call'],
         temp_directory=config['params']['java']['temp_directory'],
         af_vcf=config['resources'][genome_version]['MUTECT2_VCF'],
         temp_vcf="{project}/{genome_version}/results/vcf/paired/{sample}/sent_temp.vcf",
