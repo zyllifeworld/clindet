@@ -23,7 +23,7 @@ else:
 groups = ['NC','T']
 # stages you want run. conpair check  sample swap, case_report generate HTML case report, multiqc for QC report 
 stages = config.get("run_params", {}).get("stages", [])
-
+caller_list = config.get("run_params", {}).get("somatic_caller_list", [])
 # germline mutation calling softwares
 germ_caller_list = config.get("run_params", {}).get("germ_caller_list", [])
 # somatic CNV calling softwares

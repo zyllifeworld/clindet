@@ -71,7 +71,7 @@ rule facets_annotate_maf:
         rds="{project}/{genome_version}/results/cnv/paired/facets/{sample}/{sample}_purity.rds",
         maf="{project}/{genome_version}/results/maf/paired/{sample}/merge/{sample}.maf"
     output:
-        png="{project}/{genome_version}/results/cnv/paired/facets/{sample}/{sample}_purity.png"
+        png="{project}/{genome_version}/results/maf/paired/{sample}/merge/{sample}.annoccf.maf"
     params:
         wd="{project}/{genome_version}/results/cnv/paired/facets/{sample}",
         genome=lambda wildcards: get_config_value(config,['singularity', 'facets', wildcards.genome_version, 'genome'],default="hg19"),

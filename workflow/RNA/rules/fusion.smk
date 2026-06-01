@@ -68,7 +68,7 @@ rule TRUST4_TBCR:
         temp_directory=config['params']['java']['temp_directory'],
         f=config['softwares_params'][genome_version]['trust4']['f'],
         ref=config['resources'][genome_version]['REFFA'],
-        oref="{project}/{genome_version}/results/IG/TRUST4/{sample}"
+        oref="{project}/{genome_version}/results/IG/TRUST4/{sample}",
         trust4_dir="resources/softwares/TRUST4"
     shell:
         r"""
