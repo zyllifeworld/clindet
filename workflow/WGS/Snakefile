@@ -1,7 +1,6 @@
 ##### Modules #####
 include: "../common/rules/qc.smk"
 include: "../common/rules/mapping.smk"
-include: "rules/calling_unpaired.smk"
 
 ## cgp pipeline caller
 include: "../common/rules/cgp/cgppindel.smk"
@@ -10,6 +9,8 @@ include: "../common/rules/cgp/cgpCaVEMan.smk"
 ## rtm
 include: "rules/rtm/paired/SNV.smk"
 include: "rules/rtm/paired/CNV.smk"
+## rtm unpaired
+include: "rules/rtm/unpaired/SNV.smk"
 
 # post process steps
 include: "../common/rules/merge_loop.smk"
