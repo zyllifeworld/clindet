@@ -72,7 +72,6 @@ workflow/WES/rules/rtm/SV*
 workflow/WES/rules/rtm/paired/SV*
 
 workflow/WES/scripts/*.txt
-workflow/WES/scripts/caveman/
 workflow/WES/scripts/MM-100/
 workflow/WES/scripts/last.dump.rda
 workflow/WES/scripts/MM-100_new/
@@ -199,3 +198,6 @@ workflow/WES/rules/report/sections/04_annotation.Rmd
 workflow/WES/rules/report/sections/05_actionability.Rmd
 workflow/WES/rules/report/sections/06_summary.Rmd
 workflow/config/conf/temp.yaml
+workflow/WES/scripts/caveman/hg19.bed
+workflow/WES/scripts/caveman/mutect2_to_caveman.R
+workflow/WES/scripts/caveman/un_cavman_cmds.R
