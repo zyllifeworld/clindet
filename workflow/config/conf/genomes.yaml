@@ -25,7 +25,7 @@ resources:
     WGS_PON: "resources/ref_genome/hg38/1000g_pon.hg38.vcf.gz"
     DBSNP: "resources/ref_genome/hg38/dbsnp_138.hg38.vcf.gz"
     DBSNP_GZ: "resources/ref_genome/hg38/dbsnp_138.hg38.vcf.gz"
-    DBSNP_INDEL: ""
+    DBSNP_INDEL: "resources/ref_genome/hg38/dbsnp_138.hg38.vcf.gz"
     MUTECT2_VCF: "resources/ref_genome/hg38/af-only-gnomad.hg38.vcf.gz"
     REFFA_DICT: "resources/ref_genome/hg38/GRCh38_masked_exclusions_alts_hlas.fasta"
     MUTECT2_germline_vcf: "resources/ref_genome/hg38/af-only-gnomad.hg38.vcf.gz"

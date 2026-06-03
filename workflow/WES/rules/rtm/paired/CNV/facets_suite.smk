@@ -32,7 +32,7 @@ rule facets_calling:
         arm_level="{project}/{genome_version}/results/cnv/paired/facets/{sample}/{sample}.arm_level.txt"
     params:
         wd="{project}/{genome_version}/results/cnv/paired/facets/{sample}",
-        genome=lambda wildcards: get_config_value(config,['singularity', 'facets', wildcards.genome_version, 'genome'],default="hg19"),
+        genome=lambda wildcards: get_config_value(config,['softwares_params', wildcards.genome_version, 'facets', 'genome'],default="hg19"),
     threads: 8
     singularity:
         flexible_container_img(config,['singularity','facets','sif'],image_url = config['singularity']['facets']['repo'])

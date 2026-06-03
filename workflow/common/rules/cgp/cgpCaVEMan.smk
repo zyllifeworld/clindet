@@ -193,6 +193,8 @@ rule CM_germ_flag:
     output:
         vcf="{project}/{genome_version}/results/vcf_germline/paired/{sample}/caveman.vcf"
     threads: 20
+    conda: 
+        flexible_conda_env(config,['conda','clindet_main'],env_yaml = 'envs/clindet.yaml')
     params:
         ref=config['resources'][genome_version]['REFFA'],
         c=lambda wildcards: get_config_value(
