@@ -142,7 +142,7 @@ def get_bcftools_filter_rules(wildcards):
             "exclude": ''
         },
         "cgppindel": {
-            "include": 'PASS',
+            "include": 'FILTER="PASS"',
             "exclude": ''
         }
     }

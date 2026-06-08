@@ -6,5 +6,6 @@ channels:
 dependencies:
   - strelka
   - manta
-  - bgzip
   - tabix
+  - libboost=1.85.0
+  # libboost version must be 1.85.0 or lower

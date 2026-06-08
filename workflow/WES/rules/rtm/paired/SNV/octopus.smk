@@ -13,11 +13,13 @@ rule octopus_call_paired:
         "{project}/{genome_version}/results/benchmarks/mut/{sample}.octopus.benchmark.txt"
     shell:
         """
-        [ ! -f {input.regions}.lancet2 ] && cut -f 1-3 {input.regions} > {input.regions}.lancet2
-        Lancet2 pipeline --reference {input.reference} -T {threads} \
-        --tumor {input.Tum} --normal {input.NC} \
-        --bed-file {input.regions}.lancet2 --out-vcfgz {output.vcf_gz}
-        zcat {output.vcf_gz} > {output.vcf}
+        octopus \
+            -R {input.ref} \
+            -I {input.Tum} {input.NC} \
+            --normal-sample {wildcards.sample}_NC \
+            -t {input.region} \
+            -o {output.vcf} \
+            --threads {threads}
         """
 
 

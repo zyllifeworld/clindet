@@ -35,7 +35,7 @@ singularity:
     repo: "docker://quay.io/ohsu-comp-bio/battenberg:mar-17"
   arriba:
     sif: "resources/containers/arriba240.sif"
-    repo: "docker://uhrigs/arriba:2.5.1"
+    repo: "docker://uhrigs/arriba:2.4.0"
     call: "/arriba_v2.4.0/arriba "  
   lofreq:
     sif: "resources/containers/lofreq215.sif"

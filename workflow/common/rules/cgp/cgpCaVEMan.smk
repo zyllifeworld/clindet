@@ -34,13 +34,13 @@ if genome_version in ['hg19','b37','hg38','hg38_EBV']:
             ref=config['resources'][genome_version]['REFFA'],
             igbed=lambda wildcards: get_config_value(
                 config,
-                ['singularity', 'caveman', wildcards.genome_version, 'ignorebed'],
+                ['softwares_params', wildcards.genome_version, 'caveman',  'ignorebed'],
                 default=""
             ),
             out_dir='{project}/{genome_version}/results/vcf/paired/{sample}/caveman',
             s=lambda wildcards: get_config_value(
                 config,
-                ['singularity', 'caveman', wildcards.genome_version, 'flag','s'],
+                ['softwares_params', wildcards.genome_version, 'caveman',  'flag','s'],
                 default=""
             ),
             seqtype = 'WXS' if config["run_type"] == 'wes' else "WGS"
@@ -94,7 +94,7 @@ else:
             ref=config['resources'][genome_version]['REFFA'],
             igbed=lambda wildcards: get_config_value(
                     config,
-                    ['singularity', 'caveman', wildcards.genome_version, 'ignorebed'],
+                    ['softwares_params', wildcards.genome_version, 'caveman',  'ignorebed'],
                     default=""
                 ),
             out_dir='{project}/{genome_version}/results/vcf/paired/{sample}/caveman',
@@ -128,37 +128,37 @@ rule CM_flag:
         ref=config['resources'][genome_version]['REFFA'],
         c=lambda wildcards: get_config_value(
                 config,
-                ['singularity', 'caveman', wildcards.genome_version, 'flag','c'],
+                ['softwares_params', wildcards.genome_version, 'caveman',  'flag','c'],
                 default=""
             ),
         v=lambda wildcards: get_config_value(
                 config,
-                ['singularity', 'caveman', wildcards.genome_version, 'flag','v'],
+                ['softwares_params', wildcards.genome_version, 'caveman',  'flag','v'],
                 default=""
             ),
         u=lambda wildcards: get_config_value(
                 config,
-                ['singularity', 'caveman', wildcards.genome_version, 'flag','u'],
+                ['softwares_params', wildcards.genome_version, 'caveman',  'flag','u'],
                 default=""
             ),
         b=lambda wildcards: get_config_value(
                 config,
-                ['singularity', 'caveman', wildcards.genome_version, 'flag','b'],
+                ['softwares_params', wildcards.genome_version, 'caveman',  'flag','b'],
                 default=""
             ),
         ab=lambda wildcards: get_config_value(
                 config,
-                ['singularity', 'caveman', wildcards.genome_version, 'flag','ab'],
+                ['softwares_params', wildcards.genome_version, 'caveman',  'flag','ab'],
                 default=""
             ),
         g=lambda wildcards: get_config_value(
                 config,
-                ['singularity', 'caveman', wildcards.genome_version, 'flag','g'],
+                ['softwares_params', wildcards.genome_version, 'caveman',  'flag','g'],
                 default=""
             ),
         s=lambda wildcards: get_config_value(
                 config,
-                ['singularity', 'caveman', wildcards.genome_version, 'flag','s'],
+                ['softwares_params', wildcards.genome_version, 'caveman',  'flag','s'],
                 default=""
             )
     singularity:
@@ -199,37 +199,37 @@ rule CM_germ_flag:
         ref=config['resources'][genome_version]['REFFA'],
         c=lambda wildcards: get_config_value(
                 config,
-                ['singularity', 'caveman', wildcards.genome_version, 'flag','c'],
+                ['softwares_params', wildcards.genome_version, 'caveman',  'flag','c'],
                 default=""
             ),
         v=lambda wildcards: get_config_value(
                 config,
-                ['singularity', 'caveman', wildcards.genome_version, 'flag','v'],
+                ['softwares_params', wildcards.genome_version, 'caveman',  'flag','v'],
                 default=""
             ),
         u=lambda wildcards: get_config_value(
                 config,
-                ['singularity', 'caveman', wildcards.genome_version, 'flag','u'],
+                ['softwares_params', wildcards.genome_version, 'caveman',  'flag','u'],
                 default=""
             ),
         b=lambda wildcards: get_config_value(
                 config,
-                ['singularity', 'caveman', wildcards.genome_version, 'flag','b'],
+                ['softwares_params', wildcards.genome_version, 'caveman',  'flag','b'],
                 default=""
             ),
         ab=lambda wildcards: get_config_value(
                 config,
-                ['singularity', 'caveman', wildcards.genome_version, 'flag','ab'],
+                ['softwares_params', wildcards.genome_version, 'caveman',  'flag','ab'],
                 default=""
             ),
         g=lambda wildcards: get_config_value(
                 config,
-                ['singularity', 'caveman', wildcards.genome_version, 'flag','g'],
+                ['softwares_params', wildcards.genome_version, 'caveman',  'flag','g'],
                 default=""
             ),
         s=lambda wildcards: get_config_value(
                 config,
-                ['singularity', 'caveman', wildcards.genome_version, 'flag','s'],
+                ['softwares_params', wildcards.genome_version, 'caveman',  'flag','s'],
                 default=""
             ),
         vcf="{project}/{genome_version}/results/vcf/paired/{sample}/caveman/{sample}_T_vs_{sample}_NC.snps.ids.vcf.gz",

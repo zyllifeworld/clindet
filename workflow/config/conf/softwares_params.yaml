@@ -269,7 +269,7 @@ softwares_params:
         filter: "resources/ref_genome/hg38/Sanger/SNV_INDEL_ref_GRCh38_hla_decoy_ebv-fragment/pindel/WGS_Rules.lst"
         normal_panel: "resources/ref_genome/hg38/Sanger/SNV_INDEL_ref_GRCh38_hla_decoy_ebv-fragment/pindel/pindel_np.gff3.gz"
     caveman:
-      ignorebed: "resources/ref_genome/hg38/Sanger/SNV_INDEL_ref_GRCh38_hla_decoy_ebv-fragment/pindel/HiDepth.bed.gz"
+      ignorebed: "resources/ref_genome/hg38/Sanger/SNV_INDEL_ref_GRCh38_hla_decoy_ebv-fragment/caveman/genome.gap.tab"
       flag:
         c: "resources/ref_genome/hg38/Sanger/SNV_INDEL_ref_GRCh38_hla_decoy_ebv-fragment/caveman/flagging/flag.vcf.config.ini"
         v: "resources/ref_genome/hg38/Sanger/SNV_INDEL_ref_GRCh38_hla_decoy_ebv-fragment/caveman/flagging/flag.to.vcf.convert.ini"
