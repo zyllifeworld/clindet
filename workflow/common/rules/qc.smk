@@ -81,12 +81,12 @@ if conpair_config:
         singularity:
             flexible_container_img(config,['singularity','conpair','sif'],image_url = config['singularity']['conpair']['repo'])
         params:
-            marker = '' if isinstance(conpair_marker_defalut, bool) and conpair_marker_defalut is True else '-M ' + config['softwares_params'][genome_version]['conpair']['marker']
+            marker = '' if isinstance(conpair_marker_defalut, bool) and conpair_marker_defalut is True else '-M ' + config['softwares_params'][genome_version]['conpair']['marker'].replace(".bed", ".txt")
         benchmark:
             "{project}/{genome_version}/results/benchmarks/conpair/{sample}.concordance.benchmark.txt"
         shell:
             """
-            /Conpair-0.2/scripts/verify_concordance.py -T {input.Tum_pileup} -N {input.NC_pileup} --outfile {output.txt}
+            /Conpair-0.2/scripts/verify_concordance.py -T {input.Tum_pileup} -N {input.NC_pileup} --outfile {output.txt} {params.marker}
             """
 
     rule conpair_contamination:
@@ -96,7 +96,7 @@ if conpair_config:
         output:
             txt="{project}/{genome_version}/results/qc/conpair/paired/{sample}/{sample}-T_contamination.txt",
         params:
-            marker = '' if isinstance(conpair_marker_defalut, bool) and conpair_marker_defalut is True else '-M ' + config['softwares_params'][genome_version]['conpair']['marker']
+            marker = '' if isinstance(conpair_marker_defalut, bool) and conpair_marker_defalut is True else '-M ' + config['softwares_params'][genome_version]['conpair']['marker'].replace(".bed", ".txt")
         singularity: 
             flexible_container_img(config,['singularity','conpair','sif'],image_url = config['singularity']['conpair']['repo'])
         benchmark:
