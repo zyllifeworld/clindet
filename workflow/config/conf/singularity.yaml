@@ -19,7 +19,7 @@ singularity:
     sif: "resources/containers/facets-suite-208.sif"
     repo: "docker://asntech/facets-suite:v2.0.8"
   igcaller:
-    sif: "/public/ClinicalExam/lj_sih/softwares/igcaller-1.2.1.simg"
+    sif: "resources/containers/igcaller-1.2.1.simg"
     repo: "docker://shahcompbio/igcaller:latest"
   delly:
     sif: "resources/containers/delly_v1.7.2.sif"
@@ -31,7 +31,7 @@ singularity:
     sif: "resources/containers/svaba.sif"
     repo: "https://depot.galaxyproject.org/singularity/svaba:1.1.0--hf5e1c6e_5"
   cgpbattenberg:
-    sif: "/public/ClinicalExam/lj_sih/softwares/cgpbattenberg371.sif"
+    sif: "resources/containers/cgpbattenberg371.sif"
     repo: "docker://quay.io/ohsu-comp-bio/battenberg:mar-17"
   arriba:
     sif: "resources/containers/arriba240.sif"

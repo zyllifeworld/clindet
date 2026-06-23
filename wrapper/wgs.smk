@@ -13,7 +13,7 @@ configfile: "workflow/config/conf/softwares_params.yaml"
 
 project = config['project']['output_dir']
 genome_version = config['project']['genome_version']
-recal = config.get("run_params", {}).get("stages", False)
+recal = config.get("project", {}).get("recal_BQSR", False)
 recal_config = config['resources']['varanno'].get(genome_version, False)
 if recal_config:
     recal = False

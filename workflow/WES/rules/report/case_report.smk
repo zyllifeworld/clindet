@@ -33,53 +33,57 @@ rule run_cancer_report:
         ## patient and sample info
         # patient_csv: '~/Documents/Project/project_clindet/source/clindet_report/report/test_data/patient_info.csv'
         ## Assay QC
-        ngs_bit_sample_geneder = "{project}/{genome_version}/results/qc/conpair/qc/ngs_bit/{sample}-gender.tsv",
+        ngs_bit_sample_gender = "{project}/{genome_version}/results/qc/ngs_bit/{sample}-gender.tsv",
         conpair_contamination = "{project}/{genome_version}/results/qc/conpair/paired/{sample}/{sample}-T_contamination.txt",
         conpair_concordance = "{project}/{genome_version}/results/qc/conpair/paired/{sample}/{sample}-T_concordance.txt",
-        ngs_bit_mapqc_tumor = "{project}/{genome_version}/results/qc/conpair/paired/{sample}/{sample}_T_mapqc.txt",
-        ngs_bit_mapqc_normal = "{project}/{genome_version}/results/qc/conpair/paired/{sample}/{sample}_NC_mapqc.txt"
+        ngs_bit_mapqc_tumor = "{project}/{genome_version}/results/qc/ngs_bit/paired/{sample}/{sample}_T_mapqc.txt",
+        ngs_bit_mapqc_normal = "{project}/{genome_version}/results/qc/ngs_bit/paired/{sample}/{sample}_NC_mapqc.txt"
     params:
+        ## somatic mut MAF ########
+        patient_csv = lambda wc, input: (
+            os.path.abspath(input.patient_csv)
+            if getattr(input, "patient_csv", None)
+            else None
+        ),
         tumor_name = lambda wc: wc.sample,
         genome_version = lambda wc: wc.genome_version,
         batch_name = lambda wc: wc.project,
-        report_rmd  = lambda wc, input: abspath(input.rmd_file),
-        af_keygenes  = lambda wc, input: abspath(input.af_keygenes),
+        report_rmd  = lambda wc, input: os.path.abspath(input.rmd_file),
+        af_keygenes  = lambda wc, input: os.path.abspath(input.af_keygenes),
         output_file         = lambda wc, output: join(os.getcwd(), output['report_html']),
         ## Assay QC
-        ngs_bit_sample_geneder = lambda wc, input: os.path.basename(abspath(input.ngs_bit_sample_geneder)),
-        conpair_contamination =  lambda wc, input: os.path.basename(abspath(input.conpair_contamination)),
-        conpair_concordance = lambda wc, input: os.path.basename(abspath(input.conpair_concordance)),
-        ngs_bit_mapqc_tumor = lambda wc, input: os.path.basename(abspath(input.ngs_bit_mapqc_tumor)),
-        ngs_bit_mapqc_normal = lambda wc, input: os.path.basename(abspath(input.ngs_bit_mapqc_normal)),
+        ngs_bit_sample_gender = lambda wc, input: os.path.abspath(input.ngs_bit_sample_gender),
+        conpair_contamination =  lambda wc, input: os.path.abspath(input.conpair_contamination),
+        conpair_concordance = lambda wc, input: os.path.abspath(input.conpair_concordance),
+        ngs_bit_mapqc_tumor = lambda wc, input: os.path.abspath(input.ngs_bit_mapqc_tumor),
+        ngs_bit_mapqc_normal = lambda wc, input: os.path.abspath(input.ngs_bit_mapqc_normal),
         ## somatic mut MAF ########
         somatic_mut_maf = lambda wc, input: (
-            os.path.basename(abspath(input.somatic_mut_maf))
+            os.path.abspath(input.somatic_mut_maf)
             if getattr(input, "somatic_mut_maf", None)
             else None
         ),
         ### CNV results dir
-        ascat_res_dir=lambda wc, input: os.path.basename(abspath(input.ascat_rdata)),
-        purple_res_dir=lambda wc, input: abspath(input.purple_res_dir),
+        ascat_res_dir=lambda wc, input: os.path.dirname(os.path.abspath(input.ascat_rdata)),
+        purple_res_dir=lambda wc, input: os.path.abspath(input.purple_res_dir),
         ## purple results
-        purple_som_snv_vcf  = lambda wc, input: abspath(input.purple_som_snv_vcf),
-        purple_som_cnv      = lambda wc, input: abspath(input.purple_som_cnv),
-        purple_som_gene_cnv = lambda wc, input: abspath(input.purple_som_gene_cnv),
-        # purple_germ_cnv     = lambda wc, input: abspath(input.purple_germ_cnv),
-        purple_purity       = lambda wc, input: abspath(input.purple_purity),
-        purple_qc           = lambda wc, input: abspath(input.purple_qc),
-        ## conda list
-        # conda_list          = lambda wc, input: abspath(input.conda_list),
-        # img_dir_abs         = lambda wc, output: abspath(output.img_dir),
+        purple_som_snv_vcf  = lambda wc, input: os.path.abspath(input.purple_som_snv_vcf),
+        purple_som_cnv      = lambda wc, input: os.path.abspath(input.purple_som_cnv),
+        purple_som_gene_cnv = lambda wc, input: os.path.abspath(input.purple_som_gene_cnv),
+        # purple_germ_cnv     = lambda wc, input: os.path.abspath(input.purple_germ_cnv),
+        purple_purity       = lambda wc, input: os.path.abspath(input.purple_purity),
+        purple_qc           = lambda wc, input: os.path.abspath(input.purple_qc),
+        # conda list
+        # conda_list          = lambda wc, input: os.path.abspath(input.conda_list),
+        # img_dir_abs         = lambda wc, output: os.path.abspath(output.img_dir),
     output:
         report_html = '{project}/{genome_version}/results/report/{sample}/{sample}_cancer_report.html',
         # img_dir = directory('{project}/{genome_version}/results/reprot/{sample}/img'),
     resources:
         mem_mb=lambda wildcards, attempt: attempt * 10000
     message:
-        lambda wildcards, params: (
-            f"Parameters for {wildcards.sample}\n"
-            + format_params(params)
-        )
-    conda:'cancer_report'
+        "Running cancer report for sample {wildcards.sample}"
+    conda:
+        flexible_conda_env(config,['conda','cancer_report'],env_yaml = 'envs/cancer_report.yaml')
     script:
         '../../scripts/rmd.R'

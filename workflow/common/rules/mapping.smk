@@ -20,26 +20,49 @@ rule map_reads:
         samtools sort -@ {threads} -O bam -o {output}
         """
 
-rule mark_duplicates:
-    input:
-        "{project}/{genome_version}/results/mapped/{sample_type}/{sample}-{group}.sorted.bam",
-    output:
-        bam="{project}/{genome_version}/results/dedup/{sample_type}/{sample}-{group}.sorted.bam",
-        metrics="{project}/{genome_version}/results/qc/dedup/{sample_type}/{sample}-{group}.metrics.txt",
-        bai="{project}/{genome_version}/results/dedup/{sample_type}/{sample}-{group}.sorted.bai"
-    params:
-        temp_directory=config['params']['java']['temp_directory']
-    singularity:
-        flexible_container_img(config,['singularity','gatk4','sif'],image_url = config['singularity']['gatk4']['repo'])
-    benchmark:
-        "{project}/{genome_version}/results/benchmarks/mapping/{sample_type}/{sample}-{group}.markdup.benchmark.txt"
-    shell:
-        """
-        gatk MarkDuplicates --CREATE_INDEX true --VALIDATION_STRINGENCY SILENT \
-        -I {input} \
-        -O {output.bam} \
-        -M {output.metrics}
-        """
+if config.get('rmdup_tools') == 'sambamba':
+    rule mark_duplicates:
+        input:
+            "{project}/{genome_version}/results/mapped/{sample_type}/{sample}-{group}.sorted.bam",
+        output:
+            bam="{project}/{genome_version}/results/dedup/{sample_type}/{sample}-{group}.sorted.bam",
+            bai="{project}/{genome_version}/results/dedup/{sample_type}/{sample}-{group}.sorted.bai"
+        params:
+            temp_directory=config['params']['java']['temp_directory']
+        threads: 10
+        singularity:
+            flexible_container_img(config,['singularity','sambamba','sif'],image_url = config['singularity']['sambamba']['repo'])
+        benchmark:
+            "{project}/{genome_version}/results/benchmarks/mapping/{sample_type}/{sample}-{group}.sambamba_markdup.benchmark.txt"
+        shell:
+            """
+            sambamba markdup -p -t {threads} \
+                --tmpdir {params.temp_directory} \
+                {input} \
+                {output.bam}
+            """
+else:
+    rule mark_duplicates:
+        input:
+            "{project}/{genome_version}/results/mapped/{sample_type}/{sample}-{group}.sorted.bam",
+        output:
+            bam="{project}/{genome_version}/results/dedup/{sample_type}/{sample}-{group}.sorted.bam",
+            metrics="{project}/{genome_version}/results/qc/dedup/{sample_type}/{sample}-{group}.metrics.txt",
+            bai="{project}/{genome_version}/results/dedup/{sample_type}/{sample}-{group}.sorted.bai"
+        params:
+            temp_directory=config['params']['java']['temp_directory']
+        singularity:
+            flexible_container_img(config,['singularity','gatk4','sif'],image_url = config['singularity']['gatk4']['repo'])
+        benchmark:
+            "{project}/{genome_version}/results/benchmarks/mapping/{sample_type}/{sample}-{group}.markdup.benchmark.txt"
+        shell:
+            """
+            export _JAVA_OPTIONS=-Djava.io.tmpdir={params.temp_directory} && \
+            gatk MarkDuplicates --CREATE_INDEX true --VALIDATION_STRINGENCY SILENT \
+            -I {input} \
+            -O {output.bam} \
+            -M {output.metrics}
+            """
 
 ### for faster run, may consider not run applyBQSR, but i will keep this step in WES, you can customize as you own.
 ## For Noveseq data, don't do this step, meaningless!
@@ -64,6 +87,7 @@ if recal:
             "{project}/{genome_version}/results/benchmarks/mapping/{sample_type}/{sample}-{group}.recal.benchmark.txt"
         shell:
             """ 
+                export _JAVA_OPTIONS=-Djava.io.tmpdir={params.temp_directory} && \  
                 gatk BaseRecalibrator --use-original-qualities -R {input.ref} \
                 -I {input.bam} \
                 -O {output.recal_table} \
@@ -87,7 +111,9 @@ if recal:
         benchmark:
             "{project}/{genome_version}/results/benchmarks/mapping/{sample_type}/{sample}-{group}.applybqsr.benchmark.txt"
         shell:
-            """gatk ApplyBQSR --add-output-sam-program-record -use-original-qualities \
+            """
+            export _JAVA_OPTIONS=-Djava.io.tmpdir={params.temp_directory} && \
+            gatk ApplyBQSR --add-output-sam-program-record -use-original-qualities \
                 --bqsr-recal-file {input.recal_table} \
                 -R {input.ref} \
                 -I {input.bam} \

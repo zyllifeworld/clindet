@@ -135,7 +135,7 @@ rule ngs_bit_sample_gender:
         Tum="{project}/{genome_version}/results/recal/paired/{sample}-T.bam",
         NC="{project}/{genome_version}/results/recal/paired/{sample}-NC.bam",
     output:
-        tsv="{project}/{genome_version}/results/qc/conpair/qc/ngs_bit/{sample}-gender.tsv",
+        tsv="{project}/{genome_version}/results/qc/ngs_bit/{sample}-gender.tsv",
     params:
         build_version = get_ngsbit_build
     singularity: 
@@ -153,7 +153,7 @@ rule ngs_bit_mapping:
         ref=config['resources'][genome_version]['REFFA'],
         bed=get_sample_bed
     output:
-        txt="{project}/{genome_version}/results/qc/conpair/paired/{sample}/{sample}_{sample_group}_mapqc.txt",
+        txt="{project}/{genome_version}/results/qc/ngs_bit/paired/{sample}/{sample}_{sample_group}_mapqc.txt",
     singularity: 
         flexible_container_img(config,['singularity','ngs_bit','sif'],image_url = config['singularity']['ngs_bit']['repo'])
     benchmark:

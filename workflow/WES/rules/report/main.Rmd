@@ -12,31 +12,31 @@ output:
     highlight: kate
 params:
   ## common config
-  af_keygenes: '~/Documents/Project/project_clindet/source/clindet_report/report/test_data/final_panel.tsv'
-  genome_version: 'b37'
+  af_keygenes: NULL
+  genome_version: NULL
   title: "Clindet WES analysis case Report"
-  tumor_name: "CGGA_1288"
+  tumor_name: NULL
   ## patient and sample info
-  patient_csv: '~/Documents/Project/project_clindet/source/clindet_report/report/test_data/patient_info.csv'
+  patient_csv: NULL
   ## Assay QC
-  ngs_bit_sample_geneder: '~/Documents/Project/project_clindet/source/clindet_report/report/test_data/ngs-bit/CGGA_528-gender.tsv'
-  conpair_contamination: '~/Documents/Project/project_clindet/source/clindet_report/report/test_data/CGGA_1288/CGGA_1288-T_contamination.txt'
-  conpair_concordance: '~/Documents/Project/project_clindet/source/clindet_report/report/test_data/CGGA_1288/CGGA_1288-T_concordance.txt'
-  ngs_bit_mapqc_tumor: '~/Documents/Project/project_clindet/source/clindet_report/report/test_data/ngs-bit/CGGA_528_T_bamqc.txt'
-  ngs_bit_mapqc_normal: '~/Documents/Project/project_clindet/source/clindet_report/report/test_data/ngs-bit/CGGA_528_NC_bamqc.txt'
+  ngs_bit_sample_gender: NULL
+  conpair_contamination: NULL
+  conpair_concordance: NULL
+  ngs_bit_mapqc_tumor: NULL
+  ngs_bit_mapqc_normal: NULL
   
   ## virus reports #######
   virusbreakend_tsv: NULL
   virusbreakend_vcf: NULL
   ## somatic mut MAF ########
-  somatic_mut_maf: "~/Documents/Project/project_clindet/source/clindet_report/report/test_data/CGGA_1288.maf"
+  somatic_mut_maf: NULL
   ## copy number results ##
-  ascat_res_dir: '~/Documents/Project/project_clindet/source/clindet_report/report/test_data/ascat/CGGA_1288'
-  purple_res_dir: '~/Documents/Project/project_clindet/source/clindet_report/report/test_data/purple'
-  purple_purity: '~/Documents/Project/project_clindet/source/clindet_report/report/test_data/purple/CGGA_1288.purple.purity.tsv'
-  purple_qc: '~/Documents/Project/project_clindet/source/clindet_report/report/test_data/purple/CGGA_1288.purple.qc'
-  purple_som_cnv: '~/Documents/Project/project_clindet/source/clindet_report/report/test_data/purple/CGGA_1288.purple.cnv.somatic.tsv'
-  purple_som_gene_cnv: '~/Documents/Project/project_clindet/source/clindet_report/report/test_data/purple/CGGA_1288.purple.cnv.gene.tsv'
+  ascat_res_dir: NULL
+  purple_res_dir: NULL
+  purple_purity: NULL
+  purple_qc: NULL
+  purple_som_cnv: NULL
+  purple_som_gene_cnv: NULL
   purple_som_snv_vcf: NULL
   # structural variants results
   sv_available: NULL

@@ -78,8 +78,8 @@ softwares_params:
       chrFiles: "resources/ref_genome/b37/fasta"
       chrLenFile: "resources/ref_genome/b37/Homo_sapiens.GRCh37.GATK.illumina.fasta.auto.fai"
       snp_file: "resources/ref_genome/b37/hapmap_3.3.b37.vcf.gz"
-      sambamba: '/public/ClinicalExam/lj_sih/.conda/envs/snake/bin/sambamba'
-      bedtools: '/public/ClinicalExam/lj_sih/.conda/envs/snake/bin/bedtools'
+      sambamba: '.conda/envs/snake/bin/sambamba'
+      bedtools: '.conda/envs/snake/bin/bedtools'
     facets:
       genome: "hg19"
     igcaller:
@@ -87,11 +87,11 @@ softwares_params:
       chromosomeAnnotation: 'ensembl'
       data_dir:
     cgpbattenberg:
-      gc: "/public/ClinicalExam/lj_sih/resource/ASCAT_chr/hg19/battenberg_wgs_gc_correction_1000g_v3/"
-      impute: "/public/ClinicalExam/lj_sih/resource/ASCAT_chr/hg19/battenberg_impute_v3/impute_info.txt"
-      prob_loci: "/public/ClinicalExam/lj_sih/resource/ASCAT_chr/hg19/probloci.txt"
-      ignorebed: "/public/ClinicalExam/lj_sih/resource/genome/human/hg19/hg19.exclude.contigs.txt"
-      loci_1000: "/public/ClinicalExam/lj_sih/resource/ASCAT_chr/battenberg_1000genomesloci2012_v3/"
+      gc: "resource/ASCAT_chr/hg19/battenberg_wgs_gc_correction_1000g_v3/"
+      impute: "resource/ASCAT_chr/hg19/battenberg_impute_v3/impute_info.txt"
+      prob_loci: "resource/ASCAT_chr/hg19/probloci.txt"
+      ignorebed: "resource/genome/human/hg19/hg19.exclude.contigs.txt"
+      loci_1000: "resource/ASCAT_chr/battenberg_1000genomesloci2012_v3/"
     arriba:
       database:
         blacklist: "/arriba_v2.4.0/database/blacklist_hg19_hs37d5_GRCh37_v2.4.0.tsv.gz"
@@ -290,8 +290,8 @@ softwares_params:
       chrFiles: "resources/ref_genome/hg38/fasta"
       chrLenFile: "resources/ref_genome/hg38/Homo_sapiens.GRCh37.GATK.illumina.fasta.auto.fai"
       snp_file: "resources/ref_genome/hg38/hapmap_3.3.b37.vcf.gz"
-      sambamba: '/public/ClinicalExam/lj_sih/.conda/envs/snake/bin/sambamba'
-      bedtools: '/public/ClinicalExam/lj_sih/.conda/envs/snake/bin/bedtools'
+      sambamba: '.conda/envs/snake/bin/sambamba'
+      bedtools: '.conda/envs/snake/bin/bedtools'
     facets:
       genome: "hg38"
     igcaller:
@@ -299,11 +299,11 @@ softwares_params:
       chromosomeAnnotation: 'ensembl'
       data_dir:
     cgpbattenberg:
-      gc: "/public/ClinicalExam/lj_sih/resource/ASCAT_chr/hg38/battenberg_wgs_gc_correction_1000g_v3/"
-      impute: "/public/ClinicalExam/lj_sih/resource/ASCAT_chr/hg38/battenberg_impute_v3/impute_info.txt"
-      prob_loci: "/public/ClinicalExam/lj_sih/resource/ASCAT_chr/hg38/probloci.txt"
-      ignorebed: "/public/ClinicalExam/lj_sih/resource/genome/human/hg38/hg38.exclude.contigs.txt"
-      loci_1000: "/public/ClinicalExam/lj_sih/resource/ASCAT_chr/battenberg_1000genomesloci2012_v3/"
+      gc: "resource/ASCAT_chr/hg38/battenberg_wgs_gc_correction_1000g_v3/"
+      impute: "resource/ASCAT_chr/hg38/battenberg_impute_v3/impute_info.txt"
+      prob_loci: "resource/ASCAT_chr/hg38/probloci.txt"
+      ignorebed: "resource/genome/human/hg38/hg38.exclude.contigs.txt"
+      loci_1000: "resource/ASCAT_chr/battenberg_1000genomesloci2012_v3/"
     arriba:
       database:
         blacklist: "/arriba_v2.4.0/database/blacklist_hg38_GRCh38_v2.4.0.tsv.gz"
@@ -420,10 +420,10 @@ softwares_params:
       build_version: ""
       vep:
         vep_data: "resources/ref_genome/mm10/vep"
-        cache_version: ""
-        species: ""
+        cache_version: "102"
+        species: "mus_musculus"
     maf2vcf:
-      build_version: "GRCh38"
+      build_version: "GRCm38"
     star:
       index: ""
     salmon:
@@ -434,7 +434,7 @@ softwares_params:
       index: "resources/ref_genome/mm10/RSEM/mm10"
     cgppindel:
       species: "MOUSE"
-      genes: "resources/ref_genome/hg38/Sanger/VAGrENT_ref_GRCh38_hla_decoy_ebv_ensembl_91/vagrent/codingexon_regions.indel.bed.gz"
+      genes: "resources/ref_genome/mm10/Sanger/VAGRENT_mm10_ensembl_84/vagrent/codingexon_regions.indel.bed.gz"
       softfil: "resources/ref_genome/mm10/Sanger/SNV_INDEL_mm10/pindel/softRules.lst"
       simrep: "resources/ref_genome/mm10/Sanger/SNV_INDEL_mm10/pindel/simpleRepeats.bed.gz"
       normal_panel: "resources/ref_genome/mm10/Sanger/SNV_INDEL_mm10/pindel/pindel_np.gff3.gz"
@@ -453,7 +453,7 @@ softwares_params:
         g: "resources/ref_genome/mm10/Sanger/SNV_INDEL_mm10/caveman/unmatchedNormal.bed.gz"
         b: "resources/ref_genome/mm10/Sanger/SNV_INDEL_mm10/caveman/flagging"
         ab: "resources/ref_genome/mm10/Sanger/SNV_INDEL_mm10/caveman/flagging"
-        s: "HUMAN"
+        s: "WORM"
     brass:
       gc: "resources/ref_genome/mm10/Sanger/VAGRENT_mm10_ensembl_84/vagrent/vagrent.cache.gz"
       b: "resources/ref_genome/mm10/Sanger/CNV_SV_ref_mm10_brass6+/brass/500bp_windows.gc.bed.gz"
@@ -462,15 +462,117 @@ softwares_params:
       ct: "resources/ref_genome/mm10/Sanger/CNV_SV_ref_mm10_brass6+/brass/CentTelo.tsv"
       vi: "resources/ref_genome/mm10/Sanger/CNV_SV_ref_mm10_brass6+/brass/viral.genomic.fa.2bit"
       mi: "resources/ref_genome/mm10/Sanger/CNV_SV_ref_mm10_brass6+/brass/all_ncbi_bacteria"
+    hmftools:
+      # AMBER
+      heterozygous_sites: 'resources/ref_genome/b37/hmf_pipeline_resources/dna/copy_number/AmberGermlineSites.37.tsv.gz'
+      # COBALT
+      gc_profile:  'resources/ref_genome/b37/hmf_pipeline_resources/dna/copy_number/GC_profile.1000bp.37.cnp'
+      diploid_bed:  'resources/ref_genome/b37/hmf_pipeline_resources/dna/copy_number/DiploidRegions.37.bed.gz'
+      # CUPPA
+      cuppa_alt_sj:  'resources/ref_genome/b37/hmf_pipeline_resources/misc/cuppa/alt_sj.selected_loci.37.tsv.gz'
+      cuppa_classifier:  'resources/ref_genome/b37/hmf_pipeline_resources/misc/cuppa/cuppa_classifier.37.pickle.gz'
+      # SV Prep
+      sv_prep_blocklist:  'resources/ref_genome/b37/hmf_pipeline_resources/dna/sv/sv_prep_blacklist.37.bed'
+      # ESVEE
+      decoy_sequences_image:  'resources/ref_genome/b37/hmf_pipeline_resources/dna/sv/hg38_decoys.fa.img'
+      gridss_pon_breakends:  'resources/ref_genome/b37/hmf_pipeline_resources/dna/sv/sgl_pon.37.bed.gz'
+      gridss_pon_breakpoints:  'resources/ref_genome/b37/hmf_pipeline_resources/dna/sv/sv_pon.37.bedpe.gz'
+      repeatmasker_annotations:  'resources/ref_genome/b37/hmf_pipeline_resources/dna/sv/repeat_mask_data.37.fa.gz'
+      # Isofox
+      alt_sj_distribution:  'resources/ref_genome/b37/hmf_pipeline_resources/rna/isofox.hmf_3444.alt_sj_cohort.37.csv'
+      gene_exp_distribution:  'resources/ref_genome/b37/hmf_pipeline_resources/rna/isofox.hmf_3444.gene_distribution.37.csv'
+      isofox_counts:  'resources/ref_genome/b37/hmf_pipeline_resources/rna/read_151_exp_counts.37.csv'
+      isofox_gc_ratios:  'resources/ref_genome/b37/hmf_pipeline_resources/rna/read_100_exp_gc_ratios.37.csv'
+      # LILAC
+      lilac_resources:  'resources/ref_genome/b37/hmf_pipeline_resources/misc/lilac/'
+      # Neo
+      neo_resources:  'resources/ref_genome/b37/hmf_pipeline_resources/misc/neo/binding/'
+      cohort_tpm_medians: 'resources/ref_genome/b37/hmf_pipeline_resources/misc/neo/tpm_cohort/isofox.hmf_3444.transcript_medians.37.csv'
+      # CIDER
+      cider_blastdb:  'resources/ref_genome/b37/hmf_pipeline_resources/misc/cider/blastdb/'
+      # PEACH
+      peach_haplotypes:  'resources/ref_genome/b37/hmf_pipeline_resources/misc/peach/haplotypes.37.tsv'
+      peach_haplotype_functions:  'resources/ref_genome/b37/hmf_pipeline_resources/misc/peach/haplotype_functions.37.tsv'
+      peach_drug_info:  'resources/ref_genome/b37/hmf_pipeline_resources/misc/peach/peach_drugs.37.tsv'
+      # ORANGE
+      cohort_mapping:  'resources/ref_genome/b37/hmf_pipeline_resources/misc/orange/cohort_mapping.tsv'
+      cohort_percentiles: 'resources/ref_genome/b37/hmf_pipeline_resources/misc/orange/cohort_percentiles.tsv'
+      disease_ontology:  'resources/ref_genome/b37/hmf_pipeline_resources/misc/orange/doid.json'
+      # SAGE
+      clinvar_annotations:  'resources/ref_genome/b37/hmf_pipeline_resources/dna/variants/clinvar.37.vcf.gz'
+      sage_blocklist_regions:  'resources/ref_genome/b37/hmf_pipeline_resources/dna/variants/KnownBlacklist.germline.37.bed'
+      sage_blocklist_sites:  'resources/ref_genome/b37/hmf_pipeline_resources/dna/variants/KnownBlacklist.germline.37.vcf.gz'
+      sage_actionable_panel:  'resources/ref_genome/b37/hmf_pipeline_resources/dna/variants/ActionableCodingPanel.37.bed.gz'
+      sage_coverage_panel:  'resources/ref_genome/b37/hmf_pipeline_resources/dna/variants/CoverageCodingPanel.37.bed.gz'
+      sage_highconf_regions:  'resources/ref_genome/b37/hmf_pipeline_resources/dna/variants/NA12878_GIAB_highconf_IllFB-IllGATKHC-CG-Ion-Solid_ALLCHROM_v3.2.2_highconf.bed.gz'
+      sage_known_hotspots_germline:  'resources/ref_genome/b37/hmf_pipeline_resources/dna/variants/KnownHotspots.germline.37.vcf.gz'
+      sage_known_hotspots_somatic:  'resources/ref_genome/b37/hmf_pipeline_resources/dna/variants/KnownHotspots.somatic.37.vcf.gz'
+      sage_pon:  'resources/ref_genome/b37/hmf_pipeline_resources/dna/variants/SageGermlinePon.1000x.37.tsv.gz'
+      # Sigs
+      sigs_signatures:  'resources/ref_genome/b37/hmf_pipeline_resources/misc/sigs/snv_cosmic_signatures.csv'
+      sigs_etiology:  'resources/ref_genome/b37/hmf_pipeline_resources/misc/sigs/signatures_etiology.tsv'
+      # Virus breakend
+      virusbreakend_db:  'resources/ref_genome/b37/hmf_pipeline_resources/misc/virusbreakend/'
+      # Virus Interpreter
+      virus_reporting_db: 'resources/ref_genome/b37/hmf_pipeline_resources/misc/virusinterpreter/virus_reporting_db.tsv'
+      virus_taxonomy_db:  'resources/ref_genome/b37/hmf_pipeline_resources/misc/virusinterpreter/taxonomy_db.tsv'
+      virus_blocklist_db: 'resources/ref_genome/b37/hmf_pipeline_resources/misc/virusinterpreter/virus_blacklisting_db.tsv'
+      # Misc
+      driver_gene_panel:  'resources/ref_genome/b37/hmf_pipeline_resources/common/DriverGenePanel.37.tsv'
+      ensembl_data_resources:  'resources/ref_genome/b37/hmf_pipeline_resources/common/ensembl_data/'
+      unmap_regions:  'resources/ref_genome/b37/hmf_pipeline_resources/common/unmap_regions.37.tsv'
+      gnomad_resource:  'resources/ref_genome/b37/hmf_pipeline_resources/dna/variants/gnomad_variants_v37.csv.gz'
+      gridss_config:  'resources/ref_genome/b37/hmf_pipeline_resources/dna/sv/gridss.properties'
+      known_fusion_data:  'resources/ref_genome/b37/hmf_pipeline_resources/dna/sv/known_fusion_data.37.csv'
+      known_fusions:  'resources/ref_genome/b37/hmf_pipeline_resources/dna/sv/known_fusions.37.bedpe'
+      msi_jitter_sites:  'resources/ref_genome/b37/hmf_pipeline_resources/dna/variants/msi_jitter_sites.37.tsv.gz'
+      purple_germline_del:  'resources/ref_genome/b37/hmf_pipeline_resources/dna/copy_number/cohort_germline_del_freq.37.csv'
+      segment_mappability:  'resources/ref_genome/b37/hmf_pipeline_resources/dna/variants/mappability_150.37.bed.gz'
+      # tool spec config
+      amber:
+        loci: 'resources/ref_genome/b37/hmf_pipeline_resources/GermlineHetPon.37.vcf.gz'
+        snp_check_vcf: 'resources/ref_genome/b37/hmf_pipeline_resources/Amber.snpcheck.37.vcf'
+      cobalt:
+        ref_genome_version: 37
+        tumor_only_diploid_bed: "resources/ref_genome/b37/hmf_pipeline_resources/dna/copy_number/DiploidRegions.37.bed.gz"
+        gc_profile: "resources/ref_genome/b37/hmf_pipeline_resources/dna/copy_number/GC_profile.1000bp.37.cnp"
+      purple:
+        ref_genome_version: 37
+        tumor_only_diploid_bed: "resources/ref_genome/b37/hmf_pipeline_resources/dna/copy_number/DiploidRegions.37.bed.gz"
+        gc_profile: "resources/ref_genome/b37/hmf_pipeline_resources/dna/copy_number/GC_profile.1000bp.37.cnp"
+        ensembl_data_dir: "resources/ref_genome/b37/hmf_pipeline_resources/common/ensembl_data"
+        somatic_hotspots: "resources/ref_genome/b37/hmf_pipeline_resources/dna/variants/KnownHotspots.somatic.37.vcf.gz"
+        driver_gene_panel: "resources/ref_genome/b37/hmf_pipeline_resources/common/DriverGenePanel.37.tsv"
+      linx:
+        ref_genome_version: 37
+        tumor_only_diploid_bed: "resources/ref_genome/b37/hmf_pipeline_resources/dna/copy_number/DiploidRegions.37.bed.gz"
+        gc_profile: "resources/ref_genome/b37/hmf_pipeline_resources/dna/copy_number/GC_profile.1000bp.37.cnp"
+        ensembl_data_dir: "resources/ref_genome/b37/hmf_pipeline_resources/common/ensembl_data"
+        somatic_hotspots: "resources/ref_genome/b37/hmf_pipeline_resources/dna/variants/KnownHotspots.somatic.37.vcf.gz"
+        driver_gene_panel: "resources/ref_genome/b37/hmf_pipeline_resources/common/DriverGenePanel.37.tsv"
+        known_fusion_file: "resources/ref_genome/b37/hmf_pipeline_resources/dna/sv/known_fusion_data.37.csv"
+      sage:
+        ref_genome_version: 37
+        ensembl_data_dir: "resources/ref_genome/b37/hmf_pipeline_resources/common/ensembl_data"
+        coverage_bed: "resources/ref_genome/b37/hmf_pipeline_resources/dna/variants/CoverageCodingPanel.37.bed.gz"
+        hotspots: "resources/ref_genome/b37/hmf_pipeline_resources/dna/variants/KnownHotspots.somatic.37.vcf.gz "
+        panel_bed: "resources/ref_genome/b37/hmf_pipeline_resources/dna/variants/ActionableCodingPanel.37.bed.gz"
+        high_confidence_bed: "resources/ref_genome/b37/hmf_pipeline_resources/dna/variants/NA12878_GIAB_highconf_IllFB-IllGATKHC-CG-Ion-Solid_ALLCHROM_v3.2.2_highconf.bed.gz"
+      esvee:
+        ref_genome_version: 37
+        ensembl_data_dir: "resources/ref_genome/b37/hmf_pipeline_resources/common/ensembl_data"
+        known_fusion_bed: "resources/ref_genome/b37/hmf_pipeline_resources/dna/sv/known_fusions.37.bedpe"
+        blacklist: "resources/ref_genome/b37/hmf_pipeline_resources/dna/sv/gridss_blacklist.37.bed.gz"
+      orange:
   WBcel235:
     brass:
       gc: "resources/ref_genome/WBcel235/VAGRENT/vagrent.worm.WBcel235.caenorhabditis_elegans_core_114_WBcel235.cache.gz"
-      b: "/public/ClinicalExam/lj_sih/resource/BRASS/ucsc.hg19.gcBins_auto.bed.gz"
-      d: "/public/ClinicalExam/lj_sih/resource/BRASS/Hiseq_brass.bed"
-      cb: "/public/ClinicalExam/lj_sih/resource/genome/human/T2T_human/chm13v2.0_cytobands_allchrs.bed"
-      ct: "/public/ClinicalExam/lj_sih/resource/BRASS/Human.GRCh37.CentTelo.tsv"
-      vi: "/public/ClinicalExam/lj_sih/resource/BRASS/2bit/viral.genomic.merged.fa.2bit"
-      mi: "/public/ClinicalExam/lj_sih/resource/BRASS/2bit/all_ncbi_bacteria"
+      b: "resource/BRASS/ucsc.hg19.gcBins_auto.bed.gz"
+      d: "resource/BRASS/Hiseq_brass.bed"
+      cb: "resource/genome/human/T2T_human/chm13v2.0_cytobands_allchrs.bed"
+      ct: "resource/BRASS/Human.GRCh37.CentTelo.tsv"
+      vi: "resource/BRASS/2bit/viral.genomic.merged.fa.2bit"
+      mi: "resource/BRASS/2bit/all_ncbi_bacteria"
     caveman:
       ignorebed: "resources/ref_genome/b37/Sanger/cgpCaVEManWrapper_CPBI_refarea/hi_seq_depth.bed"
       flag:

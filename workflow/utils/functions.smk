@@ -221,3 +221,23 @@ def resolve_bed_path(path):
         return str(p.resolve())
     else:
         return str(Path(workflow.basedir, p).resolve())
+
+### purple
+### amber first
+def get_purple_sv_vcf(wildcards):
+    if purple_sv == 'gridss':
+        p_sv =  '-somatic_sv_vcf ' + f"{wildcards.project}/{wildcards.genome_version}/results/sv/paired/gridss/{wildcards.sample}/high_confidence_somatic_rename.vcf.bgz"
+    elif purple_sv == 'svaba':
+        p_sv = p_sv =  '-somatic_sv_vcf ' + f"{wildcards.project}/{wildcards.genome_version}/results/sv/paired/svaba/{wildcards.sample}/{wildcards.sample}.svaba.somatic.rename.sv.vcf"
+    else:
+        p_sv = ''
+    return p_sv
+
+def purple_sv_vcf(wildcards):
+    if purple_sv == 'gridss':
+        p_sv =  "{project}/{genome_version}/results/sv/paired/gridss/{sample}/high_confidence_somatic_rename.vcf.bgz"
+    elif purple_sv == 'svaba':
+        p_sv = "{project}/{genome_version}/results/sv/paired/svaba/{sample}/{sample}.svaba.somatic.rename.sv.vcf"
+    else:
+        p_sv = ''
+    return p_sv

@@ -10,7 +10,13 @@ dependencies:
   - r-base >=4.4
   - r-tidyverse
   - r-devtools
+  - r-remotes
+  - r-r.oo
   - r-reactable
   - r-htmltools
+  - r-details
+  - r-patchwork
+  - r-kableextra
+  - r-dt
   # umccr pkgs
   # refdata pkgs

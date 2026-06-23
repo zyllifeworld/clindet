@@ -60,16 +60,18 @@ rule split_maf_snp_indel:
 
 rule moalmanac_annotation:
     input:
-        snp="{project}/{genome_version}/results/maf_split/{sample}.snp.maf",
-        indel="{project}/{genome_version}/results/maf_split/{sample}.indel.maf",
+        snp="{project}/{genome_version}/results/maf/paired/{sample}/split/{sample}.snp.maf",
+        indel="{project}/{genome_version}/results/maf/paired/{sample}/split/{sample}.indel.maf",
         cna="{project}/{genome_version}/results/cnv/paired/facets/{sample}/{sample}.cna.txt",
         pp="{project}/{genome_version}/results/cnv/paired/ascat/{sample}/{sample}_purity.ploidy.tsv"
     output:
-        "/public/ClinicalExam/lj_sih/projects/project_clindet/test/b37/results/report/moalmanac/CGGA_1288"
+        html="{project}/{genome_version}/results/report/{sample}/moalmanac/{sample}.report.html",
+        moalmanac_dir=directory("{project}/{genome_version}/results/report/{sample}/moalmanac/")
     singularity:
         flexible_container_img(config,['singularity','moalmanac','sif'],image_url = config['singularity']['moalmanac']['repo'])
     params:
         pp=moalmanac_extract_pp,
+        outdir_abs=lambda wc, output: os.path.abspath(output.moalmanac_dir)
     shell:
         """
         python /moalmanac/moalmanac.py \
@@ -80,10 +82,10 @@ rule moalmanac_annotation:
             --snv_handle {input.snp} \
             --indel_handle {input.indel} \
             --called_cn_handle {input.cna} \
-            --purity {params.purity} \
-            --ploidy {params.ploidy} \
+            --purity {params[pp][purity]} \
+            --ploidy {params[pp][ploidy]} \
             --config /moalmanac/config.ini \
             --dbs /moalmanac/annotation-databases.ini \
-            --output_directory {output.dir} \
+            --output_directory {params.outdir_abs} \
             --preclinical-dbs /moalmanac/preclinical-databases.ini
         """

@@ -1,11 +1,11 @@
 executor: cluster-generic
 cluster-generic-submit-cmd:
-  mkdir -p logs/{wildcards.project}/slurm &&
+  mkdir -p {wildcards.project}/logs/slurm &&
   sbatch
-    --partition=CPU
+    --partition=SVC
     --cpus-per-task={threads}
     --job-name={rule}
-    --output=logs/{wildcards.project}/slurm/{wildcards.sample}_{rule}.%N.%j.out
+    --output={wildcards.project}/logs/slurm/{wildcards.sample}_{rule}.%N.%j.out
 default-resources:
   - partition=SVC
 latency-wait: 60

@@ -13,6 +13,7 @@ conda:
     trust4: 'clindet_rsem'
     rna: 'clindet_rsem'
     clindet_mut: "clindet_mutflag"
+    cancer_report:
 
 params:
   java:

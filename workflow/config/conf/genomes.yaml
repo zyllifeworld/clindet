@@ -42,16 +42,16 @@ resources:
     WGS_PON: ""
     REFFA_DICT: ""
   mm10:
-    REFFA: []
+    REFFA: "resources/ref_genome/mm10/Sanger/core_ref_mm10/genome.fa"
     GENOME_BED: ""
     GTF: ""
     GFF: ""
     WES_PON: ""
     WES_BED: ""
-    WGS_PON: ""
+    WGS_PON: "resources/ref_genome/b37/Mutect2-WGS-panel-b37.vcf"
     DBSNP: ""
     DBSNP_GZ: ""
-    DBSNP_INDEL: []
+    DBSNP_INDEL: "resources/ref_genome/b37/Homo_sapiens_assembly19.dbsnp138.indel.vcf.gz"
     MUTECT2_VCF: ""
     REFFA_DICT: ""
     MUTECT2_germline_vcf: ""

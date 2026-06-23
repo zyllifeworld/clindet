@@ -66,7 +66,7 @@ paired_res_list = [
     # "{project}/{genome_version}/results/cnv/paired/sequenza/{sample}/{sample}_segments.txt"  if 'sequenza' in somatic_cnv_list else None, # sequenza call
     #### Case report #####
     '{project}/{genome_version}/results/report/{sample}/{sample}_cancer_report.html' if 'case_report' in stages else None,
-
+    "{project}/{genome_version}/results/report/{sample}/moalmanac/{sample}.report.html" if 'case_report' in stages else None,
     #### Multiple QC report #####
     '{project}/{genome_version}/results/multiqc_report.html' if 'multiqc' in stages else None,
 

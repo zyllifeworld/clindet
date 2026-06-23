@@ -15,7 +15,7 @@ rule STAR_1_pass:
     benchmark:
         "{project}/{genome_version}/results/benchmarks/fusion/{sample}.star_arriba_map_1.benchmark.txt"
     conda:
-        flexible_conda_env(config,['conda','rna'],env_yaml = 'envs/resm.yaml')
+        flexible_conda_env(config,['conda','rna'],env_yaml = 'envs/rsem.yaml')
     shell:
         """ 
         if [ ! -s {params.star_index}/SA ] || \
@@ -59,7 +59,7 @@ rule STAR_arriba_map:
     benchmark:
         "{project}/{genome_version}/results/benchmarks/fusion/{sample}.star_arriba_map.benchmark.txt"
     conda:
-        flexible_conda_env(config,['conda','rna'],env_yaml = 'envs/resm.yaml')
+        flexible_conda_env(config,['conda','rna'],env_yaml = 'envs/rsem.yaml')
     shell:
         """ 
         STAR --genomeDir {params.star_index} --runThreadN={threads} \
@@ -108,7 +108,7 @@ rule STAR_mut_map:
     benchmark:
         "{project}/{genome_version}/results/benchmarks/mut/{sample}.star_mut_map.benchmark.txt"
     conda:
-        flexible_conda_env(config,['conda','rna'],env_yaml = 'envs/resm.yaml')
+        flexible_conda_env(config,['conda','rna'],env_yaml = 'envs/rsem.yaml')
     shell:
         """ 
         if [ ! -s {params.star_index}/SA ] || \
@@ -163,9 +163,9 @@ rule cal_exp_RSEM:
         result_prefix="{project}/{genome_version}/results/summary/RSEM"
     threads: 10
     conda:
-        flexible_conda_env(config,['conda','rna'],env_yaml = 'envs/resm.yaml')
+        flexible_conda_env(config,['conda','rna'],env_yaml = 'envs/rsem.yaml')
     benchmark:
-        "{project}/{genome_version}/results/benchmarks/exp/{sample}.resm.benchmark.txt"
+        "{project}/{genome_version}/results/benchmarks/exp/{sample}.rsem.benchmark.txt"
     output:
         genes="{project}/{genome_version}/results/summary/RSEM/{sample}/{sample}.genes.results",
         isoforms="{project}/{genome_version}/results/summary/RSEM/{sample}/{sample}.isoforms.results",
@@ -186,7 +186,7 @@ rule RSEM_sort_genome:
         bam="{project}/{genome_version}/results/summary/RSEM/{sample}/{sample}.STAR.genome.bam"
     threads: 10
     conda:
-        flexible_conda_env(config,['conda','rna'],env_yaml = 'envs/resm.yaml')
+        flexible_conda_env(config,['conda','rna'],env_yaml = 'envs/rsem.yaml')
     output:
         bam_sort=temp("{project}/{genome_version}/results/summary/RSEM/{sample}/{sample}.STAR.genome.sorted.bam"),
     shell:
@@ -217,7 +217,7 @@ rule kallisto:
         result_prefix="{project}/{genome_version}/results/summary/kallisto/{sample}"
     threads: 10
     conda:
-        flexible_conda_env(config,['conda','rna'],env_yaml = 'envs/resm.yaml')
+        flexible_conda_env(config,['conda','rna'],env_yaml = 'envs/rsem.yaml')
     output:
         tsv="{project}/{genome_version}/results/summary/kallisto/{sample}/abundance.tsv",
     benchmark:
@@ -235,7 +235,7 @@ rule salmon:
         result_prefix="{project}/{genome_version}/results/summary/salmon/{sample}"
     threads: 10
     conda:
-        flexible_conda_env(config,['conda','rna'],env_yaml = 'envs/resm.yaml')
+        flexible_conda_env(config,['conda','rna'],env_yaml = 'envs/rsem.yaml')
     output:
         tsv="{project}/{genome_version}/results/summary/salmon/{sample}/quant.sf",
     benchmark:
