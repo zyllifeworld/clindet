@@ -12,10 +12,7 @@ REF_B37 = "resources/ref_genome/b37"
 
 rule build_b37_ref:
     input:
-        f"{BUILD_LOG}/prereqs.ok",
         # expand(f"{BUILD_LOG}/{{env_name}}.env.done", env_name=sorted(ENV_SPECS)),
-        f"{BUILD_LOG}/cancer_report_install_r.log",
-        f"{BUILD_LOG}/pull_zenodo.log",
         f"{BUILD_LOG}/download_b37_hmftools.log",
         f"{BUILD_LOG}/download_b37_gatk.log",
         f"{BUILD_LOG}/download_gatk.log",
@@ -31,10 +28,6 @@ rule build_b37_ref:
         f"{REF_B37}/Homo_sapiens.GRCh37.GATK.illumina.fasta.dict",
         f"{REF_B37}/Homo_sapiens.GRCh37.GATK.illumina.fasta.fai",
         f"{REF_B37}/Homo_sapiens_assembly19.dbsnp138.vcf",
-        f"{REF_B37}/Homo_sapiens_assembly19.dbsnp138.vcf.gz",
-        f"{REF_B37}/Homo_sapiens_assembly19.dbsnp138.vcf.gz.tbi",
-        f"{REF_B37}/Homo_sapiens_assembly19.dbsnp138.indel.vcf.gz",
-        f"{REF_B37}/Homo_sapiens_assembly19.dbsnp138.indel.vcf.gz.tbi",
         f"{REF_B37}/Homo_sapiens.GRCh37.87.gtf",
         f"{REF_B37}/Homo_sapiens.GRCh37.87.gff3",
         f"{REF_B37}/Homo_sapiens.GRCh37.cdna.all.fa",

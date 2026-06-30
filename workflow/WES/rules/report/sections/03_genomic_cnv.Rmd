@@ -23,7 +23,7 @@ cnv_summary <-
     N = dplyr::n(), .groups = "drop_last"
   ))
 
-if (is.null(params$sv_available)) {
+if (is.null(params$sv_available) | params$sv_available) {
   sv_summary <- tibble(unmelted = c(0), melted = c(0))
 } else {
   sv_summary <- list(
