@@ -24,9 +24,11 @@ rule build_b37_ref:
         f"{BUILD_LOG}/rsem_star_index.log",
         f"{BUILD_LOG}/star_index.log",
         f"{BUILD_LOG}/kallisto_salmon_index.log",
+        f"{BUILD_LOG}/download_bed_files.log",
         f"{REF_B37}/Homo_sapiens.GRCh37.GATK.illumina.fasta",
         f"{REF_B37}/Homo_sapiens.GRCh37.GATK.illumina.fasta.dict",
         f"{REF_B37}/Homo_sapiens.GRCh37.GATK.illumina.fasta.fai",
+        f"{REF_B37}/Homo_sapiens.GRCh37.GATK.illumina.fasta.amb",
         f"{REF_B37}/Homo_sapiens_assembly19.dbsnp138.vcf",
         f"{REF_B37}/Homo_sapiens.GRCh37.87.gtf",
         f"{REF_B37}/Homo_sapiens.GRCh37.87.gff3",
@@ -254,9 +256,9 @@ rule download_grch37_gff3:
     shell:
         r"""
         mkdir -p {REF_B37}
-        wget -P {REF_B37} -c https://ftp.ensembl.org/pub/grch37/release-114/gtf/homo_sapiens/Homo_sapiens.GRCh37.87.gff3.gz
-        gunzip -c {REF_B37}/Homo_sapiens.GRCh37.87.gtf.gz > {output}
-        echo "GTF ready" > {log}
+        wget -P {REF_B37} -c https://ftp.ensembl.org/pub/grch37/release-114/gff3/homo_sapiens/Homo_sapiens.GRCh37.87.gff3.gz
+        gunzip -c {REF_B37}/Homo_sapiens.GRCh37.87.gff3.gz > {output}
+        echo "GFF3 ready" > {log}
         """
 
 rule download_cdna_fasta:
@@ -270,7 +272,6 @@ rule download_cdna_fasta:
         mkdir -p {REF_B37}
         wget -P {REF_B37} -c https://ftp.ensembl.org/pub/grch37/release-114/fasta/homo_sapiens/cdna/Homo_sapiens.GRCh37.cdna.all.fa.gz
         gunzip -c {REF_B37}/Homo_sapiens.GRCh37.cdna.all.fa.gz > {output.fa}
-        cp {REF_B37}/Homo_sapiens.GRCh37.cdna.all.fa.gz {output.gz}
         echo "cDNA ready" > {log}
         """
 
@@ -296,8 +297,6 @@ rule download_rna_edit_vcf:
         bcftools annotate --rename-chrs {REF_B37}/hg19_to_g1kv37.tsv {REF_B37}/GRCh37.RNAediting.vcf.gz -Ov -o {REF_B37}/b37.RNAediting.vcf
         bgzip -f {REF_B37}/b37.RNAediting.vcf
         tabix -f {REF_B37}/b37.RNAediting.vcf.gz
-        cp {REF_B37}/b37.RNAediting.vcf.gz {output.vcf_gz}
-        cp {REF_B37}/b37.RNAediting.vcf.gz.tbi {output.tbi}
         echo "RNA editing VCF ready" > {log}
         """
 
@@ -348,7 +347,6 @@ rule build_rsem_reference:
         fasta=f"{REF_B37}/Homo_sapiens.GRCh37.GATK.illumina.fasta",
         gtf=f"{REF_B37}/Homo_sapiens.GRCh37.87.gtf",
     output:
-        directory(f"{REF_B37}/RSEM/b37"),
         marker=touch(f"{BUILD_LOG}/rsem_star_index.log"),
     log:
         f"{BUILD_LOG}/rsem_star_index.run.log"
@@ -356,7 +354,7 @@ rule build_rsem_reference:
         flexible_conda_env(config,['conda','rna'],env_yaml = 'envs/rsem.yaml')
     shell:
         r"""
-        mkdir -p {REF_B37}/RSEM/b37
+        mkdir -p {REF_B37}/RSEM
         rsem-prepare-reference \
           --gtf {input.gtf} \
           --star -p 20 \
@@ -439,6 +437,6 @@ rule download_mutation_anno_bed_b37:
         wget -P {REF_B37}/bed/giab -c https://ftp-trace.ncbi.nlm.nih.gov/ReferenceSamples/giab/release/genome-stratifications/v3.5/GRCh37@all/OtherDifficult/GRCh37_KIR.bed.gz
         wget -P {REF_B37}/bed/giab -c https://ftp-trace.ncbi.nlm.nih.gov/ReferenceSamples/giab/release/genome-stratifications/v3.5/GRCh37@all/OtherDifficult/GRCh37_MHC.bed.gz
         wget -P {REF_B37}/bed/giab -c https://ftp-trace.ncbi.nlm.nih.gov/ReferenceSamples/giab/release/genome-stratifications/v3.5/GRCh37@all/OtherDifficult/GRCh37_KIR.bed.gz
-        wget -P {REF_B37}/bed/giab -c https://github.com/Boyle-Lab/Blacklist/blob/master/lists/hg19-blacklist.v2.bed.gz
+        wget -P {REF_B37}/bed/giab -c https://raw.githubusercontent.com/Boyle-Lab/Blacklist/master/lists/hg19-blacklist.v2.bed.gz
         touch {output}
         """

@@ -21,6 +21,11 @@ loci.prefix <- snakemake@params[['lociprefix']]
 GCcontentfile <- snakemake@params[['GCcontentfile']]
 rp_file <- snakemake@params[['replictimingfile']]
 
+## getAbsolutePath
+alleles.prefix <- getAbsolutePath(alleles.prefix)
+loci.prefix <- getAbsolutePath(loci.prefix)
+GCcontentfile <- getAbsolutePath(GCcontentfile)
+rp_file <- getAbsolutePath(rp_file)
 
 # gender <- snakemake@params[['gender']]
 gender = 'XX'

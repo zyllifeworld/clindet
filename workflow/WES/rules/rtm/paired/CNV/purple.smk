@@ -103,7 +103,7 @@ rule paired_purple:
     benchmark:
         "{project}/{genome_version}/results/benchmarks/cnv/{sample}.purple.benchmark.txt"
     resources:
-        mem_mb=lambda wildcards, input: max(0.45 * input.size_files_mb[0], 1000) 
+        mem_mb=lambda wildcards, input: max(0.6 * input.size_files_mb[0], 1000) 
     shell:
         """
         purple -Xms{resources.mem_mb}m -Xmx{resources.mem_mb}m \

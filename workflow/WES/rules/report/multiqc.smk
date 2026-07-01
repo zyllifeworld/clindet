@@ -1,6 +1,6 @@
 import os
 from os.path import abspath, join, dirname, basename
-
+localrules: combined_multiqc_prep_multiqc_data, combined_multiqc
 # prep purple/conpair/samtools/fastp/gatk/picard results for multiqc
 rule prep_multiqc_data:
     input:
@@ -58,7 +58,7 @@ rule combined_multiqc_prep_multiqc_data:
         filelists=expand('{project}/{genome_version}/results/multiqc_data/{sample}/filelist.txt',project = project,genome_version = genome_version,sample = [*unpaired_samples, *paired_samples]),
     output:
         filelist='{project}/{genome_version}/results/multiqc/filelist.txt',
-    group: 'combined_multiqc'
+    # group: 'combined_multiqc'
     run:
         qc_files = []
         for filelist in input.filelists:
@@ -82,7 +82,7 @@ rule combined_multiqc:
         filelist            = '{project}/{genome_version}/results/multiqc/filelist.txt',
     output:
         html_file           = '{project}/{genome_version}/results/multiqc_report.html'
-    group: 'combined_multiqc'
+    # group: 'combined_multiqc'
     conda:
         flexible_conda_env(config,['conda','multiqc'],env_yaml = 'envs/multiqc.yaml')
     shell:
