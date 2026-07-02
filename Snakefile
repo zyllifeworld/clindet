@@ -12,6 +12,7 @@ VALID_RUN_TYPES = [
     "rna",
     "build_b37",
     "build_hg38",
+    "pull_zenodo"
 ]
 
 RUN_TYPE = config.get("run_type", None)
@@ -53,6 +54,11 @@ elif RUN_TYPE == 'build_b37':
     rule all:
         input:
             rules.build_b37_ref.input
+
+elif RUN_TYPE == 'pull_zenodo':
+    rule all:
+        input:
+            rules.download_zenodo_containers.output
 
 elif RUN_TYPE == 'build_hg38':
     rule all:
