@@ -39,7 +39,7 @@ recall_pon =  False
 custome_pon_db = True
 pre_pon_db = True
 recall_pon_pindel =  False
-purple_sv = config['run_params']['purple_sv']
+purple_sv = config.get("run_params", {}).get("purple_sv", 'gridss')
 
 
 ## paired sample list
@@ -69,7 +69,7 @@ paired_res_list = [
     "{project}/{genome_version}/results/report/{sample}/moalmanac/{sample}.report.html" if 'case_report' in stages else None,
     #### Multiple QC report #####
     '{project}/{genome_version}/results/multiqc_report.html' if 'multiqc' in stages else None,
-
+    
 ]
 paired_res_list = list(filter(None, paired_res_list))
 
@@ -112,4 +112,3 @@ rule wes_pipeline:
 
 
 include: '../workflow/WES/Snakefile'
-

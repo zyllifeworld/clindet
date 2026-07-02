@@ -23,7 +23,7 @@ singularity:
     repo: "docker://shahcompbio/igcaller:latest"
   delly:
     sif: "resources/containers/delly_v1.7.2.sif"
-    repo: "https://depot.galaxyproject.org/singularity/delly:1.3.1--h4d20210_1"
+    repo: "docker://dellytools/delly:latest"
   jasmine:
     sif: "resources/containers/jasminesv.sif"
     repo: "https://depot.galaxyproject.org/singularity/jasminesv:1.1.5--hdfd78af_0"

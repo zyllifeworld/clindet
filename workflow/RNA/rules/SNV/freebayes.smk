@@ -23,7 +23,7 @@ rule unpaired_freebayes:
 
 rule norm_filter_freebayes:
     input:
-        vcf="{project}/{genome_version}/results/vcf/unpaired/{sample}/freebayes.vcf",
+        vcf="{project}/{genome_version}/results/mut/vcf/{sample}/freebayes.vcf",
         ref=config['resources'][genome_version]['REFFA'],
     output:
         vcf="{project}/{genome_version}/results/vcf_nf/unpaired/{sample}/freebayes.vcf",

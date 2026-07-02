@@ -6,7 +6,7 @@
 ### bcftools view -i 'SVTYPE="BND"' 
 rule brass_pre_merge:
     input:
-        log="{project}/{genome_version}/results/sv/paired/DELLY/{sample}/{sample}_brass.log"
+        log="{project}/{genome_version}/results/sv/paired/BRASS/{sample}/{sample}_brass.log"
     output:
         vcf="{project}/{genome_version}/results/sv/paired/merge/{sample}/brass.vcf"
     conda: flexible_conda_env(config,['conda','clindet_main'],env_yaml = 'envs/clindet.yaml')
