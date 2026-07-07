@@ -47,6 +47,6 @@ rule filter_sentieon:
         --normal_sample {wildcards.sample}_NC \
         -v {input.temp_vcf}   \
         --orientation_priors {input.ori_data}  \
-        {output.vcf}
+        {output.flag_vcf}
         bcftools filter -i 'FILTER="PASS"'  {output.flag_vcf} > {output.vcf} 
         """

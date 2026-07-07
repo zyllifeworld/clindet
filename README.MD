@@ -106,6 +106,10 @@ alt="ClinDet" width="640" border="4" /></a>
 
 
 ## Future Work
-1. Advanced downstream analysis based on consensus results (e.g. Driver gene identification)
-2. Benchmark report
+1. Resource-usage benchmark report
+    1. Extend the current text-based benchmark outputs into visual reports summarizing runtime, memory usage, CPU utilization, and other resource-consumption metrics.
+2. ClinDet MCP server
+    1. Automated download and configuration of species-specific genome configuration files, curated and maintained by domain-specific bioinformatics experts across different research communities.
+    2. Advanced tumor biology analysis modules built upon ClinDet standardized outputs, including clonal evolution analysis, driver gene identification, viral integration detection, transposable element analysis, disease-specific knowledge-base construction, and other downstream applications.
+    3. ...
 3. ...
