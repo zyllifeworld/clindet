@@ -206,17 +206,32 @@ rule download_sanger:
         touch {output.done}
         """
 
-rule download_vep:
+rule download_vep_cache_hg38:
     output:
-        cache_tar=f"{REF_Hg38}/vep/v110/homo_sapiens_vep_110_GRCh38.tar.gz",
-        done=f"{BUILD_LOG_hg38}/download_vep.log"
+        touch(f"{BUILD_LOG_hg38}/download_vep.log")
+    log:
+        f"{BUILD_LOG_hg38}/download_vep.run.log"
+    params:
+        cache_num=str(config["softwares_params"]['hg38']["vcf2maf"]["vep"]["cache_version"]).replace("v", ""),
+        cache_dir=f"{REF_Hg38}/vep/v{str(config['softwares_params']['hg38']['vcf2maf']['vep']['cache_version']).replace('v', '')}",
+        vep_dir=f"{REF_Hg38}/vep"
     shell:
-        r"""
-        mkdir -p {REF_Hg38}/vep/v110 {BUILD_LOG_hg38}
-        wget -P {REF_Hg38}/vep/v110 -c \
-          https://ftp.ensembl.org/pub/release-110/variation/indexed_vep_cache/homo_sapiens_vep_110_GRCh38.tar.gz
-        tar -xzvf {REF_Hg38}/vep/v110/homo_sapiens_vep_110_GRCh38.tar.gz -C {REF_Hg38}/vep/
-        touch {output.done}
+        """
+        (
+            set -euo pipefail
+
+            mkdir -p {params.cache_dir}
+
+            wget \
+                -P {params.cache_dir} \
+                -c https://ftp.ensembl.org/pub/release-{params.cache_num}/variation/indexed_vep_cache/homo_sapiens_vep_{params.cache_num}_GRCh38.tar.gz
+
+            tar -xzvf \
+                {params.cache_dir}/homo_sapiens_vep_{params.cache_num}_GRCh37.tar.gz \
+                -C {params.vep_dir}
+        ) &> {log}
+
+        touch {output}
         """
 
 rule bwa_index:
@@ -247,7 +262,12 @@ rule mass_config:
         r"""
         mkdir -p {BUILD_LOG_hg38}
         bgzip -k -d -o {output.dbsnp_vcf} {input.dbsnp_gz}
-        resources/softwares/gatk/gatk CreateSequenceDictionary -R {input.fasta}
+        bcftools view -v indels --write-index -Oz -o {REF_Hg38}/dbsnp_138.hg38.indel.vcf.gz {input.dbsnp_gz}
+        tabix -f {REF_Hg38}/dbsnp_138.hg38.indel.vcf.gz
+        echo "Clone TRUST4"
+        if [ ! -d "{SOFT_DIR}/TRUST4" ]; then
+            git clone https://github.com/liulab-dfci/TRUST4.git {SOFT_DIR}/TRUST4
+        fi
         touch {output.done}
         """
 

@@ -1,6 +1,6 @@
 CONTAINER_DIR = "resources/containers"
 build_software_log = "build_log/envs"
-
+configfile: "workflow/config/conf/softwares_params.yaml"
 ENV_SPECS = {
     "clindet": "envs/clindet.yaml",
     "hmftools": "envs/hmftools.yaml",

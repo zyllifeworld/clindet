@@ -224,13 +224,26 @@ rule download_vep_cache:
         touch(f"{BUILD_LOG}/download_vep.log")
     log:
         f"{BUILD_LOG}/download_vep.run.log"
+    params:
+        cache_num=str(config["softwares_params"]['b37']["vcf2maf"]["vep"]["cache_version"]).replace("v", ""),
+        cache_dir=f"{REF_B37}/vep/v{str(config['softwares_params']['b37']['vcf2maf']['vep']['cache_version']).replace('v', '')}",
+        vep_dir=f"{REF_B37}/vep"
     shell:
-        r"""
-        mkdir -p {REF_B37}/vep/v110
-        {{
-            wget -P {REF_B37}/vep/v110 -c https://ftp.ensembl.org/pub/release-110/variation/indexed_vep_cache/homo_sapiens_vep_110_GRCh37.tar.gz
-            tar -xzvf {REF_B37}/vep/v110/homo_sapiens_vep_110_GRCh37.tar.gz -C {REF_B37}/vep/
-        }} &> {log}
+        """
+        (
+            set -euo pipefail
+
+            mkdir -p {params.cache_dir}
+
+            wget \
+                -P {params.cache_dir} \
+                -c https://ftp.ensembl.org/pub/release-{params.cache_num}/variation/indexed_vep_cache/homo_sapiens_vep_{params.cache_num}_GRCh37.tar.gz
+
+            tar -xzvf \
+                {params.cache_dir}/homo_sapiens_vep_{params.cache_num}_GRCh37.tar.gz \
+                -C {params.vep_dir}
+        ) &> {log}
+
         touch {output}
         """
 
@@ -390,7 +403,6 @@ rule build_kallisto_salmon_index:
 
 rule install_clindet_extras:
     input:
-        gatk_dir=f"{SOFT_DIR}/gatk",
         dbsnp_vcf=f"{REF_B37}/Homo_sapiens_assembly19.dbsnp138.vcf",
     output:
         touch(f"{BUILD_LOG}/mass_config.log"),
@@ -406,8 +418,6 @@ rule install_clindet_extras:
             tabix -f {REF_B37}/Homo_sapiens_assembly19.dbsnp138.vcf.gz
             bcftools view -v indels --write-index -Oz -o {REF_B37}/Homo_sapiens_assembly19.dbsnp138.indel.vcf.gz {REF_B37}/Homo_sapiens_assembly19.dbsnp138.vcf.gz
             tabix -f {REF_B37}/Homo_sapiens_assembly19.dbsnp138.indel.vcf.gz
-            echo "Create sequence dictionary"
-            {SOFT_DIR}/gatk/gatk CreateSequenceDictionary -R {REF_B37}/Homo_sapiens.GRCh37.GATK.illumina.fasta
             echo "Clone TRUST4"
             if [ ! -d "{SOFT_DIR}/TRUST4" ]; then
                 git clone https://github.com/liulab-dfci/TRUST4.git {SOFT_DIR}/TRUST4
