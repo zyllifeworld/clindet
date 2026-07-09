@@ -1,6 +1,6 @@
 import pandas as pd
 sample_sheet_file = config['project']['sample_sheet']
-samples_info = pd.read_csv(sample_sheet_file,index_col='Sample_name')
+samples_info = pd.read_csv(sample_sheet_file,index_col='Sample_name',dtype={"Sample_name": str})
 
 unpaired_samples = samples_info.loc[pd.isna(samples_info['Normal_R1_file_path'])].index.tolist()
 paired_samples = samples_info.loc[~pd.isna(samples_info['Normal_R1_file_path'])].index.tolist()
@@ -69,6 +69,9 @@ paired_res_list = [
     "{project}/{genome_version}/results/report/{sample}/moalmanac/{sample}.report.html" if 'case_report' in stages else None,
     #### Multiple QC report #####
     '{project}/{genome_version}/results/multiqc_report.html' if 'multiqc' in stages else None,
+
+    #### call sv 
+    "{project}/{genome_version}/results/sv/paired/merge/{sample}/merge.vcf"  if 'call_sv' in stages else None,
     
 ]
 paired_res_list = list(filter(None, paired_res_list))
@@ -112,3 +115,4 @@ rule wes_pipeline:
 
 
 include: '../workflow/WES/Snakefile'
+include: '../workflow/WGS/rules/rtm/paired/SV.smk'

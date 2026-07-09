@@ -1,7 +1,7 @@
 import pandas as pd
 
 sample_sheet_file = config['project']['sample_sheet']
-samples_info = pd.read_csv(sample_sheet_file,index_col='Sample_name')
+samples_info = pd.read_csv(sample_sheet_file,index_col='Sample_name',dtype={"Sample_name": str})
 unpaired_samples = samples_info.loc[pd.isna(samples_info['Normal_R1_file_path'])].index.tolist()
 paired_samples = samples_info.loc[~pd.isna(samples_info['Normal_R1_file_path'])].index.tolist()
 
@@ -78,7 +78,8 @@ paired_res_list = [
     "{project}/{genome_version}/results/sv/paired/igcaller/{sample}/{sample}-T_IgCaller/{sample}-T_output_filtered.tsv"  if 'igcaller' in somatic_sv_list else None, # igcaller call
     # Manta call
     "{project}/{genome_version}/results/vcf/paired/{sample}/Manta/results/variants/somaticSV.vcf.gz"  if 'Manta' in somatic_sv_list else None, # manta call
-
+    # merge sv results
+    "{project}/{genome_version}/results/sv/paired/merge/{sample}/merge.vcf"  if 'call_sv' in stages else None,
     #### Case report #####
     '{project}/{genome_version}/results/report/{sample}/{sample}_cancer_report.html' if 'case_report' in stages else None,
     #### Multiple QC report #####

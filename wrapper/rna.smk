@@ -1,6 +1,6 @@
 import pandas as pd
 sample_sheet_file = config['project']['sample_sheet']
-samples_info = pd.read_csv(sample_sheet_file,index_col='Sample_name')
+samples_info = pd.read_csv(sample_sheet_file,index_col='Sample_name',dtype={"Sample_name": str})
 SE_samples = samples_info.loc[pd.isna(samples_info['R2_file_path'])].index.tolist()
 PE_samples = samples_info.loc[~pd.isna(samples_info['R1_file_path'])].index.tolist()
 
