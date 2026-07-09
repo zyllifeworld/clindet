@@ -15,7 +15,7 @@ rule brass_pre_merge:
         vcf="{project}/{genome_version}/results/sv/paired/BRASS/{sample}/{sample}_T_vs_{sample}_NC.annot.vcf.gz"
     shell:
         """
-        bcftools view -i 'INFO/SVCLASS="translocation"' {params.vcf} -o {output.vcf} -O v
+        bcftools view -i 'INFO/SVCLASS="translocation" || INFO/SVCLASS="inversion"' {params.vcf} -o {output.vcf} -O v
         """
 
 ## for delly
@@ -29,7 +29,7 @@ rule delly_pre_merge:
         ref=config['resources'][genome_version]['REFFA'],
     shell:
         """
-        bcftools annotate -x INFO/END,INFO/SVMETHOD,INFO/CONSENSUS -i 'SVTYPE="BND"'  {input.vcf} -o {output.vcf} -O v
+        bcftools annotate -x INFO/END,INFO/SVMETHOD,INFO/CONSENSUS -i 'SVTYPE="BND" || SVTYPE="INV"'  {input.vcf} -o {output.vcf} -O v
         """
 
 ## for svaba
@@ -43,7 +43,7 @@ rule svaba_pre_merge:
         ref=config['resources'][genome_version]['REFFA']
     shell:
         """
-        bcftools view -i 'SVTYPE="BND"' {input.vcf} -o {output.vcf} -O v
+        bcftools view -i 'SVTYPE="BND" || SVTYPE="INV"' {input.vcf} -o {output.vcf} -O v
         """
 
 ## for gridss
@@ -57,7 +57,7 @@ rule gridss_pre_merge:
         ref=config['resources'][genome_version]['REFFA']
     shell:
         """
-        bcftools view -i 'SVTYPE="BND"'  {input.vcf} -o {output.vcf} -O v
+        bcftools view -i 'SVTYPE="BND" || SVTYPE="INV"'  {input.vcf} -o {output.vcf} -O v
         """
 
 ### Manta
@@ -93,5 +93,5 @@ rule jasmine_merge:
         do
             echo "$f" >> "{output[0]}"
         done
-        jasmine --output_genotypes --allow_intrasample  file_list={output[0]} out_file={output.vcf}
+        jasmine --normalize_type --allow_intrasample  file_list={output[0]} out_file={output.vcf}
         """
