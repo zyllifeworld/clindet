@@ -22,7 +22,7 @@ singularity:
     sif: "resources/containers/igcaller-1.2.1.simg"
     repo: "docker://shahcompbio/igcaller:latest"
   delly:
-    sif: "resources/containers/delly_v1.7.2.sif"
+    sif: "resources/containers/delly_v2.3.1.sif"
     repo: "docker://dellytools/delly:latest"
   jasmine:
     sif: "resources/containers/jasminesv.sif"
