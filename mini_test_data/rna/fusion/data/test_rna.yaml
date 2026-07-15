@@ -54,3 +54,11 @@ project:
 run_params:
   stages: 
     - arriba
+    - call_mut
+  rna_caller_list:
+    - freebayes
+    - HaplotypeCaller
+    - lofreq
+    - Mutect2
+    - vardict
+    - varscan2

@@ -8,6 +8,7 @@ conda:
     clindet_rsem: 'clindet_rsem'
     clindet_vep: 'clindet_vep'
     facets:
+    gsutils: "gsutils"
     hmftools: 'hmftools'
     strelka: 'strelka'
     trust4: 'clindet_rsem'

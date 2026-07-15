@@ -29,8 +29,8 @@ rule loop_vcf2maf_rna:
 
 rule merge_rna_maf:
     input:
-        vcf1=expand("{project}/{genome_version}/results/mut/vcf/{{sample}}/{caller}.vcf",caller = rna_caller_list,project = project,genome_version = genome_version),
-        maf1=expand("{project}/{genome_version}/results/mut/maf/{{sample}}/{caller}.vcf.maf",caller = rna_caller_list,project = project,genome_version = genome_version),
+        vcf1=expand("{project}/{genome_version}/results/mut/vcf/{{sample}}/{caller}.vcf",caller = caller_list,project = project,genome_version = genome_version),
+        maf1=expand("{project}/{genome_version}/results/mut/maf/{{sample}}/{caller}.vcf.maf",caller = caller_list,project = project,genome_version = genome_version),
         ref=config['resources'][genome_version]['REFFA']
     output:
         maf="{project}/{genome_version}/results/mut/maf/{sample}/merge/{sample}.maf",

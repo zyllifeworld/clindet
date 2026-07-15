@@ -69,7 +69,10 @@ def get_vcf_name(wildcards):
         else: 
             name =  "--tumor-id " + wildcards.sample + '_T' + " --normal-id " + wildcards.sample + '_NC'
     else:
-        name =  "--tumor-id " + wildcards.sample + '_T' + " --normal-id " + wildcards.sample + '_NORMAL'
+        if config["run_type"] == 'rna':
+            name = "--tumor-id " + wildcards.sample + " --normal-id " + wildcards.sample + '_NORMAL'
+        else:
+            name =  "--tumor-id " + wildcards.sample + '_T' + " --normal-id " + wildcards.sample + '_NORMAL'
     return(name)
 
 def vcf2vcf_name(wildcards):
@@ -241,3 +244,25 @@ def purple_sv_vcf(wildcards):
     else:
         p_sv = ''
     return p_sv
+
+
+def get_rna_fastq(wildcards):
+    fq_files = list(samples_info.loc[wildcards.sample,['R1_file_path','R2_file_path']])
+    return {
+        "R1":fq_files[0],
+        "R2":fq_files[1],
+    }
+
+def get_sample_gender(wildcards):
+    bed_file = samples_info.loc[wildcards.sample,'gender']
+    return(bed_file)
+
+import os
+
+def has_executable(path):
+    if not path:
+        return False
+    path = str(path).strip()
+    if path == "":
+        return False
+    return os.path.exists(path) and os.access(path, os.X_OK)

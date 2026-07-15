@@ -1,4 +1,3 @@
-redup = False
 if redup:
     rule mark_duplicates_score:
         input:

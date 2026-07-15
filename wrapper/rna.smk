@@ -3,6 +3,7 @@ sample_sheet_file = config['project']['sample_sheet']
 samples_info = pd.read_csv(sample_sheet_file,index_col='Sample_name',dtype={"Sample_name": str})
 SE_samples = samples_info.loc[pd.isna(samples_info['R2_file_path'])].index.tolist()
 PE_samples = samples_info.loc[~pd.isna(samples_info['R1_file_path'])].index.tolist()
+paired_samples = []
 
 ## split config files 
 configfile: "workflow/config/conf/genomes.yaml"
@@ -11,7 +12,7 @@ configfile: "workflow/config/conf/softwares.yaml"
 configfile: "workflow/config/conf/softwares_params.yaml"
 
 stages = config['run_params']['stages']
-rna_caller_list = config.get("run_params", {}).get("rna_caller_list", [])
+caller_list = config.get("run_params", {}).get("rna_caller_list", [])
 project = config['project']['output_dir']
 
 genome_version = config['project']['genome_version']

@@ -1,44 +1,21 @@
-def get_rna_fastq(wildcards):
-    fq_files = list(samples_info.loc[wildcards.sample,['R1_file_path','R2_file_path']])
-    return {
-        "R1":fq_files[0],
-        "R2":fq_files[1],
-    }
-
-def get_sample_bed(wildcards):
-    bed_file = samples_info.loc[wildcards.sample,'Target_file_bed']
-    return(bed_file)
-
-def get_sample_gender(wildcards):
-    bed_file = samples_info.loc[wildcards.sample,'gender']
-    return(bed_file)
-
-
-def get_vcf_name(wildcards):
-    if wildcards.caller == 'vardict':          
-        name =  "--tumor-id " + wildcards.sample + '_T'
-    else: 
-        name =  "--tumor-id " + wildcards.sample
-    return(name)
-
-
-def get_vcf_file(wildcards):
-    if wildcards.sample in paired_samples:
-        file_name =  f"results/vcf/" + 'paired' + "/{sample}/{caller}.vcf"
-    else:
-        file_name =  f"results/vcf/" + 'unpaired' + "/{sample}/{caller}.vcf"
-    return(file_name)
-
-
+sentieon_call = (
+    config.get("softwares", {})
+          .get("sentieon", {})
+          .get("call", "")
+)
+### call mutation module
+redup = False
+if has_executable(sentieon_call):
+    print(f"[INFO] Sentieon found: {sentieon_call.strip()}")
+    include: "rules/call_mut_sentieon.smk"
+else:
+    print("[INFO] Sentieon not found or not configured. Using GATK mutation calling rules.")
+    include: "rules/call_mut_GATK.smk"
 
 ##### Modules #####
 
 include: "rules/qc.smk"
 include: "rules/mapping.smk"
-# include: "rules/isofox.smk"
-
-### call mutation module
-include: "rules/call_mut_sentieon.smk"
 #include: "rules/merge.smk"
 include: "rules/merge_loop.smk"
 include: "rules/SNV.smk"

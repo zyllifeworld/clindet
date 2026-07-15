@@ -131,7 +131,6 @@ rule loop_vcf2maf_unpaired:
 
 rule merge_paired_maf:
     input:
-       # vcf1=expand("{project}/{genome_version}/results/vcf/paired/{{sample}}/{caller}.vcf",caller = caller_list,project = project,genome_version = genome_version),
         maf1=expand("{project}/{genome_version}/results/maf/paired/{{sample}}/{caller}.vcf.maf",caller = caller_list,project = project,genome_version = genome_version),
         ref=config['resources'][genome_version]['REFFA']
     output:

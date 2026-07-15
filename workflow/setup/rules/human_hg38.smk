@@ -24,8 +24,10 @@ rule download_hg38_genome:
         dictf=f"{REF_Hg38}/GRCh38_masked_exclusions_alts_hlas.fasta.dict",
         fai=f"{REF_Hg38}/GRCh38_masked_exclusions_alts_hlas.fasta.fai",
         done=f"{BUILD_LOG_hg38}/download_hg38.log"
+    conda:
+        flexible_conda_env(config,['conda','gsutils'],env_yaml = 'envs/gsutils.yaml')
     shell:
-        r"""
+        """
         mkdir -p {REF_Hg38} {BUILD_LOG_hg38}
         gsutil -m cp -r -n \
           gs://hmf-public/HMFtools-Resources/ref_genome/38/GRCh38_masked_exclusions_alts_hlas.fasta \
@@ -43,8 +45,10 @@ rule download_hmftools:
         amber2=f"{REF_Hg38}/hmf_pipeline_resources/GermlineHetPon.hg38.snpcheck.vcf.gz",
         amber3=f"{REF_Hg38}/hmf_pipeline_resources/Amber.snpcheck.38.vcf",
         done=f"{BUILD_LOG_hg38}/download_hg38_hmftools.log"
+    conda:
+        flexible_conda_env(config,['conda','gsutils'],env_yaml = 'envs/gsutils.yaml')
     shell:
-        r"""
+        """
         mkdir -p {REF_Hg38}/hmf_pipeline_resources {BUILD_LOG_hg38}
 
         gsutil -m cp -r -n \
@@ -93,8 +97,10 @@ rule download_gatk_resources:
         common=f"{REF_Hg38}/00-common_all.vcf.gz",
         common_tbi=f"{REF_Hg38}/00-common_all.vcf.gz.tbi",
         done=f"{BUILD_LOG_hg38}/download_hg38_gatk.log"
+    conda:
+        flexible_conda_env(config,['conda','gsutils'],env_yaml = 'envs/gsutils.yaml')
     shell:
-        r"""
+        """
         mkdir -p {REF_Hg38} {BUILD_LOG_hg38}
 
         gsutil -m cp -r -n \
@@ -137,7 +143,7 @@ rule download_ascat:
         wgs_done=f"{REF_Hg38}/ASCAT/WGS/.done",
         done=f"{BUILD_LOG_hg38}/download_ascat.log"
     shell:
-        r"""
+        """
         mkdir -p {REF_Hg38}/ASCAT/WES {REF_Hg38}/ASCAT/WGS {BUILD_LOG_hg38}
 
         wget -P {REF_Hg38}/ASCAT/WES -c https://zenodo.org/records/14008443/files/G1000_alleles_WES_hg38.zip
@@ -176,7 +182,7 @@ rule download_sanger:
         flagging_bed=f"{REF_Hg38}/Sanger/SNV_INDEL_ref_GRCh38_hla_decoy_ebv-fragment/caveman/flagging/gene_regions.bed",
         done=f"{BUILD_LOG_hg38}/download_sanger.log"
     shell:
-        r"""
+        """
         mkdir -p {REF_Hg38}/Sanger {BUILD_LOG_hg38}
 
         wget -P {REF_Hg38}/Sanger -c \
@@ -244,8 +250,10 @@ rule bwa_index:
         pac=f"{REF_Hg38}/GRCh38_masked_exclusions_alts_hlas.fasta.pac",
         sa=f"{REF_Hg38}/GRCh38_masked_exclusions_alts_hlas.fasta.sa"
     threads: 8
+    conda:
+        flexible_conda_env(config,['conda','clindet_main'],env_yaml = 'envs/clindet.yaml')
     shell:
-        r"""
+        """
         bwa index {input}
         """
 
@@ -258,16 +266,14 @@ rule mass_config:
         dbsnp_vcf=f"{REF_Hg38}/dbsnp_138.hg38.vcf",
         dictf=f"{REF_Hg38}/GRCh38_masked_exclusions_alts_hlas.dict",
         done=f"{BUILD_LOG_hg38}/mass_config.log"
+    conda:
+        flexible_conda_env(config,['conda','clindet_main'],env_yaml = 'envs/clindet.yaml')
     shell:
-        r"""
+        """
         mkdir -p {BUILD_LOG_hg38}
         bgzip -k -d -o {output.dbsnp_vcf} {input.dbsnp_gz}
         bcftools view -v indels --write-index -Oz -o {REF_Hg38}/dbsnp_138.hg38.indel.vcf.gz {input.dbsnp_gz}
         tabix -f {REF_Hg38}/dbsnp_138.hg38.indel.vcf.gz
-        echo "Clone TRUST4"
-        if [ ! -d "{SOFT_DIR}/TRUST4" ]; then
-            git clone https://github.com/liulab-dfci/TRUST4.git {SOFT_DIR}/TRUST4
-        fi
         touch {output.done}
         """
 
@@ -276,29 +282,29 @@ rule download_gtf:
         gtf_gz=f"{REF_Hg38}/gencode.v49.annotation.gtf.gz",
         gtf=f"{REF_Hg38}/gencode.v49.annotation.gtf"
     shell:
-        r"""
+        """
         mkdir -p {REF_Hg38}
         wget -P {REF_Hg38} -c \
           https://ftp.ebi.ac.uk/pub/databases/gencode/Gencode_human/release_49/gencode.v49.annotation.gtf.gz
         gzip -cd {output.gtf_gz} > {output.gtf}
         """
 
-rule download_ensembel_gff3:
+rule download_ensembl_gff3:
     output:
         gff_gz=f"{REF_Hg38}/Homo_sapiens.GRCh38.115.chr.gff3.gz",
         gff=f"{REF_Hg38}/Homo_sapiens.GRCh38.115.chr_prefix.gff3"
     shell:
-        r"""
-        mkdir -p {REF_Hg38}
+        """
+        mkdir -p {REF_Hg38} 
         wget -P {REF_Hg38} -c https://ftp.ensembl.org/pub/release-115/gff3/homo_sapiens/Homo_sapiens.GRCh38.115.chr.gff3.gz
         zcat {output.gff_gz} | \
-        awk 'BEGIN{FS=OFS="\t"}
-            /^#/ {print; next}
-            {
+        awk 'BEGIN{{FS=OFS="\\t"}}
+            /^#/ {{print; next}}
+            {{
               if ($1 ~ /^(1[0-9]|2[0-2]|[1-9]|X|Y)$/) $1="chr"$1;
               else if ($1=="MT") $1="chrM";
               print
-            }' > {output.gff}
+            }}' > {output.gff}
         """
 
 rule rsem_star_index:
@@ -309,8 +315,10 @@ rule rsem_star_index:
     output:
         done=f"{BUILD_LOG_hg38}/rsem_star_index.log"
     threads: 20
+    conda:
+        flexible_conda_env(config,['conda','rna'],env_yaml = 'envs/rsem.yaml')
     shell:
-        r"""
+        """
         mkdir -p {REF_Hg38}/RSEM {BUILD_LOG_hg38}
         rsem-prepare-reference \
             --gtf {input.gtf} \
@@ -327,8 +335,10 @@ rule star_index:
     output:
         done=f"{BUILD_LOG_hg38}/star_index.log"
     threads: 20
+    conda:
+        flexible_conda_env(config,['conda','rna'],env_yaml = 'envs/rsem.yaml')
     shell:
-        r"""
+        """
         mkdir -p {REF_Hg38}/STAR/hg38 {BUILD_LOG_hg38}
         STAR \
             --runThreadN {threads} \
@@ -345,8 +355,10 @@ rule download_cdna:
     output:
         fa_gz=f"{REF_Hg38}/Homo_sapiens.GRCh38.cdna.all.fa.gz",
         fa=f"{REF_Hg38}/Homo_sapiens.GRCh38.cdna.all.fa"
+    conda:
+        flexible_conda_env(config,['conda','rna'],env_yaml = 'envs/rsem.yaml')
     shell:
-        r"""
+        """
         mkdir -p {REF_Hg38}
         wget -P {REF_Hg38} -c \
           https://ftp.ensembl.org/pub/release-114/fasta/homo_sapiens/cdna/Homo_sapiens.GRCh38.cdna.all.fa.gz
@@ -360,8 +372,10 @@ rule kallisto_salmon_index:
     output:
         done=f"{BUILD_LOG_hg38}/kallisto_salmon_index.log"
     threads: 20
+    conda:
+        flexible_conda_env(config,['conda','rna'],env_yaml = 'envs/rsem.yaml')
     shell:
-        r"""
+        """
         mkdir -p {REF_Hg38}/kallisto {REF_Hg38}/salmon {BUILD_LOG_hg38}
 
         kallisto index \
@@ -379,28 +393,26 @@ rule kallisto_salmon_index:
 rule download_mutation_anno_bed_hg38:
     output:
         output=f"{BUILD_LOG_hg38}/download_bed_files.log"
-    conda:
-        flexible_conda_env(config,['conda','clindet_main'],env_yaml = 'envs/clindet.yaml')
     shell:
-        r"""
-        mkdir -p {REF_B37}/bed/giab
-        wget -P {REF_B37}/bed/giab -c https://ftp-trace.ncbi.nlm.nih.gov/ReferenceSamples/giab/release/genome-stratifications/v3.6/GRCh38@all/Union/GRCh38_alldifficultregions.bed.gz
-        wget -P {REF_B37}/bed/giab -c https://ftp-trace.ncbi.nlm.nih.gov/ReferenceSamples/giab/release/genome-stratifications/v3.6/GRCh38@all/Union/GRCh38_alllowmapandsegdupregions.bed.gz
-        wget -P {REF_B37}/bed/giab -c https://ftp-trace.ncbi.nlm.nih.gov/ReferenceSamples/giab/release/genome-stratifications/v3.5/GRCh38@all/FunctionalTechnicallyDifficult/GRCh38_BadPromoters.bed.gz
-        wget -P {REF_B37}/bed/giab -c https://ftp-trace.ncbi.nlm.nih.gov/ReferenceSamples/giab/release/genome-stratifications/v3.6/GRCh38@all/Union/GRCh38_alldifficultregions.bed.gz
-        wget -P {REF_B37}/bed/giab -c https://ftp-trace.ncbi.nlm.nih.gov/ReferenceSamples/giab/release/genome-stratifications/v3.5/GRCh38@all/XY/GRCh38_chrX_PAR.bed.gz
-        wget -P {REF_B37}/bed/giab -c https://ftp-trace.ncbi.nlm.nih.gov/ReferenceSamples/giab/release/genome-stratifications/v3.5/GRCh38@all/XY/GRCh38_chrX_XTR.bed.gz
-        wget -P {REF_B37}/bed/giab -c https://ftp-trace.ncbi.nlm.nih.gov/ReferenceSamples/giab/release/genome-stratifications/v3.5/GRCh38@all/XY/GRCh38_chrY_PAR.bed.gz
-        wget -P {REF_B37}/bed/giab -c https://ftp-trace.ncbi.nlm.nih.gov/ReferenceSamples/giab/release/genome-stratifications/v3.5/GRCh38@all/XY/GRCh38_chrY_XTR.bed.gz
-        wget -P {REF_B37}/bed/giab -c https://ftp-trace.ncbi.nlm.nih.gov/ReferenceSamples/giab/release/genome-stratifications/v3.5/GRCh38@all/OtherDifficult/GRCh38_KIR.bed.gz
-        wget -P {REF_B37}/bed/giab -c https://ftp-trace.ncbi.nlm.nih.gov/ReferenceSamples/giab/release/genome-stratifications/v3.5/GRCh38@all/OtherDifficult/GRCh38_MHC.bed.gz
-        wget -P {REF_B37}/bed/giab -c https://ftp-trace.ncbi.nlm.nih.gov/ReferenceSamples/giab/release/genome-stratifications/v3.5/GRCh38@all/OtherDifficult/GRCh38_KIR.bed.gz
+        """
+        mkdir -p {REF_Hg38}/bed/giab
+        wget -P {REF_Hg38}/bed/giab -c https://ftp-trace.ncbi.nlm.nih.gov/ReferenceSamples/giab/release/genome-stratifications/v3.6/GRCh38@all/Union/GRCh38_alldifficultregions.bed.gz
+        wget -P {REF_Hg38}/bed/giab -c https://ftp-trace.ncbi.nlm.nih.gov/ReferenceSamples/giab/release/genome-stratifications/v3.6/GRCh38@all/Union/GRCh38_alllowmapandsegdupregions.bed.gz
+        wget -P {REF_Hg38}/bed/giab -c https://ftp-trace.ncbi.nlm.nih.gov/ReferenceSamples/giab/release/genome-stratifications/v3.5/GRCh38@all/FunctionalTechnicallyDifficult/GRCh38_BadPromoters.bed.gz
+        wget -P {REF_Hg38}/bed/giab -c https://ftp-trace.ncbi.nlm.nih.gov/ReferenceSamples/giab/release/genome-stratifications/v3.6/GRCh38@all/Union/GRCh38_alldifficultregions.bed.gz
+        wget -P {REF_Hg38}/bed/giab -c https://ftp-trace.ncbi.nlm.nih.gov/ReferenceSamples/giab/release/genome-stratifications/v3.5/GRCh38@all/XY/GRCh38_chrX_PAR.bed.gz
+        wget -P {REF_Hg38}/bed/giab -c https://ftp-trace.ncbi.nlm.nih.gov/ReferenceSamples/giab/release/genome-stratifications/v3.5/GRCh38@all/XY/GRCh38_chrX_XTR.bed.gz
+        wget -P {REF_Hg38}/bed/giab -c https://ftp-trace.ncbi.nlm.nih.gov/ReferenceSamples/giab/release/genome-stratifications/v3.5/GRCh38@all/XY/GRCh38_chrY_PAR.bed.gz
+        wget -P {REF_Hg38}/bed/giab -c https://ftp-trace.ncbi.nlm.nih.gov/ReferenceSamples/giab/release/genome-stratifications/v3.5/GRCh38@all/XY/GRCh38_chrY_XTR.bed.gz
+        wget -P {REF_Hg38}/bed/giab -c https://ftp-trace.ncbi.nlm.nih.gov/ReferenceSamples/giab/release/genome-stratifications/v3.5/GRCh38@all/OtherDifficult/GRCh38_KIR.bed.gz
+        wget -P {REF_Hg38}/bed/giab -c https://ftp-trace.ncbi.nlm.nih.gov/ReferenceSamples/giab/release/genome-stratifications/v3.5/GRCh38@all/OtherDifficult/GRCh38_MHC.bed.gz
+        wget -P {REF_Hg38}/bed/giab -c https://ftp-trace.ncbi.nlm.nih.gov/ReferenceSamples/giab/release/genome-stratifications/v3.5/GRCh38@all/OtherDifficult/GRCh38_KIR.bed.gz
 
-        wget -P {REF_B37}/bed/giab -c https://zenodo.org/records/16755940/files/hg38.pm151b-v3.easy.bed.gz
-        wget -P {REF_B37}/bed/giab -c https://zenodo.org/records/16755940/files/hg38.longdust.bed.gz
-        wget https://github.com/parklab/SMaHT_Regional_Categorization/raw/main/SMaHT_easy_hg38.bed.gz
-        wget https://github.com/parklab/SMaHT_Regional_Categorization/raw/main/SMaHT_difficult_hg38.bed.gz
-        wget https://github.com/parklab/SMaHT_Regional_Categorization/raw/main/SMaHT_extreme_hg38.bed.gz
+        wget -P {REF_Hg38}/bed/giab -c https://zenodo.org/records/16755940/files/hg38.pm151b-v3.easy.bed.gz
+        wget -P {REF_Hg38}/bed/giab -c https://zenodo.org/records/16755940/files/hg38.longdust.bed.gz
+        wget -P {REF_Hg38}/bed/giab -c https://github.com/parklab/SMaHT_Regional_Categorization/raw/main/SMaHT_easy_hg38.bed.gz
+        wget -P {REF_Hg38}/bed/giab -c https://github.com/parklab/SMaHT_Regional_Categorization/raw/main/SMaHT_difficult_hg38.bed.gz
+        wget -P {REF_Hg38}/bed/giab -c https://github.com/parklab/SMaHT_Regional_Categorization/raw/main/SMaHT_extreme_hg38.bed.gz
 
         touch {output}
         """

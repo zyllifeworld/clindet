@@ -11,16 +11,17 @@ rule unpaired_vardict_single_mode:
         allele_frequency_threshold="0.01",  # Optional, default is 0.01
         post_scripts="teststrandbias.R | var2vcf_valid.pl -A -N "
     threads: 10
-    conda: flexible_conda_env(config,['conda','clindet_main'],env_yaml = 'envs/clindet.yaml')
+    singularity:
+        flexible_container_img(config,['singularity','vardict_java','sif'],image_url = config['singularity']['vardict_java']['repo'])
     shell:
         """
         vardict-java -G {input.reference} \
         {params.extra} \
         -th {threads} \
         {params.bed_columns} \
-        -N '{wildcards.sample}_T' \
+        -N '{wildcards.sample}' \
         -b {input.bam} \
-        {input.regions} | {params.post_scripts} '{wildcards.sample}_T' -E > {output.vcf}
+        {input.regions} | {params.post_scripts} '{wildcards.sample}' -E > {output.vcf}
         """
 
 rule unpaired_filter_vardict:
@@ -32,5 +33,9 @@ rule unpaired_filter_vardict:
         flexible_conda_env(config,['conda','clindet_main'],env_yaml = 'envs/clindet.yaml')
     shell:
         """
-        bcftools view -i 'FILTER="PASS" && INFO/DP>=20 && INFO/VD>=5'  {input.vcf} -Ov -o {output.vcf}
+        bcftools view \
+        -i 'FILTER="PASS" && INFO/DP>=20 && INFO/VD>=5 && INFO/SVTYPE="." && ALT!~"^<.*>$"' \
+        {input.vcf} \
+        -Ov \
+        -o {output.vcf}
         """
