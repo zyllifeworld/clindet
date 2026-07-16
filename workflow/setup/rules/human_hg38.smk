@@ -104,14 +104,12 @@ rule download_gatk_resources:
         mkdir -p {REF_Hg38} {BUILD_LOG_hg38}
 
         gsutil -m cp -r -n \
-            gs://genomics-public-data/resources/broad/hg38/v0/1000G_omni2.5.hg38.vcf.gz \
-            gs://genomics-public-data/resources/broad/hg38/v0/1000G_omni2.5.hg38.vcf.gz.tbi \
-            gs://genomics-public-data/resources/broad/hg38/v0/1000G_phase1.snps.high_confidence.hg38.vcf.gz \
-            gs://genomics-public-data/resources/broad/hg38/v0/1000G_phase1.snps.high_confidence.hg38.vcf.gz.tbi \
-            gs://genomics-public-data/resources/broad/hg38/v0/Axiom_Exome_Plus.genotypes.all_populations.poly.hg38.vcf.gz \
-            gs://genomics-public-data/resources/broad/hg38/v0/Axiom_Exome_Plus.genotypes.all_populations.poly.hg38.vcf.gz.tbi \
-            gs://genomics-public-data/resources/broad/hg38/v0/Homo_sapiens_assembly38.dbsnp138.vcf \
-            gs://genomics-public-data/resources/broad/hg38/v0/Homo_sapiens_assembly38.dbsnp138.vcf.idx \
+            "gs://gcp-public-data--broad-references/hg38/v0/1000G_omni2.5.hg38.vcf.gz" \
+            "gs://gcp-public-data--broad-references/hg38/v0/1000G_omni2.5.hg38.vcf.gz.tbi" \
+            "gs://gcp-public-data--broad-references/hg38/v0/1000G_phase1.snps.high_confidence.hg38.vcf.gz" \
+            "gs://gcp-public-data--broad-references/hg38/v0/1000G_phase1.snps.high_confidence.hg38.vcf.gz.tbi" \
+            "gs://gcp-public-data--broad-references/hg38/v0/Axiom_Exome_Plus.genotypes.all_populations.poly.hg38.vcf.gz" \
+            "gs://gcp-public-data--broad-references/hg38/v0/Axiom_Exome_Plus.genotypes.all_populations.poly.hg38.vcf.gz.tbi" \
             {REF_Hg38}
 
         gsutil -m cp -n -r \
@@ -121,14 +119,19 @@ rule download_gatk_resources:
             gs://gatk-best-practices/somatic-hg38/af-only-gnomad.hg38.vcf.gz.tbi \
             {REF_Hg38}
 
+        gsutil -m cp -n -r \
+            gs://gcp-public-data--broad-references/hg38/v0/Homo_sapiens_assembly38.dbsnp138.vcf.gz \
+            gs://gcp-public-data--broad-references/hg38/v0/Homo_sapiens_assembly38.dbsnp138.vcf.gz.tbi \
+            gs://gcp-public-data--broad-references/hg38/v0/Homo_sapiens_assembly38.dbsnp138.vcf.idx \
+            {REF_Hg38}
+
+        mv {REF_Hg38}/Homo_sapiens_assembly38.dbsnp138.vcf.gz {REF_Hg38}/dbsnp_138.hg38.vcf.gz
+        mv {REF_Hg38}/Homo_sapiens_assembly38.dbsnp138.vcf.gz.tbi {REF_Hg38}/dbsnp_138.hg38.vcf.gz.tbi
+
         wget -P {REF_Hg38} -c \
-          http://ftp.cbi.pku.edu.cn/pub/mirror/GATK/hg38/Mills_and_1000G_gold_standard.indels.hg38.vcf.gz
+          https://zenodo.org/records/18267841/files/Mills_and_1000G_gold_standard.indels.hg38.vcf.gz
         wget -P {REF_Hg38} -c \
-          http://ftp.cbi.pku.edu.cn/pub/mirror/GATK/hg38/Mills_and_1000G_gold_standard.indels.hg38.vcf.gz.tbi
-        wget -P {REF_Hg38} -c \
-          http://ftp.cbi.pku.edu.cn/pub/mirror/GATK/hg38/dbsnp_138.hg38.vcf.gz
-        wget -P {REF_Hg38} -c \
-          http://ftp.cbi.pku.edu.cn/pub/mirror/GATK/hg38/dbsnp_138.hg38.vcf.gz.tbi
+          https://zenodo.org/records/18267841/files/Mills_and_1000G_gold_standard.indels.hg38.vcf.gz.tbi
         wget -P {REF_Hg38} -c \
           https://ftp.ncbi.nlm.nih.gov/snp/organisms/human_9606_b151_GRCh38p7/VCF/00-common_all.vcf.gz
         wget -P {REF_Hg38} -c \
