@@ -45,7 +45,6 @@ workflow/config_slurm_last/
 workflow/RNA/rules/mut_liftover/
 workflow/RNA/rules/mut/
 workflow/RNA/rules/summary/
-workflow/RNA/scripts/
 
 # smk files
 workflow/RNA/rules/AS.smk
