@@ -245,14 +245,62 @@ def purple_sv_vcf(wildcards):
         p_sv = ''
     return p_sv
 
+##### RNA-seq paired and single-end section
+def is_valid_file_path(x):
+    if x is None:
+        return False
+    if str(x).lower() in ["", "nan", "none", "na", "null", "."]:
+        return False
+    return True
+
 
 def get_rna_fastq(wildcards):
-    fq_files = list(samples_info.loc[wildcards.sample,['R1_file_path','R2_file_path']])
-    return {
-        "R1":fq_files[0],
-        "R2":fq_files[1],
-    }
+    r1 = samples_info.loc[wildcards.sample, "R1_file_path"]
+    r2 = samples_info.loc[wildcards.sample, "R2_file_path"]
 
+    if is_valid_file_path(r2):
+        return {
+            "R1": r1,
+            "R2": r2,
+        }
+    else:
+        return {
+            "R1": r1,
+        }
+
+def get_star_read_files_in(wildcards, input):
+    if "R2" in input.keys():
+        return f"{input.R1} {input.R2}"
+    else:
+        return f"{input.R1}"
+
+def get_rna_layout(wildcards, input):
+    return "PE" if "R2" in input.keys() else "SE"
+
+def get_kallisto_reads(wildcards, input):
+    if "R2" in input.keys():
+        return f"{input.R1} {input.R2}"
+    else:
+        # 单端 kallisto 必须指定 fragment length 和 sd
+        return f"--single -l 200 -s 20 {input.R1}"
+
+
+def get_salmon_reads(wildcards, input):
+    if "R2" in input.keys():
+        return f"-1 {input.R1} -2 {input.R2}"
+    else:
+        return f"-r {input.R1}"
+
+def get_rsem_paired_flag(wildcards, input):
+    return "--paired-end" if "R2" in input.keys() else ""
+
+
+def get_rsem_reads(wildcards, input):
+    if "R2" in input.keys():
+        return f"{input.R1} {input.R2}"
+    return f"{input.R1}"
+
+###
 def get_sample_gender(wildcards):
     bed_file = samples_info.loc[wildcards.sample,'gender']
     return(bed_file)

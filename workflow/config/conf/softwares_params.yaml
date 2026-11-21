@@ -241,6 +241,42 @@ softwares_params:
       index: "resources/ref_genome/hg38/kallisto/hg38"
     rsem:
       index: "resources/ref_genome/hg38/RSEM/hg38"
+    splicing:
+      # GENCODE v50 comprehensive annotation (primary chromosomes, chr-prefixed)
+      annotation_version: "GENCODE v50"
+      gtf: "resources/ref_genome/hg38/gencode.v50.annotation.gtf"
+      gff: "resources/ref_genome/hg38/gencode.v50.annotation.gff3"
+      # STAR index: existing index is v49/Ensembl114-based. With
+      # star_use_gtf_at_align=true the v50 GTF is inserted at alignment time,
+      # so no index rebuild is needed. For strict TCASIA mode set this to
+      # false and point star_index at an index built with the v50 GTF.
+      star_index: "resources/ref_genome/hg38/STAR/hg38"
+      star_use_gtf_at_align: true
+      # Build from gencode.v50.transcripts.fa (see prepare_splicing_refs.sh)
+      salmon_index: "resources/ref_genome/hg38/salmon/hg38_v50"
+      # auto -> read salmon aux_info/meta_info.json; or set explicitly:
+      # fr-firststrand | fr-secondstrand | fr-unstranded
+      strandness: auto
+      read_len: 150
+      read_len_mode: fixed        # fixed | detect (detect is a future option)
+      rmats:
+        gtf: ""                  # empty -> splicing.gtf
+        cstat: 0.0001
+        extra: ""
+      majiq:
+        gff: ""                  # empty -> splicing.gff
+        genome: hg38
+        minreads: 10
+        license: "/path/to/majiq_license_academic_official.lic"
+      suppa2:
+        gtf: ""                  # empty -> splicing.gtf
+        min_tpm: 1
+        events: ""               # empty -> generate from splicing.gtf
+      spladder:
+        gtf: ""                  # empty -> splicing.gtf
+        confidence: 3
+        merge_strategy: single
+        event_types: "exon_skip,intron_retention,alt_3prime,alt_5prime,mutex_exons"
     trust4:
       ref: "resources/softwares/TRUST4/human_IMGT+C.fa"
       f: "resources/softwares/TRUST4/hg38_bcrtcr.fa"
@@ -417,7 +453,7 @@ softwares_params:
       orange:
   mm10:
     vcf2maf:
-      build_version: ""
+      build_version: "GRCm38"
       vep:
         vep_data: "resources/ref_genome/mm10/vep"
         cache_version: "102"

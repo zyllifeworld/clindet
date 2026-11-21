@@ -1,5 +1,5 @@
 try:
-    pindel_normal_panel = config['singularity']['cgppindel'][genome_version]['WES'].get("normal_panel", False)
+    pindel_normal_panel = config['softwares_params'][genome_version]['cgppindel']['WES'].get("normal_panel", False)
 except KeyError:
     # 如果任何一级键不存在，返回默认值
     pindel_normal_panel = False

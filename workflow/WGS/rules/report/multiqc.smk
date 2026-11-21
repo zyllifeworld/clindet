@@ -1,15 +1,15 @@
 import os
 from os.path import abspath, join, dirname, basename
-
+localrules: combined_multiqc_prep_multiqc_data, combined_multiqc
 # prep purple/conpair/samtools/fastp/gatk/picard results for multiqc
 rule prep_multiqc_data:
     input:
         fastp_tum = "{project}/{genome_version}/results/trimmed/fastp/{sample}-T-fastp.json",
         fastp_nc = "{project}/{genome_version}/results/trimmed/fastp/{sample}-NC-fastp.json",
-        conpair_concord = "{project}/{genome_version}/results/qc/conpair/paired/{sample}/{sample}-T_concordance.txt",
-        conpair_contam = "{project}/{genome_version}/results/qc/conpair/paired/{sample}/{sample}-T_contamination.txt",
-        purple_stats = '{project}/{genome_version}/results/cnv/paired/purple/{sample}/purple/{sample}.purple.purity.tsv',
-        purple_qc = '{project}/{genome_version}/results/cnv/paired/purple/{sample}/purple/{sample}.purple.qc',
+        # conpair_concord = "{project}/{genome_version}/results/qc/conpair/paired/{sample}/{sample}-T_concordance.txt",
+        # conpair_contam = "{project}/{genome_version}/results/qc/conpair/paired/{sample}/{sample}-T_contamination.txt",
+        # purple_stats = '{project}/{genome_version}/results/cnv/paired/purple/{sample}/purple/{sample}.purple.purity.tsv',
+        # purple_qc = '{project}/{genome_version}/results/cnv/paired/purple/{sample}/purple/{sample}.purple.qc',
         dedup_metrics = "{project}/{genome_version}/results/qc/dedup/paired/{sample}-T.metrics.txt",
         picard = "{project}/{genome_version}/results/stats/paired/wgs_metrics/{sample}-T.txt"
     output:
@@ -24,22 +24,22 @@ rule prep_multiqc_data:
         qc_files = []
         # qc results
         # change conpair result name
-        renamed_conpair_concord    = join(params.data_dir, basename(input.conpair_concord) \
-            .replace('-T_', '.'))
-        renamed_conpair_contam = join(params.data_dir, basename(input.conpair_contam) \
-            .replace('-T_', '.'))
-        shell(f'cp {input.conpair_concord} {renamed_conpair_concord}')
-        shell(f'cp {input.conpair_contam} {renamed_conpair_contam}')
-        qc_files.extend([
-            renamed_conpair_concord,
-            renamed_conpair_contam,
-        ])
+        # renamed_conpair_concord    = join(params.data_dir, basename(input.conpair_concord) \
+        #     .replace('-T_', '.'))
+        # renamed_conpair_contam = join(params.data_dir, basename(input.conpair_contam) \
+        #     .replace('-T_', '.'))
+        # shell(f'cp {input.conpair_concord} {renamed_conpair_concord}')
+        # shell(f'cp {input.conpair_contam} {renamed_conpair_contam}')
+        # qc_files.extend([
+        #     renamed_conpair_concord,
+        #     renamed_conpair_contam,
+        # ])
 
         qc_files.extend([
             input.fastp_tum,
             input.fastp_nc,
-            input.purple_stats,
-            input.purple_qc,
+            # input.purple_stats,
+            # input.purple_qc,
             input.dedup_metrics,
             input.picard,
         ])
@@ -84,7 +84,7 @@ rule combined_multiqc:
     output:
         html_file           = '{project}/{genome_version}/results/multiqc_report.html'
     group: 'combined_multiqc'
-    conda:'multiqc'
+    conda: flexible_conda_env(config,['conda','multiqc'],env_yaml = 'envs/multiqc.yaml')
     shell:
         """
         multiqc -f -o . -l {input.filelist} --filename {output.html_file}

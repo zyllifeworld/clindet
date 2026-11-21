@@ -49,6 +49,7 @@ paired_res_list = [
     ##### for SNV/INDEL calling #####
     "{project}/{genome_version}/results/maf/paired/{sample}/merge/{sample}.maf" if 'call_mut'  in stages else None,
     "{project}/{genome_version}/results/vcf_norm/paired/{sample}/merge/{sample}.vcf" if 'call_mut_vcf' in stages else None,
+    "{project}/{genome_version}/results/pon/sentieon/sentieon_pon.vcf.gz" if 'call_pon' in stages else None,
     ##### for CNV result ##### There is a bug for snakemake rules namelist when include *smk for 3-4 levels
     # rules.paired_purple.output.qc  if 'purple' in somatic_cnv_list else None, # purple call
     "{project}/{genome_version}/results/cnv/paired/purple/{sample}/purple/{sample}.purple.qc"  if 'purple' in somatic_cnv_list else None, # purple call
@@ -67,7 +68,7 @@ paired_res_list = [
     # BRASS call
     "{project}/{genome_version}/results/sv/paired/BRASS/{sample}/{sample}_brass.log"  if 'brass' in somatic_sv_list else None, # BRASS call
     # DELLY call
-    "{project}/{genome_version}/results/sv/paired/DELLY/{sample}/SV_delly_{sample}.vcf"   if 'delly'  in somatic_sv_list else None, # DELLY call
+    "{project}/{genome_version}/results/sv/paired/DELLY/{sample}/SV_delly_{sample}_filter.vcf"   if 'delly'  in somatic_sv_list else None, # DELLY call
     # gridss call
     "{project}/{genome_version}/results/sv/paired/gridss/{sample}/high_confidence_somatic.vcf.bgz" if 'gridss' in somatic_sv_list else None, # gridss call
     # linx call

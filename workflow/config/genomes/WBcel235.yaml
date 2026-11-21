@@ -1,0 +1,55 @@
+# ---------------------------------------------------------------------------
+# Clindet genome configuration: C. elegans WBcel235
+# genome_version: WBcel235
+#
+# Generated from workflow/config/conf/genomes.yaml and
+# workflow/config/conf/softwares_params.yaml by
+# workflow/setup/scripts/split_genome_configs.py
+#
+# Edit this file to update the reference resources (resources) or the
+# genome-specific tool parameters/databases (tools) for this genome.
+# ---------------------------------------------------------------------------
+
+genome_version: WBcel235
+display_name: C. elegans WBcel235
+resources:
+  REFFA: resources/ref_genome/WBcel235/WBcel235_genome.fa
+  GTF: resources/ref_genome/WBcel235/Caenorhabditis_elegans.WBcel235.114.gtf
+  GENOME_BED: ''
+  DBSNP: ''
+  DBSNP_GZ: reference/WBcel235/worm_fake_dbsnp.vcf.gz
+  DBSNP_INDEL: reference/WBcel235/worm_fake_dbsnp.vcf.gz
+  MUTECT2_VCF: reference/WBcel235/c_elegans.dbsnp.vcf.gz
+  WGS_PON: ''
+  REFFA_DICT: ''
+tools:
+  brass:
+    gc: resources/ref_genome/WBcel235/VAGRENT/vagrent.worm.WBcel235.caenorhabditis_elegans_core_114_WBcel235.cache.gz
+    b: resource/BRASS/ucsc.hg19.gcBins_auto.bed.gz
+    d: resource/BRASS/Hiseq_brass.bed
+    cb: resource/genome/human/T2T_human/chm13v2.0_cytobands_allchrs.bed
+    ct: resource/BRASS/Human.GRCh37.CentTelo.tsv
+    vi: resource/BRASS/2bit/viral.genomic.merged.fa.2bit
+    mi: resource/BRASS/2bit/all_ncbi_bacteria
+  caveman:
+    ignorebed: resources/ref_genome/b37/Sanger/cgpCaVEManWrapper_CPBI_refarea/hi_seq_depth.bed
+    flag:
+      c: resources/ref_genome/b37/Sanger/SNV_INDEL_ref/caveman/flagging/flag.vcf.config_Celegans.ini
+      v: resources/ref_genome/b37/Sanger/SNV_INDEL_ref/caveman/flagging/flag.to.vcf.convert.ini
+      u: resources/ref_genome/b37/Sanger/SNV_INDEL_ref/caveman/flagging
+      g: resources/ref_genome/b37/Sanger/SNV_INDEL_ref/caveman/unmatchedNormal.bed.gz
+      b: resources/ref_genome/b37/Sanger/SNV_INDEL_ref/caveman/flagging
+      ab: resources/ref_genome/b37/Sanger/SNV_INDEL_ref/caveman/flagging
+      s: Celegans
+  cgppindel:
+    genes: resources/ref_genome/b37/Sanger/refarea_pindel/codingexon_regions.indel.bed.gz
+    species: C_elegans
+    softfil: resources/ref_genome/b37/Sanger/SNV_INDEL_ref/pindel/WXS_Rules.lst
+    simrep: resources/ref_genome/b37/Sanger/SNV_INDEL_ref/pindel/simpleRepeats.bed.gz
+    normal_panel: resources/ref_genome/b37/Sanger/SNV_INDEL_ref/pindel/pindel_np.gff3.gz
+    WES:
+      filter: resources/ref_genome/b37/Sanger/SNV_INDEL_ref/pindel/WXS_Rules.lst
+      normal_panel: resources/ref_genome/b37/Sanger/SNV_INDEL_ref/pindel/pindel_np.gff3.gz
+    WGS:
+      filter: resources/ref_genome/b37/Sanger/SNV_INDEL_ref/pindel/WGS_Rules.lst
+      normal_panel: resources/ref_genome/b37/Sanger/SNV_INDEL_ref/pindel/pindel_np.gff3.gz

@@ -9,7 +9,7 @@ if genome_version in ['hg19','b37','hg38','hg38_EBV']:
             NCcnv="{project}/{genome_version}/results/cnv/paired/ascat/{sample}/{sample}_NCcnv.bed"
         params:
             wd="{project}/{genome_version}/results/cnv/paired/{sample}",
-            # gender=,
+            ref=config['resources'][genome_version]['REFFA'],
             sample_index=lambda wildcards: wildcards.sample,
             genome_version=lambda wildcards: wildcards.genome_version
         conda: 
@@ -26,7 +26,6 @@ if genome_version in ['hg19','b37','hg38','hg38_EBV']:
             Tcnv="{project}/{genome_version}/results/cnv/paired/ascat/{sample}/{sample}_Tcnv.bed",
             NCcnv="{project}/{genome_version}/results/cnv/paired/ascat/{sample}/{sample}_NCcnv.bed"
         output:
-            # out_dir=directory('results/vcf/paired/{sample}/caveman'),
             log='{project}/{genome_version}/logs/paired/caveman/caveman_{sample}.log',
             vcf="{project}/{genome_version}/results/vcf/paired/{sample}/caveman/{sample}_T_vs_{sample}_NC.muts.ids.vcf.gz"
         threads: 20

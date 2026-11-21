@@ -1,0 +1,24 @@
+name: clindet_spladder
+channels:
+  - conda-forge
+  - bioconda
+dependencies:
+  - python=3.10
+  - pip
+
+  # SplAdder 3.1.1 dependencies
+  - numpy>=1.26
+  - scipy>=1.13
+  - numba>=0.59
+  - matplotlib>=3.7
+  - intervaltree>=3.0
+  - h5py>=2.2
+  - statsmodels>=0.14
+
+  # Prevent pysam compilation errors
+  - pysam>=0.22.0
+  - zlib
+
+  # Official SplAdder release
+  - pip:
+      - spladder==3.1.1

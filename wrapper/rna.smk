@@ -17,6 +17,23 @@ project = config['project']['output_dir']
 
 genome_version = config['project']['genome_version']
 
+## Alternative splicing targets (callers are selected per run batch)
+splice_callers = config.get("run_params", {}).get("splice_caller_list", [])
+splice_stage = "splicing" in stages
+splice_res_list = [
+    "{project}/{genome_version}/results/AS/{sample}/rmats"
+    if (splice_stage and 'rmats' in splice_callers) else None,
+    "{project}/{genome_version}/results/AS/{sample}/majiq/{sample}.voila.tsv"
+    if (splice_stage and 'majiq' in splice_callers) else None,
+    "{project}/{genome_version}/results/AS/{sample}/majiq/modulized"
+    if (splice_stage and 'majiq' in splice_callers) else None,
+    "{project}/{genome_version}/results/AS/{sample}/suppa2/{sample}_event.psi"
+    if (splice_stage and 'suppa2' in splice_callers) else None,
+    "{project}/{genome_version}/results/AS/{sample}/spladder"
+    if (splice_stage and 'spladder' in splice_callers) else None,
+]
+splice_res_list = list(filter(None, splice_res_list))
+
 rna_res_list = [
     ##### for isoform expression RSEM ######
     "{project}/{genome_version}/results/summary/RSEM/{sample}/{sample}.genes.results" if 'RSEM'      in stages else None,
@@ -45,6 +62,12 @@ rule rna_pipeline:
         project = project,
         genome_version = genome_version
         ),
+        ## alternative splicing (pe and se samples)
+        expand(splice_res_list,
+        sample = samples_info.index.tolist(),
+        project = project,
+        genome_version = genome_version
+        ) if splice_res_list else [],
         
 ##### Modules #####
 include: "../workflow/RNA/Snakefile"

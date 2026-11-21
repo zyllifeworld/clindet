@@ -117,16 +117,30 @@ rule loop_vcf2maf_unpaired:
         species=config['softwares_params'][genome_version]['vcf2maf']['vep']['species']
     shell:
         """
-        vcf2maf.pl --input-vcf {input.vcf} \
-        --output-maf {output.maf} --ref-fasta {input.ref} \
-        {params.name} \
-        --vep-path $(realpath $(dirname $(which vep))) \
-        --vep-data {params.vep_data} \
-        --vep-fork 40 \
-        --vep-overwrite \
-        --species {params.species} \
-        --ncbi-build {params.ncbi_build} \
-        --cache-version {params.cache_version}
+        VCF_INPUT="{input.vcf}"
+
+        # Only sort FreeBayes VCF before VEP annotation
+        if [ "{wildcards.caller}" = "freebayes" ]; then
+            VCF_INPUT="{input.vcf}.sorted.vcf"
+
+            bcftools sort \
+                -Ov \
+                -o "$VCF_INPUT" \
+                "{input.vcf}"
+        fi
+
+        vcf2maf.pl \
+            --input-vcf "$VCF_INPUT" \
+            --output-maf {output.maf} \
+            --ref-fasta {input.ref} \
+            {params.name} \
+            --vep-path $(realpath $(dirname $(which vep))) \
+            --vep-data {params.vep_data} \
+            --vep-fork 40 \
+            --vep-overwrite \
+            --species {params.species} \
+            --ncbi-build {params.ncbi_build} \
+            --cache-version {params.cache_version}
         """
 
 rule merge_paired_maf:
